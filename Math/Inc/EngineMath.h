@@ -43,40 +43,33 @@ namespace JimmyGod::Math
 		return mResult;
 	}
 
-	constexpr Matrix4 Determinant(const Matrix4& m)
+	constexpr float Determinant(const Matrix4& m)
 	{
-		return {};
+		float factor1 = 0.0f;
+		float factor2 = 0.0f;
+		float factor3 = 0.0f;
+		float factor4 = 0.0f;
+		float det = 0.0f;
+
+		factor1 = m._11*((m._22*((m._33*m._44) - (m._34*m._43))) - ((m._23*((m._32*m._44) - (m._34*m._42)))) + ((m._24*((m._32*m._43) - (m._33*m._42)))));
+		factor2 = m._12*((m._21*((m._33*m._44) - (m._34*m._43))) - ((m._23*((m._31*m._44) - (m._34*m._41)))) + ((m._24*((m._31*m._43) - (m._33*m._41)))));
+		factor3 = m._13*((m._21*((m._32*m._44) - (m._34*m._42))) - ((m._22*((m._31*m._44) - (m._34*m._41)))) + ((m._24*((m._31*m._42) - (m._32*m._41)))));
+		factor4 = m._14*((m._21*((m._32*m._43) - (m._33*m._42))) - ((m._22*((m._31*m._43) - (m._33*m._41)))) + ((m._23*((m._31*m._42) - (m._32*m._41)))));
+
+		det = factor1 - factor2 + factor3 - factor4;
+
+		return det;
 	}
 
 	constexpr Matrix4 Inverse(const Matrix4& m)
 	{
-		Matrix4 mResult = m;
-		float factor1 = mResult._22 * mResult._33 - mResult._23 * mResult._32;
-		float factor2 = mResult._13 * mResult._32 - mResult._12 * mResult._33;
-		float factor3 = mResult._12 * mResult._23 - mResult._13 * mResult._22;
-		float det = mResult._11 * factor1 + mResult._21*factor2 + mResult._31*factor3;
-		if (det == 0.0f)
-		{
-			return {};
-		}
-
-		float inverseDet = 1.0f / det;
-
-		mResult._11 = inverseDet * factor1;
-		mResult._12 = inverseDet * factor2;
-		mResult._13 = inverseDet * factor3;
-
+		Matrix4 mResult = Matrix4::Identity;
+		float det = Determinant(mResult);
+		
 		return {};
 	}
 
-	constexpr Matrix4 TransformCoord(const Vector3& v, const Matrix4& m)
-	{
-		Matrix4 mResult = m;
-
-		return {};
-	}
-
-	constexpr Vector3 TransformNormal(const Vector3& v, const Matrix4& m)
+	constexpr Vector3 TransformCoord(const Vector3& v, const Matrix4& m)
 	{
 		Matrix4 mResult = m;
 		Vector3 mVecResult;
@@ -84,6 +77,18 @@ namespace JimmyGod::Math
 		mVecResult.x = m._11*v.x + m._21*v.y + m._31*v.z + m._41;
 		mVecResult.y = m._12*v.x + m._22*v.y + m._32*v.z + m._42;
 		mVecResult.z = m._13*v.x + m._23*v.y + m._33*v.z + m._43;
+
+		return mVecResult;
+	}
+
+	constexpr Vector3 TransformNormal(const Vector3& v, const Matrix4& m)
+	{
+		Matrix4 mResult = m;
+		Vector3 mVecResult;
+
+		mVecResult.x = m._11*v.x + m._21*v.y + m._31*v.z;
+		mVecResult.y = m._12*v.x + m._22*v.y + m._32*v.z;
+		mVecResult.z = m._13*v.x + m._23*v.y + m._33*v.z;
 
 		return mVecResult;
 	}
