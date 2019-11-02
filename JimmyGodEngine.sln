@@ -3,23 +3,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.852
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Core", "Core\Core.vcxproj", "{3774C3EC-C77A-4AC9-B472-5AB91BC33E3C}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Math", "Math\Math.vcxproj", "{609F4881-107D-446C-9338-6F5876C09297}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTest", "UnitTest", "{774AE280-B01D-49D4-BF6C-4D9F2C66FD6A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MathTest", "MathTest\MathTest.vcxproj", "{C9BEFC4C-E13C-46E8-A5F2-73F4DED0172F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VGP242", "VGP242", "{F8F97F18-A6EA-42FF-B48D-4589FDDCC32D}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01_HelloWindow", "01_HelloWindow\01_HelloWindow.vcxproj", "{93048D3A-B0D7-48DC-8E49-26C9C212574C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{59D97D77-4B1E-42A4-9AC5-6AD4FFE2D819}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Framework", "Framework", "{FB1CCE89-92C6-4FC0-B8D9-9F6125BC0BB0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JimmyGodEngine", "JimmyGodEngine\JimmyGodEngine.vcxproj", "{B716E344-9A3B-468E-801F-639410D47B30}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Core", "Framework\Core\Core.vcxproj", "{3774C3EC-C77A-4AC9-B472-5AB91BC33E3C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Math", "Framework\Math\Math.vcxproj", "{609F4881-107D-446C-9338-6F5876C09297}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MathTest", "UnitTest\MathTest\MathTest.vcxproj", "{C9BEFC4C-E13C-46E8-A5F2-73F4DED0172F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01_HelloWindow", "VGP242\01_HelloWindow\01_HelloWindow.vcxproj", "{93048D3A-B0D7-48DC-8E49-26C9C212574C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JimmyGodEngine", "Engine\JimmyGodEngine\JimmyGodEngine.vcxproj", "{B716E344-9A3B-468E-801F-639410D47B30}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
