@@ -121,18 +121,19 @@ namespace JimmyGod::Math
 		static Matrix4 RotationAxis(const Vector3& axis, float radian)
 		{
 			Matrix4 mResult;
-
-			mResult._11 = (axis.x*(axis.x*(1-cosf(radian)) + cosf(radian)));
-			mResult._12 = (axis.y*(axis.x*(1 - cosf(radian)) - axis.z*(sinf(radian))));
-			mResult._13 = (axis.z*(axis.x*(1 - cosf(radian)) + axis.y* sinf(radian)));
+			const float cos = cosf(radian);
+			const float sin = sinf(radian);
+			mResult._11 = (axis.x*(axis.x*(1 - cos) + cos));
+			mResult._12 = (axis.y*(axis.x*(1 - cos) - axis.z * sin));
+			mResult._13 = (axis.z*(axis.x*(1 - cos) + axis.y * sin));
 			mResult._14 = 0.0f;
-			mResult._21 = (axis.x*(axis.y*(1 - cosf(radian)) + axis.z * sinf(radian)));
-			mResult._22 = (axis.y*(axis.y*(1 - cosf(radian)) + cosf(radian)));
-			mResult._23 = (axis.z*(axis.y*(1 - cosf(radian)) - axis.x*sinf(radian)));
+			mResult._21 = (axis.x*(axis.y*(1 - cos) + axis.z * sin));
+			mResult._22 = (axis.y*(axis.y*(1 - cos) + cos));
+			mResult._23 = (axis.z*(axis.y*(1 - cos) - axis.x * sin));
 			mResult._24 = 0.0f;
-			mResult._31 = (axis.x*(axis.z*(1 - cosf(radian)) - axis.y*sinf(radian)));
-			mResult._32 = (axis.y*(axis.z*(1 - cosf(radian)) + axis.x*sinf(radian)));
-			mResult._33 = (axis.z*(axis.z*(1 - cosf(radian)) + cosf(radian)));
+			mResult._31 = (axis.x*(axis.z*(1 - cos) - axis.y * sin));
+			mResult._32 = (axis.y*(axis.z*(1 - cos) + axis.x * sin));
+			mResult._33 = (axis.z*(axis.z*(1 - cos) + cos));
 			mResult._34 = 0.0f;
 			mResult._41 = 0.0f; mResult._42 = 0.0f; mResult._43 = 0.0f; mResult._44 = 1.0f;
 

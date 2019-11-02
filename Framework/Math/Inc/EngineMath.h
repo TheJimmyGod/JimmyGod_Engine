@@ -118,7 +118,7 @@ namespace JimmyGod::Math
 
 	inline float Magnitude(const Vector3& v)
 	{
-		return sqrt(MagnitudeSqr(v));
+		return sqrtf(MagnitudeSqr(v));
 	}
 
 	inline Vector3 Normalize(const Vector3& v)

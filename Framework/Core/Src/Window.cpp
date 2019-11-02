@@ -58,9 +58,10 @@ void Window::Initialize(HINSTANCE instance, LPCSTR appName, uint32_t width, uint
 	//Create Window
 	mWindow = CreateWindowA(appName, appName, WS_OVERLAPPEDWINDOW,
 		posX, posY, winWidth, winHeight, nullptr, nullptr, instance, nullptr);
-
 	ShowWindow(mWindow, true);
 	SetCursorPos(screenWidth / 2, screenHeight / 2);
+	mActive = (mWindow != nullptr);
+
 }
 
 void Window::Terminate()
@@ -72,18 +73,14 @@ void Window::Terminate()
 	mInstance = nullptr;
 }
 
-bool Window::ProcessMessage()
+void Window::ProcessMessage()
 {
 	MSG msg{};
-
-	bool quit = false;
 	while (PeekMessageA(&msg, nullptr, 0, 0, PM_REMOVE))
 	{
 		TranslateMessage(&msg);
 		DispatchMessageA(&msg);
 		if (WM_QUIT == msg.message)
-			quit = true;
+			mActive = false;
 	}
-
-	return quit;
 }
