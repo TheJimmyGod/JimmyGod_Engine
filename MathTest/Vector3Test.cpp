@@ -31,5 +31,16 @@ namespace MathTest
 			Assert::AreEqual(c.y, 7.0f);
 			Assert::AreEqual(c.z, 9.0f);
 		}
+
+		TEST_METHOD(TestAxises)
+		{
+			Vector3 a = Vector3::XAxis;
+			Vector3 b = Vector3::YAxis;
+			Vector3 c = Vector3::ZAxis;
+
+			Assert::AreEqual(a.x, 1.0f);
+			Assert::AreEqual(b.y, 1.0f);
+			Assert::AreEqual(c.z, 1.0f);
+		}
 	};
 }

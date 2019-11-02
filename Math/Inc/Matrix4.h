@@ -121,7 +121,7 @@ namespace JimmyGod::Math
 		static Matrix4 RotationAxis(const Vector3& axis, float radian)
 		{
 			Matrix4 mResult;
-			Normalize(axis);
+
 			mResult._11 = (axis.x*(axis.x*(1-cosf(radian)) + cosf(radian)));
 			mResult._12 = (axis.y*(axis.x*(1 - cosf(radian)) - axis.z*(sinf(radian))));
 			mResult._13 = (axis.z*(axis.x*(1 - cosf(radian)) + axis.y* sinf(radian)));
