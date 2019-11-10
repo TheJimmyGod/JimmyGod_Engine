@@ -2,6 +2,8 @@
 #include "App.h"
 
 using namespace JimmyGod;
+using namespace JimmyGod::Graphics;
+using namespace JimmyGod::Input;
 
 void App::Run(AppConfig appConfig)
 {
@@ -15,7 +17,15 @@ void App::Run(AppConfig appConfig)
 		appConfig.windowHeight
 	);
 
-	// Initialize engine systems
+	// Initialize input systems
+	auto handle = mWindow.GetWindowHandle();
+	InputSystem::StaticInitialize(handle);
+
+	// Initialize Graphics systems
+	GraphicsSystem::StaticInitialize(handle, false);
+
+	// OnInit
+
 	mRunning = true;
 	while (mWindow.IsActive() && mRunning)
 	{
@@ -25,10 +35,16 @@ void App::Run(AppConfig appConfig)
 		{
 			Quit();
 		}
-		//Do Game Stuff
+		// Do Game Stuff
+		// OnGameLoop
 	}
 
+	// OnCleanUp
+
 	// Termiates engine systems
+
+	InputSystem::StaticTerminate();
+	GraphicsSystem::StaticTerminate();
 
 	// Terminate window
 

@@ -22,6 +22,7 @@
     <ClInclude Include="Inc\Common.h" />
     <ClInclude Include="Inc\Core.h" />
     <ClInclude Include="Inc\Debug.h" />
+    <ClInclude Include="Inc\WindowMessageHandler.h" />
     <ClInclude Include="Src\Precompiled.h" />
     <ClInclude Include="Inc\Window.h" />
   </ItemGroup>
@@ -30,6 +31,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Src\Window.cpp" />
+    <ClCompile Include="Src\WindowMessageHandler.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
