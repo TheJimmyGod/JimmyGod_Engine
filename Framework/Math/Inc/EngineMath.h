@@ -5,6 +5,8 @@
 #include "Vector3.h"
 #include "Matrix4.h"
 
+#include "Vector4.h"
+
 namespace JimmyGod::Math
 {
 	constexpr float Dot(const Vector3& a, const Vector3& b)

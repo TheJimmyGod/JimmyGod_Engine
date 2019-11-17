@@ -5,16 +5,22 @@ using namespace JimmyGod;
 using namespace JimmyGod::Graphics;
 using namespace JimmyGod::Input;
 
+void App::ChangeState(const std::string & name)
+{
+	if (auto iter = mAppStates.find(name); iter != mAppStates.end())
+		mNextState = iter->second.get();
+}
+
 void App::Run(AppConfig appConfig)
 {
-	mAppConfig = appConfig;
+	mAppConfig = std::move(appConfig);
 
 	// Setup our application window
 	mWindow.Initialize(
 		GetModuleHandle(NULL),
-		appConfig.appName.c_str(),
-		appConfig.windowWidth,
-		appConfig.windowHeight
+		mAppConfig.appName.c_str(),
+		mAppConfig.windowWidth,
+		mAppConfig.windowHeight
 	);
 
 	// Initialize input systems
@@ -24,6 +30,10 @@ void App::Run(AppConfig appConfig)
 	// Initialize Graphics systems
 	GraphicsSystem::StaticInitialize(handle, false);
 
+	// Initialize the starting state
+	mCurrentState = mAppStates.begin()->second.get();
+	mCurrentState->Initialize();
+
 	// OnInit
 
 	mRunning = true;
@@ -31,15 +41,34 @@ void App::Run(AppConfig appConfig)
 	{
 		mWindow.ProcessMessage();
 
-		if (GetAsyncKeyState(VK_ESCAPE))
+		if (mNextState)
+		{
+			mCurrentState->Terminate();
+			mCurrentState = std::exchange(mNextState, nullptr);
+			mCurrentState->Initialize();
+		}
+
+		auto inputSystem = InputSystem::Get();
+		inputSystem->Update();
+
+		if (inputSystem->IsKeyPressed(KeyCode::ESCAPE))
 		{
 			Quit();
+			continue;
 		}
-		// Do Game Stuff
-		// OnGameLoop
+
+
+		// TODO
+		float deltaTime = 1.0f / 60.0f;
+		mCurrentState->Update(deltaTime);
+		
+		auto graphicSystem = GraphicsSystem::Get();
+		graphicSystem->BeginRender();
+		mCurrentState->Render();
+		graphicSystem->EndRender();
 	}
 
-	// OnCleanUp
+	mCurrentState->Terminate();
 
 	// Termiates engine systems
 

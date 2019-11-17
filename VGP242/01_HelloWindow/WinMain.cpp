@@ -2,12 +2,8 @@
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
-	JimmyGod::AppConfig appConfig;
-	appConfig.appName = "Jimmy's window";
-	appConfig.windowWidth = 1280;
-	appConfig.windowHeight = 720;
-
-	JimmyGod::MainApp().Run(appConfig);
+	JimmyGod::MainApp().AddState<JimmyGod::AppState>("DummyState");
+	JimmyGod::MainApp().Run({ "Jimmy's head",1280,720 });
 	return 0;
 }
 
