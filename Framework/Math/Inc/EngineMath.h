@@ -123,7 +123,7 @@ namespace JimmyGod::Math
 		return sqrtf(MagnitudeSqr(v));
 	}
 
-	inline Vector3 Normalize(const Vector3& v)
+	inline Vector3 Normalize(const Vector3& v) // Shunk a vector to make the vector's length 1
 	{
 		float magnitude = Magnitude(v);
 		if (magnitude == 0)
