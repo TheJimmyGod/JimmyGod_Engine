@@ -4,11 +4,45 @@
 
 #include "Vector3.h"
 #include "Matrix4.h"
-
+#include "Constants.h"
 #include "Vector4.h"
 
 namespace JimmyGod::Math
 {
+	template<class T>
+	constexpr T Min(T a, T b)
+	{
+		return (a < b) ? a : b;
+	}
+
+	template<class T>
+	constexpr T Max(T a, T b)
+	{
+		return (a > b) ? a : b;
+	}
+
+	template<class T>
+	constexpr T Clamp(T value, T min, T max)
+	{
+		return Max(min, Min(max, value));
+	}
+
+	template<class T>
+	constexpr T Lerp(T a, T b, float t)
+	{
+		return a + (b - a) * t;
+	}
+
+	constexpr float Abs(float value)
+	{
+		return value >= 0.0f ? value : -value;
+	}
+
+	constexpr float Spr(float value)
+	{
+		return value * value;
+	}
+
 	constexpr float Dot(const Vector3& a, const Vector3& b)
 	{
 		return (a.x*b.x) + (a.y*+b.y) + (a.z*+b.z);

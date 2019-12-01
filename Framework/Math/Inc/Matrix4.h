@@ -36,13 +36,20 @@ namespace JimmyGod::Math
 
 		constexpr Matrix4 operator/(float s) const
 		{
-			return
+			if (s == 0)
 			{
-			_11 / s, _12 / s, _13 / s, _14 / s,
-			_21 / s, _22 / s, _23 / s, _24 / s,
-			_31 / s, _32 / s, _33 / s, _34 / s,
-			_41 / s, _42 / s, _43 / s, _44 / s
-			};
+				return Matrix4();
+			}
+			else
+			{
+				return
+				{
+				_11 / s, _12 / s, _13 / s, _14 / s,
+				_21 / s, _22 / s, _23 / s, _24 / s,
+				_31 / s, _32 / s, _33 / s, _34 / s,
+				_41 / s, _42 / s, _43 / s, _44 / s
+				};
+			}
 		}
 
 		constexpr Matrix4 operator*(const Matrix4& m) const
@@ -120,24 +127,18 @@ namespace JimmyGod::Math
 		}
 		static Matrix4 RotationAxis(const Vector3& axis, float radian)
 		{
-			Matrix4 mResult;
-			const float cos = cosf(radian);
-			const float sin = sinf(radian);
-			mResult._11 = (axis.x*(axis.x*(1 - cos) + cos));
-			mResult._12 = (axis.y*(axis.x*(1 - cos) - axis.z * sin));
-			mResult._13 = (axis.z*(axis.x*(1 - cos) + axis.y * sin));
-			mResult._14 = 0.0f;
-			mResult._21 = (axis.x*(axis.y*(1 - cos) + axis.z * sin));
-			mResult._22 = (axis.y*(axis.y*(1 - cos) + cos));
-			mResult._23 = (axis.z*(axis.y*(1 - cos) - axis.x * sin));
-			mResult._24 = 0.0f;
-			mResult._31 = (axis.x*(axis.z*(1 - cos) - axis.y * sin));
-			mResult._32 = (axis.y*(axis.z*(1 - cos) + axis.x * sin));
-			mResult._33 = (axis.z*(axis.z*(1 - cos) + cos));
-			mResult._34 = 0.0f;
-			mResult._41 = 0.0f; mResult._42 = 0.0f; mResult._43 = 0.0f; mResult._44 = 1.0f;
+			float cos = cosf(radian);
+			float sin = sinf(radian);
+			float wx = axis.x;
+			float wy = axis.y;
+			float wz = axis.z;
 
-			return mResult;
+			return{
+				cos + wx*wx*(1-cos), wz*sin+wx*wy*(1-cos),-wy*sin*wx*wz*(1-cos),0.0f,
+				wx*wy*(1-cos)-wz *sin, cos+wy*wy*(1-cos),wx*sin+wy*wz*(1-cos),0.0f,
+				wy*sin+wx*wz*(1-cos),-wx*sin+wy*wz*(1-cos),cos+wz*wz*(1-cos),0.0f,
+				0.0f,0.0f,0.0f,1.0f
+			};
 		}
 		static Matrix4 Scaling(float scale)
 		{
@@ -150,3 +151,17 @@ namespace JimmyGod::Math
 		}
 	};
 }
+
+// Combine affects in one matrix
+// [T] - Translation
+// [R] - Rotate
+// [S] - Scale
+// View frustum
+//	- Near frame : How near from view
+//	- Far frame : How far from view
+//	- Fov : How angle you can see
+//	- Aspect radio
+// Local space --[R][S][T](World matrix)--> World space --[T][R](View matrix)--> View space --Squish view frustum(Projection)--> NDC space --(Rasterization)--> Screen space
+// Projection : Make perspective from the view
+
+// Zoom : narrow field of view

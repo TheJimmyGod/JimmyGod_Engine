@@ -115,32 +115,21 @@ void GameState::Render()
 	context->PSSetShader(mPixelShader, nullptr, 0);
 
 	context->Draw(mVertices.size(), 0);
-
-	// Add 04_HelloShapes project
-	// Copy code from 03_HelloTriangle
-	// Update to use DoSomething fx shaders
-	// Update Vertex to have Color as well
-	// Make sure inputlayout is initialized with correct description
-	// Create multiple meshes and vertex buffers
-	// Draw a heart
-	// Draw a triforce
-	// Draw something with more than 5 triangle
-	// Use input check so you can change between them
 }
 
 void HeartState::Initialize()
 {
 	GraphicsSystem::Get()->SetClearColor(Colors::LightGray);
 
-	mVertices.emplace_back(Vertex{ Vector3{ -0.75f,0.3f,0.0f }, Color{Colors::HotPink} });
+	mVertices.emplace_back(Vertex{ Vector3{ -0.65f,0.3f,0.0f }, Color{Colors::HotPink} });
 	mVertices.emplace_back(Vertex{ Vector3{ -0.5f,0.9f,0.0f }, Color{Colors::HotPink} });
 	mVertices.emplace_back(Vertex{ Vector3{ -0.1f,0.3f,0.0f }, Color{Colors::HotPink} });
 	mVertices.emplace_back(Vertex{ Vector3{ 0.0f,0.3f,0.0f }, Color{Colors::HotPink} });
 	mVertices.emplace_back(Vertex{ Vector3{ 0.1f,0.3f,0.0f }, Color{Colors::HotPink} });
 	mVertices.emplace_back(Vertex{ Vector3{ 0.5f,0.9f,0.0f }, Color{Colors::HotPink} });
-	mVertices.emplace_back(Vertex{ Vector3{ 0.75f,0.3f,0.0f }, Color{Colors::HotPink} });
+	mVertices.emplace_back(Vertex{ Vector3{ 0.65f,0.3f,0.0f }, Color{Colors::HotPink} });
 	mVertices.emplace_back(Vertex{ Vector3{ 0.0f,-0.75f,0.0f }, Color{Colors::HotPink} });
-	mVertices.emplace_back(Vertex{ Vector3{ -0.75f,0.3f,0.0f }, Color{Colors::HotPink} });
+	mVertices.emplace_back(Vertex{ Vector3{ -0.65f,0.3f,0.0f }, Color{Colors::HotPink} });
 
 
 	auto device = GraphicsSystem::Get()->GetDevice();
@@ -344,6 +333,10 @@ void TriForceState::Terminate()
 
 void TriForceState::Update(float deltaTime)
 {
+	if (InputSystem::Get()->IsKeyPressed(KeyCode::SPACE))
+	{
+		JimmyGod::MainApp().ChangeState("MultipleState");
+	}
 }
 
 void TriForceState::Render()
@@ -366,9 +359,38 @@ void MultipleState::Initialize()
 {
 	GraphicsSystem::Get()->SetClearColor(Colors::LightGray);
 
-	mVertices.emplace_back(Vertex{ Vector3{ 0.0f,0.5f,0.0f }, Color{Colors::Chocolate} });
-	mVertices.emplace_back(Vertex{ Vector3{ 0.5f,-0.5f,0.0f }, Color{Colors::Gold} });
-	mVertices.emplace_back(Vertex{ Vector3{ -0.5f,-0.5f,0.0f }, Color{Colors::HotPink} });
+	// Left Bottom
+	mVertices.emplace_back(Vertex{ Vector3{ -0.1f,-0.20f,0.0f }, Color{ Colors::MidnightBlue } });
+	mVertices.emplace_back(Vertex{ Vector3{ -0.35f,-0.45f,0.0f }, Color{ Colors::LightSkyBlue} });
+	mVertices.emplace_back(Vertex{ Vector3{ -0.2f, -0.05f,0.0f }, Color{ Colors::Silver } });
+	// Left root
+	mVertices.emplace_back(Vertex{ Vector3{ -0.1f,-0.7f,0.0f }, Color{ Colors::MidnightBlue } });
+	mVertices.emplace_back(Vertex{ Vector3{ -0.1f,-0.85f,0.0f }, Color{ Colors::LightSkyBlue } });
+	mVertices.emplace_back(Vertex{ Vector3{ -0.7f, -0.85f,0.0f }, Color{ Colors::Silver } });
+	// Right Bottom
+	mVertices.emplace_back(Vertex{ Vector3{ 0.2f,-0.05f,0.0f }, Color{ Colors::Silver } });
+	mVertices.emplace_back(Vertex{ Vector3{ 0.35f,-0.45f,0.0f }, Color{ Colors::LightSkyBlue } });
+	mVertices.emplace_back(Vertex{ Vector3{ 0.1f,-0.20f,0.0f }, Color{ Colors::MidnightBlue } });
+	// Right root
+	mVertices.emplace_back(Vertex{ Vector3{ 0.1f,-0.85f,0.0f }, Color{ Colors::LightSkyBlue } });
+	mVertices.emplace_back(Vertex{ Vector3{ 0.1f,-0.7f,0.0f }, Color{ Colors::MidnightBlue } });
+	mVertices.emplace_back(Vertex{ Vector3{ 0.7f, -0.85f,0.0f }, Color{ Colors::Silver } });
+	// Center top
+	mVertices.emplace_back(Vertex{ Vector3{ 0.0f,0.7f,0.0f }, Color{ Colors::Silver } });
+	mVertices.emplace_back(Vertex{ Vector3{ 0.075f, 0.3f,0.0f }, Color{ Colors::MidnightBlue } });
+	mVertices.emplace_back(Vertex{ Vector3{ -0.075f, 0.3f,0.0f }, Color{ Colors::LightSkyBlue } });
+	// Center botoom
+	mVertices.emplace_back(Vertex{ Vector3{ 0.075f, -0.35f,0.0f }, Color{ Colors::Silver } });
+	mVertices.emplace_back(Vertex{ Vector3{ 0.0f,-0.7f,0.0f }, Color{ Colors::MidnightBlue } });
+	mVertices.emplace_back(Vertex{ Vector3{ -0.075f, -0.35f,0.0f }, Color{ Colors::LightSkyBlue } });
+	// Left top
+	mVertices.emplace_back(Vertex{ Vector3{ -0.35f,0.4f,0.0f }, Color{ Colors::Silver } });
+	mVertices.emplace_back(Vertex{ Vector3{ -0.1f, 0.25f,0.0f }, Color{ Colors::MidnightBlue } });
+	mVertices.emplace_back(Vertex{ Vector3{ -0.2f, 0.05f,0.0f }, Color{ Colors::LightSkyBlue } });
+	// Right top
+	mVertices.emplace_back(Vertex{ Vector3{ 0.2f, 0.05f,0.0f }, Color{ Colors::Silver } });
+	mVertices.emplace_back(Vertex{ Vector3{ 0.1f, 0.25f,0.0f }, Color{ Colors::MidnightBlue } });
+	mVertices.emplace_back(Vertex{ Vector3{ 0.35f,0.4f,0.0f }, Color{ Colors::LightSkyBlue } });
 
 	auto device = GraphicsSystem::Get()->GetDevice();
 
@@ -453,6 +475,10 @@ void MultipleState::Terminate()
 
 void MultipleState::Update(float deltaTime)
 {
+	if (InputSystem::Get()->IsKeyPressed(KeyCode::SPACE))
+	{
+		JimmyGod::MainApp().ChangeState("GameState");
+	}
 }
 
 void MultipleState::Render()
