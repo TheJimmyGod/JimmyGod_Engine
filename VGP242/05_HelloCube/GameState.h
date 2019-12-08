@@ -10,6 +10,7 @@ using namespace Math;
 class GameState : public JimmyGod::AppState
 {
 public:
+
 	void Initialize() override;
 	void Terminate() override;
 
@@ -18,22 +19,15 @@ public:
 
 private:
 	Camera mCamera;
-	
-	struct Vertex
-	{
-		Vector3 position;
-		Color color;
-	};
 
-	
+	UINT indiceCount;
 
-	vector<Vertex> mVertices;
+	VertexShader mVertexShader;
+	MeshBuffer mMeshBuffer;
+	PixelShader mPixelShader;
+	ConstantBuffer mConstantBuffer;
 
-	ID3D11Buffer* mConstantBuffer = nullptr;
-	ID3D11Buffer* mVertexBuffer = nullptr;
-	ID3D11VertexShader* mVertexShader = nullptr;
-	ID3D11InputLayout* mInputLayout = nullptr;
-	ID3D11PixelShader* mPixelShader = nullptr;
+	Mesh mMesh;
 
 	float mRotation = 0.0f;
 };
