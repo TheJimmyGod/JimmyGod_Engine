@@ -23,21 +23,6 @@ void GameState::Initialize()
 //		+---------------+ -1.0
 //	 -1.0			   1.0
 
-
-	//Vertex verteies[] =
-	//{
-	//	//Front
-	//	{ Vector3{ -0.5f,0.5f,-0.5f }, Color{Colors::DeepSkyBlue}},
-	//	{ Vector3{ 0.5f,0.5f,-0.5f }, Color{Colors::Navy} },
-	//	{ Vector3{ -0.5f,-0.5f,-0.5f }, Color{Colors::SkyBlue} },
-	//	{ Vector3{	0.5f,-0.5f,-0.5f}, Color{Colors::Aqua} },
-	//	//Back
-	//	{ Vector3{ -0.5f,0.5f,0.5f }, Color{Colors::DeepSkyBlue} },
-	//	{ Vector3{ 0.5f,0.5f,0.5f }, Color{Colors::Navy} },
-	//	{ Vector3{ -0.5f,-0.5f,0.5f }, Color{Colors::SkyBlue} },
-	//	{ Vector3{	0.5f,-0.5f,0.5f}, Color{Colors::Aqua} }
-	//};
-
 	mMesh.mVertices.emplace_back(Vertex{ Vector3{ -0.5f,0.5f,-0.5f }, Color{Colors::DeepSkyBlue} });
 	mMesh.mVertices.emplace_back(Vertex{ Vector3{ 0.5f,0.5f,-0.5f }, Color{Colors::Navy} });
 	mMesh.mVertices.emplace_back(Vertex{ Vector3{ -0.5f,-0.5f,-0.5f }, Color{Colors::SkyBlue} });
@@ -47,26 +32,6 @@ void GameState::Initialize()
 	mMesh.mVertices.emplace_back(Vertex{ Vector3{ -0.5f,-0.5f,0.5f }, Color{Colors::Aqua} });
 	mMesh.mVertices.emplace_back(Vertex{ Vector3{ 0.5f,-0.5f,0.5f }, Color{Colors::SkyBlue} });
 	Vertex* arr = mMesh.mVertices.data();
-	uint32_t indices[] =
-	{
-		0,1,2,
-		1,3,2,
-		
-		4,6,5,
-		6,7,5,
-
-		4,5,8,
-		0,5,1,
-
-		2,3,6,
-		6,3,7,
-		
-		4,0,6,
-		6,0,2,
-
-		1,5,3,
-		3,5,7
-	};
 	
 	mMesh.mIndices.push_back(0);
 	mMesh.mIndices.push_back(1);
@@ -104,6 +69,7 @@ void GameState::Initialize()
 	mMesh.mIndices.push_back(3);
 	mMesh.mIndices.push_back(5);
 	mMesh.mIndices.push_back(7);
+
 
 	uint32_t* index = mMesh.mIndices.data();
 
@@ -160,7 +126,7 @@ void GameState::Initialize()
 	// Compile and create pixel shader
 	mPixelShader.Initialize();
 
-	mConstantBuffer.Initialize(sizeof(Matrix4));
+	mConstantBuffer.Initialize(sizeof(Matrix4) * 3.0f);
 }
 
 void GameState::Terminate()
@@ -193,15 +159,23 @@ void GameState::Update(float deltaTime)
 
 void GameState::Render()
 {
-	auto matWorld = Matrix4::RotationY(mRotation);
-	auto matView = mCamera.GetViewMatrix();
-	auto matProj = mCamera.GetPerspectiveMatrix();
-	auto matWVP = Transpose(matWorld * matView * matProj);
-	mVertexShader.Bind();
-	mPixelShader.Bind();
-	mMeshBuffer.Draw(indiceCount);
-	mConstantBuffer.Set(&matWVP);
-	mConstantBuffer.Bind();
+	for (int i = 0; i < 100; i++)
+	{
+		auto matWorld1 = Matrix4::RotationY(mRotation+ i);
+		auto matWorld2 = Matrix4::RotationX(mRotation-i);
+		auto matWorld3 = Matrix4::RotationZ(mRotation);
+		auto matView = mCamera.GetViewMatrix();
+		auto matProj = mCamera.GetPerspectiveMatrix();
+		auto matTranslation = Matrix4::Translation(Vector3((float)i, (float)i, (float)i));
+		auto matScl = Matrix4::Scaling((float) i * 0.25f);
+		auto matWVP = Transpose(matScl*matTranslation*matWorld1 * matWorld2 * matWorld3 * matView * matProj * (float)i);
+		
+		mVertexShader.Bind();
+		mPixelShader.Bind();
+		mMeshBuffer.Draw();
+		mConstantBuffer.Set(&matWVP);
+		mConstantBuffer.Bind();
+	}
 	/*context->Draw(mVertices.size(), 0);*/ // This is for when we don't have an index buffer
 
 }
