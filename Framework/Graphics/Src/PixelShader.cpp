@@ -6,14 +6,14 @@
 using namespace JimmyGod;
 using namespace JimmyGod::Graphics;
 
-void PixelShader::Initialize()
+void PixelShader::Initialize(const std::filesystem::path& filePath)
 {
 	auto device = GetDevice();
 	DWORD shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG;
 	ID3DBlob* shaderBlob = nullptr;
 	ID3DBlob* errorBlob = nullptr;
 	HRESULT hr = D3DCompileFromFile(
-		L"../../Assets/Shaders/DoTransform.fx",
+		filePath.wstring().c_str(),
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		"PS", "ps_5_0",
@@ -37,7 +37,7 @@ void PixelShader::Terminate()
 	SafeRelease(mPixelShader);
 }
 
-void PixelShader::Bind()
+void PixelShader::Bind() const
 {
 	auto context = GetContext();
 	context->PSSetShader(mPixelShader, nullptr, 0);

@@ -1,13 +1,35 @@
 #include "Precompiled.h"
 #include "VertexShader.h"
-
+#include "VertexTypes.h"
 #include "D3DUtil.h"
 
 using std::vector;
 using namespace JimmyGod;
 using namespace JimmyGod::Graphics;
 
-void VertexShader::Initialize()
+namespace
+{
+	vector<D3D11_INPUT_ELEMENT_DESC> GetVertexLayout(uint32_t vertexFormat)
+	{
+		vector<D3D11_INPUT_ELEMENT_DESC> vertexLayout;
+
+		if(vertexFormat&VE_Position)
+			vertexLayout.push_back({ "POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0 });
+		if(vertexFormat&VE_Normal)
+			vertexLayout.push_back({ "NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0 });
+		if(vertexFormat&VE_Tangent) 
+			vertexLayout.push_back({ "TANGENT",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0 });
+		if(vertexFormat&VE_Color)
+			vertexLayout.push_back({ "COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0 });
+		if(vertexFormat&VE_TexCoord)
+			vertexLayout.push_back({ "TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0 });
+
+		return vertexLayout;
+	}
+
+}
+
+void VertexShader::Initialize(const std::filesystem::path& filePath, uint32_t vertexFormat)
 {
 	auto device = GetDevice();
 
@@ -15,7 +37,7 @@ void VertexShader::Initialize()
 	ID3DBlob* shaderBlob = nullptr;
 	ID3DBlob* errorBlob = nullptr;
 	HRESULT hr = D3DCompileFromFile(
-		L"../../Assets/Shaders/DoTransform.fx",
+		filePath.wstring().c_str(),
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		"VS", "vs_5_0",
@@ -31,13 +53,12 @@ void VertexShader::Initialize()
 		&mVertexShader);
 	ASSERT(SUCCEEDED(hr), "Failed to create vertex shader");
 
-	vector<D3D11_INPUT_ELEMENT_DESC> vertexLayout;
-	vertexLayout.push_back({ "POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0 });
-	vertexLayout.push_back({ "COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0 });
-
+	// Define vertex element descriptions
+	const auto vertexLayout = GetVertexLayout(vertexFormat);
+	
 	hr = device->CreateInputLayout(
 		vertexLayout.data(),
-		(UINT)vertexLayout.size(),
+		static_cast<UINT>(vertexLayout.size()),
 		shaderBlob->GetBufferPointer(),
 		shaderBlob->GetBufferSize(),
 		&mInputLayout);
@@ -52,7 +73,7 @@ void VertexShader::Terminate()
 	SafeRelease(mInputLayout);
 }
 
-void VertexShader::Bind()
+void VertexShader::Bind() const
 {
 	auto context = GetContext();
 	context->IASetInputLayout(mInputLayout);

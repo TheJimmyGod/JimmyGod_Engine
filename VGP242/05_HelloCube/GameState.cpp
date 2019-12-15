@@ -11,122 +11,68 @@ void GameState::Initialize()
 	mCamera.SetPosition({ 0.0f,0.0f,-5.0f });
 	mCamera.SetDirection({ 0.0f,0.0f,1.0f });
 
-//		   +---------------+
-//		  /				  /|
-//		 /				 / |
-// 1.0	+---------------+  |
-//		|		^		|  |
-//		|		|		|  |
-//		|<------|------>|  |1.0
-//		|		|		| /
-//		|		v		|/
-//		+---------------+ -1.0
-//	 -1.0			   1.0
-
-	mMesh.mVertices.emplace_back(Vertex{ Vector3{ -0.5f,0.5f,-0.5f }, Color{Colors::DeepSkyBlue} });
-	mMesh.mVertices.emplace_back(Vertex{ Vector3{ 0.5f,0.5f,-0.5f }, Color{Colors::Navy} });
-	mMesh.mVertices.emplace_back(Vertex{ Vector3{ -0.5f,-0.5f,-0.5f }, Color{Colors::SkyBlue} });
-	mMesh.mVertices.emplace_back(Vertex{ Vector3{ 0.5f,-0.5f,-0.5f}, Color{Colors::Aqua} });
-	mMesh.mVertices.emplace_back(Vertex{ Vector3{ -0.5f,0.5f,0.5f }, Color{Colors::DeepSkyBlue} });
-	mMesh.mVertices.emplace_back(Vertex{ Vector3{ 0.5f,0.5f,0.5f }, Color{Colors::Navy} });
-	mMesh.mVertices.emplace_back(Vertex{ Vector3{ -0.5f,-0.5f,0.5f }, Color{Colors::Aqua} });
-	mMesh.mVertices.emplace_back(Vertex{ Vector3{ 0.5f,-0.5f,0.5f }, Color{Colors::SkyBlue} });
-	Vertex* arr = mMesh.mVertices.data();
-	
-	mMesh.mIndices.push_back(0);
-	mMesh.mIndices.push_back(1);
-	mMesh.mIndices.push_back(2);
-	mMesh.mIndices.push_back(1);
-	mMesh.mIndices.push_back(3);
-	mMesh.mIndices.push_back(2);
-	mMesh.mIndices.push_back(4);
-	mMesh.mIndices.push_back(6);
-	mMesh.mIndices.push_back(5);
-	mMesh.mIndices.push_back(6);
-	mMesh.mIndices.push_back(7);
-	mMesh.mIndices.push_back(5);
-	mMesh.mIndices.push_back(4);
-	mMesh.mIndices.push_back(5);
-	mMesh.mIndices.push_back(0);
-	mMesh.mIndices.push_back(0);
-	mMesh.mIndices.push_back(5);
-	mMesh.mIndices.push_back(1);
-	mMesh.mIndices.push_back(2);
-	mMesh.mIndices.push_back(3);
-	mMesh.mIndices.push_back(6);
-	mMesh.mIndices.push_back(6);
-	mMesh.mIndices.push_back(3);
-	mMesh.mIndices.push_back(7);
-	mMesh.mIndices.push_back(4);
-	mMesh.mIndices.push_back(0);
-	mMesh.mIndices.push_back(6);
-	mMesh.mIndices.push_back(6);
-	mMesh.mIndices.push_back(0);
-	mMesh.mIndices.push_back(2);
-	mMesh.mIndices.push_back(1);
-	mMesh.mIndices.push_back(5);
-	mMesh.mIndices.push_back(3);
-	mMesh.mIndices.push_back(3);
-	mMesh.mIndices.push_back(5);
-	mMesh.mIndices.push_back(7);
 
 
-	uint32_t* index = mMesh.mIndices.data();
+	mMesh.vertices.emplace_back(VertexPC{ Vector3{ -0.5f,0.5f,-0.5f }, Color{Colors::DeepSkyBlue} });
+	mMesh.vertices.emplace_back(VertexPC{ Vector3{ 0.5f,0.5f,-0.5f }, Color{Colors::Navy} });
+	mMesh.vertices.emplace_back(VertexPC{ Vector3{ -0.5f,-0.5f,-0.5f }, Color{Colors::SkyBlue} });
+	mMesh.vertices.emplace_back(VertexPC{ Vector3{ 0.5f,-0.5f,-0.5f}, Color{Colors::Aqua} });
+	mMesh.vertices.emplace_back(VertexPC{ Vector3{ -0.5f,0.5f,0.5f }, Color{Colors::DeepSkyBlue} });
+	mMesh.vertices.emplace_back(VertexPC{ Vector3{ 0.5f,0.5f,0.5f }, Color{Colors::Navy} });
+	mMesh.vertices.emplace_back(VertexPC{ Vector3{ -0.5f,-0.5f,0.5f }, Color{Colors::Aqua} });
+	mMesh.vertices.emplace_back(VertexPC{ Vector3{ 0.5f,-0.5f,0.5f }, Color{Colors::SkyBlue} });
 
-	auto vertexCount = mMesh.mVertices.size() + 1;
-	indiceCount = mMesh.mIndices.size();
+	//Front
+	mMesh.indices.push_back(0);
+	mMesh.indices.push_back(1);
+	mMesh.indices.push_back(2);
+	mMesh.indices.push_back(1);
+	mMesh.indices.push_back(3);
+	mMesh.indices.push_back(2);
+	//Right
+	mMesh.indices.push_back(4);
+	mMesh.indices.push_back(6);
+	mMesh.indices.push_back(5);
+	mMesh.indices.push_back(6);
+	mMesh.indices.push_back(7);
+	mMesh.indices.push_back(5);
+	//Back
+	mMesh.indices.push_back(4);
+	mMesh.indices.push_back(5);
+	mMesh.indices.push_back(0);
+	mMesh.indices.push_back(0);
+	mMesh.indices.push_back(5);
+	mMesh.indices.push_back(1);
+	//Left
+	mMesh.indices.push_back(2);
+	mMesh.indices.push_back(3);
+	mMesh.indices.push_back(6);
+	mMesh.indices.push_back(6);
+	mMesh.indices.push_back(3);
+	mMesh.indices.push_back(7);
+	//Top
+	mMesh.indices.push_back(4);
+	mMesh.indices.push_back(0);
+	mMesh.indices.push_back(6);
+	mMesh.indices.push_back(6);
+	mMesh.indices.push_back(0);
+	mMesh.indices.push_back(2);
+	//Bottom
+	mMesh.indices.push_back(1);
+	mMesh.indices.push_back(5);
+	mMesh.indices.push_back(3);
+	mMesh.indices.push_back(3);
+	mMesh.indices.push_back(5);
+	mMesh.indices.push_back(7);
 
-	////Front
-	//mVertices.emplace_back(Vertex{ Vector3{ -0.5f,0.5f,-0.5f }, Color{Colors::DeepSkyBlue} });
-	//mVertices.emplace_back(Vertex{ Vector3{ 0.5f,0.5f,-0.5f }, Color{Colors::Navy} });
-	//mVertices.emplace_back(Vertex{ Vector3{ -0.5f,-0.5f,-0.5f }, Color{Colors::SkyBlue} });
-	//mVertices.emplace_back(Vertex{ Vector3{ -0.5f,-0.5f,-0.5f }, Color{Colors::DeepSkyBlue} });
-	//mVertices.emplace_back(Vertex{ Vector3{ 0.5f,0.5f,-0.5f }, Color{Colors::Navy} });
-	//mVertices.emplace_back(Vertex{ Vector3{ 0.5f, -0.5f,-0.5f }, Color{Colors::SkyBlue} });
-	////left
-	//mVertices.emplace_back(Vertex{ Vector3{ -0.5f,0.5f, -0.5f }, Color{Colors::PapayaWhip} });
-	//mVertices.emplace_back(Vertex{ Vector3{ -0.5f,-0.5f,0.5f }, Color{Colors::PapayaWhip} });
-	//mVertices.emplace_back(Vertex{ Vector3{ -0.5f,0.5f, 0.5f }, Color{Colors::BurlyWood} });
-	//mVertices.emplace_back(Vertex{ Vector3{ -0.5f,-0.5f, 0.5f }, Color{Colors::PapayaWhip} });
-	//mVertices.emplace_back(Vertex{ Vector3{ -0.5f,0.5f, -0.5f }, Color{Colors::PapayaWhip} });
-	//mVertices.emplace_back(Vertex{ Vector3{ -0.5f,-0.5f, -0.5f }, Color{Colors::BurlyWood} });
-	////Back
-	//mVertices.emplace_back(Vertex{ Vector3{ -0.5f,-0.5f,0.5f }, Color{Colors::Crimson} });
-	//mVertices.emplace_back(Vertex{ Vector3{ 0.5f,0.5f,0.5f }, Color{Colors::Crimson} });
-	//mVertices.emplace_back(Vertex{ Vector3{ -0.5f,0.5f,0.5f }, Color{Colors::Tan} });
-	//mVertices.emplace_back(Vertex{ Vector3{ 0.5f, -0.5f,0.5f }, Color{Colors::Tan} });
-	//mVertices.emplace_back(Vertex{ Vector3{ 0.5f,0.5f,0.5f }, Color{Colors::Crimson} });
-	//mVertices.emplace_back(Vertex{ Vector3{ -0.5f,-0.5f,0.5f }, Color{Colors::Crimson} });
-	////Right
-	//mVertices.emplace_back(Vertex{ Vector3{ 0.5f,0.5f,-0.5f }, Color{Colors::Yellow} });
-	//mVertices.emplace_back(Vertex{ Vector3{ 0.5f,-0.5f,0.5f }, Color{Colors::Yellow} });
-	//mVertices.emplace_back(Vertex{ Vector3{ 0.5f,-0.5f,-0.5f }, Color{Colors::GreenYellow} });
-	//mVertices.emplace_back(Vertex{ Vector3{ 0.5f,0.5f, -0.5f }, Color{Colors::Yellow} });
-	//mVertices.emplace_back(Vertex{ Vector3{ 0.5f,0.5f, 0.5f }, Color{Colors::GreenYellow} });
-	//mVertices.emplace_back(Vertex{ Vector3{ 0.5f,-0.5f, 0.5f }, Color{Colors::Yellow} });
-	////Top
-	//mVertices.emplace_back(Vertex{ Vector3{ 0.5f,0.5f,-0.5f }, Color{Colors::Chocolate} });
-	//mVertices.emplace_back(Vertex{ Vector3{ -0.5f,0.5f,-0.5f }, Color{Colors::SandyBrown} });
-	//mVertices.emplace_back(Vertex{ Vector3{ 0.5f,0.5f, 0.5f }, Color{Colors::Chocolate} });
-	//mVertices.emplace_back(Vertex{ Vector3{ -0.5f,0.5f,0.5f }, Color{Colors::SandyBrown} });
-	//mVertices.emplace_back(Vertex{ Vector3{ 0.5f,0.5f,0.5f }, Color{Colors::Chocolate} });
-	//mVertices.emplace_back(Vertex{ Vector3{ -0.5f,0.5f, -0.5f }, Color{Colors::Chocolate} });
-	////Bottom
-	//mVertices.emplace_back(Vertex{ Vector3{ -0.5f,-0.5f,-0.5f }, Color{Colors::Purple} });
-	//mVertices.emplace_back(Vertex{ Vector3{ 0.5f,-0.5f,-0.5f }, Color{Colors::Red} });
-	//mVertices.emplace_back(Vertex{ Vector3{ 0.5f,-0.5f, 0.5f }, Color{Colors::Blue} });
-	//mVertices.emplace_back(Vertex{ Vector3{ 0.5f,-0.5f,0.5f }, Color{Colors::Blue} });
-	//mVertices.emplace_back(Vertex{ Vector3{ -0.5f,-0.5f,0.5f }, Color{Colors::Red} });
-	//mVertices.emplace_back(Vertex{ Vector3{ -0.5f,-0.5f, -0.5f }, Color{Colors::Purple} });
+	mMeshBuffer.Initialize(mMesh);
 
-	mMeshBuffer.Initialize(arr, vertexCount, index , indiceCount);
+	mConstantBuffer.Initialize(sizeof(Matrix4));
 
 	// Compile and create vertex shader
-	mVertexShader.Initialize();
+	mVertexShader.Initialize("../../Assets/Shaders/DoTransform.fx", VertexPC::Format);
 	// Compile and create pixel shader
-	mPixelShader.Initialize();
-
-	mConstantBuffer.Initialize(sizeof(Matrix4) * 3.0f);
+	mPixelShader.Initialize("../../Assets/Shaders/DoTransform.fx");
 }
 
 void GameState::Terminate()
@@ -159,23 +105,24 @@ void GameState::Update(float deltaTime)
 
 void GameState::Render()
 {
-	for (int i = 0; i < 100; i++)
+	auto matView = mCamera.GetViewMatrix();
+	auto matProj = mCamera.GetPerspectiveMatrix();
+
+	mVertexShader.Bind();
+	mPixelShader.Bind();
+	mConstantBuffer.Bind();
+
+	for (int i = 0; i < 11; i++)
 	{
-		auto matWorld1 = Matrix4::RotationY(mRotation+ i);
-		auto matWorld2 = Matrix4::RotationX(mRotation-i);
-		auto matWorld3 = Matrix4::RotationZ(mRotation);
-		auto matView = mCamera.GetViewMatrix();
-		auto matProj = mCamera.GetPerspectiveMatrix();
-		auto matTranslation = Matrix4::Translation(Vector3((float)i, (float)i, (float)i));
-		auto matScl = Matrix4::Scaling((float) i * 0.25f);
-		auto matWVP = Transpose(matScl*matTranslation*matWorld1 * matWorld2 * matWorld3 * matView * matProj * (float)i);
+		auto matWorld1 = Matrix4::RotationY(mRotation.y- static_cast<float>(i));
+		auto matWorld2 = Matrix4::RotationX(mRotation.x- static_cast<float>(i));
+		auto matWorld3 = Matrix4::RotationZ(mRotation.z+ static_cast<float>(i));
+		auto matTranslation = Matrix4::Translation(Vector3(static_cast<float>(i), static_cast<float>(i), static_cast<float>(i)));
+		auto matScl = Matrix4::Scaling(static_cast<float>(i) * 0.25f);
+		auto matWVP = Transpose(matScl*matTranslation*matWorld1 * matWorld2 * matWorld3 * matView * matProj);
 		
-		mVertexShader.Bind();
-		mPixelShader.Bind();
-		mMeshBuffer.Draw();
 		mConstantBuffer.Set(&matWVP);
-		mConstantBuffer.Bind();
+		mMeshBuffer.Draw();
 	}
 	/*context->Draw(mVertices.size(), 0);*/ // This is for when we don't have an index buffer
-
 }

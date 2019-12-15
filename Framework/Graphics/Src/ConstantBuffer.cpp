@@ -25,7 +25,7 @@ void ConstantBuffer::Terminate()
 	SafeRelease(mConstantBuffer);
 }
 
-void ConstantBuffer::Bind()
+void ConstantBuffer::Bind() const
 {
 	auto context = GetContext();
 	context->VSSetConstantBuffers(0, 1, &mConstantBuffer);

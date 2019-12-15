@@ -24,7 +24,10 @@ private:
 	PixelShader mPixelShader;
 	ConstantBuffer mConstantBuffer;
 
-	MeshPC mMesh;
+	Sampler mSampler;
+	Texture mTexture;
+
+	MeshPX mMesh;
 
 	Vector3 mRotation = 0.0f;
 };
