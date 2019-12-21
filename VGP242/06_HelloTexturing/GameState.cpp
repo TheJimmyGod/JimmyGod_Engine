@@ -48,80 +48,10 @@ void GameState::Initialize()
 
 	 }*/
 
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ -1.0f,1.0f,-1.0f}, 0.0f,0.0f });
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ 1.0f,1.0f,-1.0f }, 1.0f,0.0f });
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ -1.0f,-1.0f,-1.0f}, 0.0f,1.0f });
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ 1.0f,-1.0f,-1.0f}, 1.0f,1.0f });
-
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ 1.0f,1.0f,-1.0f }, 0.0f,0.0f });
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ 1.0f,1.0f,1.0f }, 1.0f,0.0f });
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ 1.0f,-1.0f,-1.0f }, 0.0f,1.0f });
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ 1.0f,-1.0f,1.0f}, 1.0f,1.0f });
-
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ 1.0f,1.0f,1.0f }, 0.0f,0.0f });
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ -1.0f,1.0f,1.0f }, 1.0f,0.0f });
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ 1.0f,-1.0f,1.0f }, 0.0f,1.0f });
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ -1.0f,-1.0f,1.0f}, 1.0f,1.0f });
-
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ -1.0f,1.0f,1.0f}, 0.0f,0.0f });
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ -1.0f,1.0f,-1.0f }, 0.0f,1.0f });
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ -1.0f,-1.0f,1.0f }, 1.0f,0.0f });
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ -1.0f,-1.0f,-1.0f}, 1.0f,1.0f });
-
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ -1.0f,1.0f,1.0f}, 0.0f,0.0f });
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ 1.0f,1.0f,1.0f }, 0.0f,1.0f });
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ -1.0f,1.0f,-1.0f }, 1.0f,0.0f });
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ 1.0f,1.0f,-1.0f}, 1.0f,1.0f });
-
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ 1.0f,-1.0f,-1.0f}, 0.0f,0.0f });
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ -1.0f,-1.0f,-1.0f }, 0.0f,1.0f });
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ 1.0f,-1.0f,1.0f }, 1.0f,0.0f });
-	mMesh.vertices.emplace_back(VertexPX{ Vector3{ -1.0f,-1.0f,1.0f}, 1.0f,1.0f });
-
-	//Front
-	mMesh.indices.push_back(0);
-	mMesh.indices.push_back(1);
-	mMesh.indices.push_back(2);
-	mMesh.indices.push_back(1);
-	mMesh.indices.push_back(3);
-	mMesh.indices.push_back(2);
-	//Right
-	mMesh.indices.push_back(4);
-	mMesh.indices.push_back(5);
-	mMesh.indices.push_back(6);
-	mMesh.indices.push_back(5);
-	mMesh.indices.push_back(7);
-	mMesh.indices.push_back(6);
-	//Back
-	mMesh.indices.push_back(8);
-	mMesh.indices.push_back(9);
-	mMesh.indices.push_back(10);
-	mMesh.indices.push_back(9);
-	mMesh.indices.push_back(11);
-	mMesh.indices.push_back(10);
-	//Left
-	mMesh.indices.push_back(12);
-	mMesh.indices.push_back(13);
-	mMesh.indices.push_back(14);
-	mMesh.indices.push_back(13);
-	mMesh.indices.push_back(15);
-	mMesh.indices.push_back(14);
-	//Top
-	mMesh.indices.push_back(16);
-	mMesh.indices.push_back(17);
-	mMesh.indices.push_back(18);
-	mMesh.indices.push_back(17);
-	mMesh.indices.push_back(19);
-	mMesh.indices.push_back(18);
-	//Bottom
-	mMesh.indices.push_back(21);
-	mMesh.indices.push_back(20);
-	mMesh.indices.push_back(22);
-	mMesh.indices.push_back(21);
-	mMesh.indices.push_back(22);
-	mMesh.indices.push_back(23);
-
-	mMeshBuffer.Initialize(mMesh);	
+	auto Mesh = MeshBuilder::CreateCubePX();
+	auto Plane = MeshBuilder::CreatePlanePX(16,16);
+	auto Cylinder = MeshBuilder::CreateCylinderPX(36, 36);
+	mMeshBuffer.Initialize(Cylinder);	
 
 	mConstantBuffer.Initialize(sizeof(Matrix4));
 	mSampler.Initialize(Sampler::Filter::Point, Sampler::AddressMode::Clamp);
@@ -180,7 +110,7 @@ void GameState::Render()
 	mConstantBuffer.Bind();
 	mSampler.Bind();
 	mTexture.Bind();
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		auto matWorld1 = Matrix4::RotationY(mRotation.y);
 		//auto matWorld2 = Matrix4::RotationX(mRotation.x- static_cast<float>(i));
