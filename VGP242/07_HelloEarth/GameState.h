@@ -25,9 +25,20 @@ private:
 	ConstantBuffer mConstantBuffer;
 
 	Sampler mSampler;
-	Texture mTexture;
+	Texture mSun;
+	Texture mEarth;
+	Texture mMoon;
+	Texture mMercury;
+	Texture mVenus;
+	Texture mMars;
+	Texture mJupiter;
+	Texture mSaturn;
+	Texture mUranos;
+	Texture mNeptune;
 
 	MeshPX mMesh;
 
 	Vector3 mRotation = 0.0f;
+	Vector3 mEarthRotation = 5.0f;
+
 };

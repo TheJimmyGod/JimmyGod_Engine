@@ -49,7 +49,7 @@ void GameState::Initialize()
 	 }*/
 
 	auto Mesh = MeshBuilder::CreateCubePX();
-	auto Plane = MeshBuilder::CreatePlanePX(16,16);
+	auto Plane = MeshBuilder::CreatePlanePX(2,2);
 	auto Cylinder = MeshBuilder::CreateCylinderPX(36, 36);
 	auto Sphere = MeshBuilder::CreateSpherePX(10);
 	mMeshBuffer.Initialize(Plane);	
@@ -116,7 +116,7 @@ void GameState::Render()
 		auto matWorld1 = Matrix4::RotationY(mRotation.y);
 		//auto matWorld2 = Matrix4::RotationX(mRotation.x- static_cast<float>(i));
 		//auto matWorld3 = Matrix4::RotationZ(mRotation.z+ static_cast<float>(i));
-		auto matTranslation = Matrix4::Translation(Vector3(static_cast<float>(i), static_cast<float>(i), static_cast<float>(i)));
+		auto matTranslation = Matrix4::Identity;// Matrix4::Translation(Vector3(static_cast<float>(i), static_cast<float>(i), static_cast<float>(0)));
 		auto matScl = Matrix4::Scaling(static_cast<float>(i) * 0.25f);
 		auto matWVP = Transpose(matScl*matTranslation*matWorld1 * matView * matProj);
 		

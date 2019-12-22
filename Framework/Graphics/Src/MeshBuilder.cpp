@@ -85,28 +85,30 @@ MeshPX MeshBuilder::CreateCubePX()
 }
 MeshPX MeshBuilder::CreatePlanePX(float height, float width)
 {
-	ASSERT((height > 1.0f && width > 1.0f), "Jimmygod");
+	ASSERT((height > 1.0f && width > 1.0f), "Must be more than 1.0 for height and width");
 	MeshPX mMesh;
-	const float OffsetX = (-width) * 0.5f;
+	const float OffsetX = (width) * 0.5f;
 	const float OffsetY = (height) * 0.5f;
-	float du = 1.0f / (width - 1);
-	float dv = 1.0f / (height - 1);
-	for (int y = 0; y < height; y++)
+	for (int y = 0; y <= height; y++)
+	{
+		for (int x = 0; x <= width; x++)
+		{
+			mMesh.vertices.emplace_back(VertexPX{ Vector3{ -OffsetX + (static_cast<float>(x)), OffsetY - (static_cast<float>(y)),0.0f },
+				static_cast<float>((x) /width ), static_cast<float>((y) /height) });
+		}
+	}
+
+	for (int y = 0; y <= height; y++)
 	{
 		for (int x = 0; x < width; x++)
 		{
-			mMesh.vertices.emplace_back(VertexPX{ Vector3{ OffsetX + (static_cast<float>(x)), OffsetY - (static_cast<float>(y)),0.0f },
-				static_cast<float>((x) * du ), static_cast<float>((y) *dv) });
-			if (y != height - 1 && x != width - 1)
-			{
-				mMesh.indices.push_back(y*width + x);
-				mMesh.indices.push_back((y + 1) * width + x + 1);
-				mMesh.indices.push_back((y + 1) * width + x);
+			mMesh.indices.push_back(y*width + x);
+			mMesh.indices.push_back((y + 1) * width + x + 1);
+			mMesh.indices.push_back((y + 1) * width + x);
 
-				mMesh.indices.push_back(y * width + x);
-				mMesh.indices.push_back(y * width + x + 1);
-				mMesh.indices.push_back((y + 1)* width + x + 1);
-			}
+			mMesh.indices.push_back(y * width + x);
+			mMesh.indices.push_back(y * width + x + 1);
+			mMesh.indices.push_back((y + 1)* width + x + 1);
 		}
 	}
 	return mMesh;
@@ -183,9 +185,9 @@ MeshPX MeshBuilder::CreateSpherePX(float radius, int rings, int slices)
 	}
 
 	uint32_t a, b, c, d;
-	for (uint32_t y = 0; y < rings; y++)
+	for (uint32_t y = 0; y < rings; ++y)
 	{
-		for (uint32_t x = 0; x <= slices; x++)
+		for (uint32_t x = 0; x <= slices; ++x)
 		{
 			a = static_cast<uint32_t>(x % (slices + 1));
 			b = static_cast<uint32_t>((x + 1) % (slices + 1));
