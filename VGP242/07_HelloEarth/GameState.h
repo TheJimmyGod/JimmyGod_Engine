@@ -35,7 +35,7 @@ private:
 	Texture mSaturn;
 	Texture mUranos;
 	Texture mNeptune;
-
+	Texture mSpace;
 	MeshPX mMesh;
 
 	Vector3 mRotation = 0.0f;
