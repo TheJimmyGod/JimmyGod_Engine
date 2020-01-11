@@ -21,6 +21,7 @@ private:
 	Camera mCamera;
 	VertexShader mVertexShader;
 	MeshBuffer mMeshBuffer;
+	MeshBuffer mMeshDomeBuffer;
 	PixelShader mPixelShader;
 	ConstantBuffer mConstantBuffer;
 

@@ -27,9 +27,9 @@ void GameState::Initialize()
 	mUranos.Initialize("../../Assets/Textures/Uranos.jpg");
 	mNeptune.Initialize("../../Assets/Textures/Neptune.jpg");
 
-	//auto Space = MeshBuilder::CreateDomePX();
-	//mMeshBuffer.Initialize(Space);
-	//mSpace.Initialize("../../Assets/Textures/Space.jpg");
+	auto Space = MeshBuilder::CreateSpherePX(1000, 12, 360, true);
+	mMeshDomeBuffer.Initialize(Space);
+	mSpace.Initialize("../../Assets/Textures/Space.jpg");
 	// Compile and create vertex shader
 	mVertexShader.Initialize("../../Assets/Shaders/DoTexturing.fx",VertexPX::Format);
 	// Compile and create pixel shader
@@ -42,6 +42,7 @@ void GameState::Terminate()
 	mVertexShader.Terminate();
 	mPixelShader.Terminate();
 	mMeshBuffer.Terminate();
+	mMeshDomeBuffer.Terminate();
 	mConstantBuffer.Terminate();
 	mEarth.Terminate();
 	mMoon.Terminate();
@@ -87,14 +88,13 @@ void GameState::Render()
 	mConstantBuffer.Bind();
 	mSampler.Bind();
 
-	//auto matWorld0 = Matrix4::RotationY(mRotation.y);
-	//auto matTranslation0 = Matrix4::Translation(Vector3(0.0f, 0.0f, 0.0f));
-	//auto matScl0 = Matrix4::Scaling(0.3f);
-	//auto matSpace = matTranslation0 * matWorld0;
-	//auto matWVP0 = Transpose(matScl0*matSpace* matView * matProj);
-	//mConstantBuffer.Set(&matWVP0);
-	//mSpace.Bind();
-	//mMeshBuffer.Draw();
+	auto matWorld0 = Matrix4::RotationY(mRotation.y * 0.25f);
+	auto matTranslation0 = Matrix4::Translation(Vector3(0.0f, 0.0f, 0.0f));
+	auto matSpace = matTranslation0 * matWorld0;
+	auto matWVP0 = Transpose(matSpace* matView * matProj);
+	mConstantBuffer.Set(&matWVP0);
+	mSpace.Bind();
+	mMeshDomeBuffer.Draw();
 
 	auto matWorld = Matrix4::RotationY(mRotation.y);
 	auto matTranslation = Matrix4::Translation(Vector3(0.0f, 0.0f, 0.0f));
