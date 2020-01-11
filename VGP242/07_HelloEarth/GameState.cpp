@@ -11,7 +11,7 @@ void GameState::Initialize()
 	mCamera.SetPosition({ -75.0f,0.0f,-80.0f });
 	mCamera.SetDirection({ 0.0f,0.0f,1.0f });
 
-	auto Sphere = MeshBuilder::CreateSpherePX(20);
+	auto Sphere = MeshBuilder::CreateSpherePX(20,12,36,false);
 	mMeshBuffer.Initialize(Sphere);	
 
 	mConstantBuffer.Initialize(sizeof(Matrix4));

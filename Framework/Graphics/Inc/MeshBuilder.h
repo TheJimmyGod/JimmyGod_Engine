@@ -8,7 +8,6 @@ namespace JimmyGod::Graphics
 		static MeshPX CreateCubePX();
 		static MeshPX CreatePlanePX(float height, float width);
 		static MeshPX CreateCylinderPX(float height, float width);
-		static MeshPX CreateSpherePX(float radius, int rings = 12, int slices = 36);
-		static MeshPX CreateDomePX(float radius = 500, int rings = 12, int slices = 36);
+		static MeshPX CreateSpherePX(float radius, int rings, int slices, bool isSpace);
 	};
 }
