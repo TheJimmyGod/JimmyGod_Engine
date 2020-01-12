@@ -29,6 +29,7 @@ void App::Run(AppConfig appConfig)
 
 	// Initialize Graphics systems
 	GraphicsSystem::StaticInitialize(handle, false);
+	DebugUI::StaticInitialize(handle, false, true);
 
 	// Initialize the starting state
 	mCurrentState = mAppStates.begin()->second.get();
@@ -40,6 +41,12 @@ void App::Run(AppConfig appConfig)
 	while (mWindow.IsActive() && mRunning)
 	{
 		mWindow.ProcessMessage();
+
+		if (!mWindow.IsActive())
+		{
+			Quit();
+			continue;
+		}
 
 		if (mNextState)
 		{
@@ -65,6 +72,11 @@ void App::Run(AppConfig appConfig)
 		auto graphicSystem = GraphicsSystem::Get();
 		graphicSystem->BeginRender();
 		mCurrentState->Render();
+
+		DebugUI::BeginRender();
+		mCurrentState->DebugUI();
+		DebugUI::EndRender();
+
 		graphicSystem->EndRender();
 	}
 
@@ -72,6 +84,7 @@ void App::Run(AppConfig appConfig)
 
 	// Termiates engine systems
 
+	DebugUI::StaticTerminate();
 	InputSystem::StaticTerminate();
 	GraphicsSystem::StaticTerminate();
 
