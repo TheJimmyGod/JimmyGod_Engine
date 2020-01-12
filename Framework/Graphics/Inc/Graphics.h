@@ -12,6 +12,7 @@
 #include "MeshBuffer.h"
 #include "MeshBuilder.h"
 #include "Sampler.h"
+#include "SimpleDraw.h"
 #include "Texture.h"
 #include "VertexShader.h"
 #include "VertexTypes.h"

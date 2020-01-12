@@ -30,7 +30,7 @@ void App::Run(AppConfig appConfig)
 	// Initialize Graphics systems
 	GraphicsSystem::StaticInitialize(handle, false);
 	DebugUI::StaticInitialize(handle, false, true);
-
+	SimpleDraw::StaticInitialize();
 	// Initialize the starting state
 	mCurrentState = mAppStates.begin()->second.get();
 	mCurrentState->Initialize();
@@ -87,7 +87,7 @@ void App::Run(AppConfig appConfig)
 	DebugUI::StaticTerminate();
 	InputSystem::StaticTerminate();
 	GraphicsSystem::StaticTerminate();
-
+	SimpleDraw::StaticTerminate();
 	// Terminate window
 
 	mWindow.Terminate();
