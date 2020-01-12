@@ -66,7 +66,7 @@ LRESULT CALLBACK DebugUIMessageHandler(HWND window, UINT message, WPARAM wParam,
 	return sWindowMessageHandler.ForwardMessage(window, message, wParam, lParam);
 }
 
-void DebugUI::StaticInitialize(HWND window, bool docking = false, bool multiViewport = false)
+void DebugUI::StaticInitialize(HWND window, bool docking, bool multiViewport)
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
