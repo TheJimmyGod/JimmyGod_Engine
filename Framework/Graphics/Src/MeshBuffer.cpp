@@ -67,7 +67,7 @@ void MeshBuffer::Terminate()
 void MeshBuffer::Draw() const
 {
 	auto context = GetContext();
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->IASetPrimitiveTopology(mTopology);
 	UINT stride = mVertexSize;
 	UINT offset = 0;
 	context->IASetVertexBuffers(0, 1, &mVertexBuffer, &stride, &offset);

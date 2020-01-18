@@ -11,12 +11,12 @@ void GameState::Initialize()
 	mCamera.SetPosition({ -75.0f,0.0f,-80.0f });
 	mCamera.SetDirection({ 0.0f,0.0f,1.0f });
 
-	SimpleDraw::StaticInitialize(3);
+	//SimpleDraw::StaticInitialize(1000000);
 }
 
 void GameState::Terminate()
 {
-	SimpleDraw::StaticTerminate();
+	//SimpleDraw::StaticTerminate();
 }
 
 void GameState::Update(float deltaTime)
@@ -36,22 +36,23 @@ void GameState::Update(float deltaTime)
 	mCamera.Yaw(inputSystem->GetMouseMoveX() * kTurnSpeed * deltaTime);
 	mCamera.Pitch(inputSystem->GetMouseMoveY() * kTurnSpeed * deltaTime);
 
+
+	SimpleDraw::AddLine(Vector3::Zero, Vector3::XAxis * 5.0f, Color{ Colors::Red });
+	SimpleDraw::AddLine(Vector3::Zero, Vector3::YAxis * 5.0f, Color{ Colors::Blue });
+	SimpleDraw::AddLine(Vector3::Zero, Vector3::ZAxis * 5.0f, Color{ Colors::Green });
+
 	mRotation += deltaTime;
 }
 
 void GameState::Render()
 {
-	auto matView = mCamera.GetViewMatrix();
-	auto matProj = mCamera.GetPerspectiveMatrix();
+	//auto matView = mCamera.GetViewMatrix();
+	//auto matProj = mCamera.GetPerspectiveMatrix();
 
-	mVertexShader.Bind();
-	mPixelShader.Bind();
-	mConstantBuffer.Bind();
-	mSampler.Bind();
-
-	SimpleDraw::AddLine(Vector3::Zero, Vector3::XAxis, Color{ Colors::Red });
-	SimpleDraw::AddLine(Vector3::Zero, Vector3::YAxis, Color{ Colors::Blue });
-	SimpleDraw::AddLine(Vector3::Zero, Vector3::ZAxis, Color{ Colors::Green });
+	//mVertexShader.Bind();
+	//mPixelShader.Bind();
+	//mConstantBuffer.Bind();
+	//mSampler.Bind();
 	SimpleDraw::Render(mCamera);
 }
 
