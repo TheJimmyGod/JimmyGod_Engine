@@ -6,7 +6,7 @@ using namespace JimmyGod::Math;
 
 void GameState::Initialize()
 {
-	GraphicsSystem::Get()->SetClearColor(Colors::Yellow);
+	GraphicsSystem::Get()->SetClearColor(Colors::Black);
 
 	mCamera.SetPosition({ -75.0f,0.0f,-80.0f });
 	mCamera.SetDirection({ 0.0f,0.0f,1.0f });
@@ -36,10 +36,7 @@ void GameState::Update(float deltaTime)
 	mCamera.Yaw(inputSystem->GetMouseMoveX() * kTurnSpeed * deltaTime);
 	mCamera.Pitch(inputSystem->GetMouseMoveY() * kTurnSpeed * deltaTime);
 
-
-	SimpleDraw::AddLine(Vector3::Zero, Vector3::XAxis * 5.0f, Color{ Colors::Red });
-	SimpleDraw::AddLine(Vector3::Zero, Vector3::YAxis * 5.0f, Color{ Colors::Blue });
-	SimpleDraw::AddLine(Vector3::Zero, Vector3::ZAxis * 5.0f, Color{ Colors::Green });
+	SimpleDraw::AddBox(3, Colors::Aqua);
 
 	mRotation += deltaTime;
 }

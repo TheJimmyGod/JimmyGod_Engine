@@ -41,6 +41,22 @@ namespace
 				mLineVertices[mVertexCount++] = VertexPC{ v1,color };
 			}
 		}
+		void AddBox(float Length, const Color & color)
+		{
+			SimpleDraw::AddLine(Vector3{ -Length,-Length,-Length }, Vector3{Length,-Length,-Length}, color);
+			SimpleDraw::AddLine(Vector3{ -Length,-Length,-Length }, Vector3{ -Length,Length,-Length }, color);
+			SimpleDraw::AddLine(Vector3{ -Length,-Length,-Length }, Vector3{ -Length,-Length,Length }, color);
+			SimpleDraw::AddLine(Vector3{ -Length,Length,-Length }, Vector3{ Length,Length,-Length }, color);
+			SimpleDraw::AddLine(Vector3{ -Length,Length,-Length }, Vector3{ -Length,Length,Length }, color);
+			SimpleDraw::AddLine(Vector3{ Length,Length,-Length }, Vector3{  Length,Length,Length }, color);
+			SimpleDraw::AddLine(Vector3{ Length,Length,-Length }, Vector3{ Length,-Length,-Length }, color);
+			SimpleDraw::AddLine(Vector3{ Length,-Length,-Length }, Vector3{ Length,-Length,Length }, color);
+			SimpleDraw::AddLine(Vector3{ Length,Length,Length }, Vector3{ -Length,Length,Length }, color);
+			SimpleDraw::AddLine(Vector3{ Length,Length,Length }, Vector3{ Length,-Length,Length }, color);
+			SimpleDraw::AddLine(Vector3{ Length,-Length,Length }, Vector3{ -Length,-Length,Length }, color);
+			SimpleDraw::AddLine(Vector3{ -Length,-Length,Length }, Vector3{ -Length,Length,Length }, color);
+		}
+
 		void Render(const Camera& camera)
 		{
 			auto matView = camera.GetViewMatrix();
@@ -84,6 +100,14 @@ void SimpleDraw::StaticTerminate()
 void SimpleDraw::AddLine(const Math::Vector3& v0, const Math::Vector3& v1, const Color& color)
 {
 	sInstance->AddLine(v0, v1, color);
+}
+void SimpleDraw::AddBox(float Length, const Color & color)
+{
+	sInstance->AddBox(Length, color);
+}
+void SimpleDraw::AddSphere(float radius, int rings, int slices)
+{
+
 }
 void SimpleDraw::Render(const Camera& camera)
 {
