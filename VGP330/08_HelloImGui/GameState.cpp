@@ -36,7 +36,9 @@ void GameState::Update(float deltaTime)
 	mCamera.Yaw(inputSystem->GetMouseMoveX() * kTurnSpeed * deltaTime);
 	mCamera.Pitch(inputSystem->GetMouseMoveY() * kTurnSpeed * deltaTime);
 
-	SimpleDraw::AddBox(3, Colors::Aqua);
+	SimpleDraw::AddDisplacement(25.0f);
+	SimpleDraw::AddBox(15, Colors::Aqua);
+	SimpleDraw::AddSphere(20, 12, 720, Colors::White);
 
 	mRotation += deltaTime;
 }

@@ -41,6 +41,14 @@ namespace
 				mLineVertices[mVertexCount++] = VertexPC{ v1,color };
 			}
 		}
+
+		void AddDisplacement(float Length)
+		{
+			SimpleDraw::AddLine(Vector3::Zero, Vector3::XAxis * Length, Colors::Red);
+			SimpleDraw::AddLine(Vector3::Zero, Vector3::YAxis * Length, Colors::Blue);
+			SimpleDraw::AddLine(Vector3::Zero, Vector3::ZAxis * Length, Colors::Green);
+		}
+
 		void AddBox(float Length, const Color & color)
 		{
 			SimpleDraw::AddLine(Vector3{ -Length,-Length,-Length }, Vector3{Length,-Length,-Length}, color);
@@ -55,6 +63,25 @@ namespace
 			SimpleDraw::AddLine(Vector3{ Length,Length,Length }, Vector3{ Length,-Length,Length }, color);
 			SimpleDraw::AddLine(Vector3{ Length,-Length,Length }, Vector3{ -Length,-Length,Length }, color);
 			SimpleDraw::AddLine(Vector3{ -Length,-Length,Length }, Vector3{ -Length,Length,Length }, color);
+		}
+
+		void AddSphere(float radius, int rings, int slices, const Color & color)
+		{
+			float r = radius;
+			for (float phi = 0; phi < Constants::Pi; phi += (Constants::Pi) / (rings))
+			{
+				for (float theta = 0; theta < Constants::TwoPi; theta += (Constants::TwoPi) / (slices))
+				{
+					auto vec = Vector3{
+								sinf(phi)*cosf(theta)*r,
+								cosf(phi)*r,
+								sinf(theta) * sinf(phi) *r
+					};
+
+					mLineVertices[mVertexCount++] = VertexPC{ vec,color };
+				}
+
+			}
 		}
 
 		void Render(const Camera& camera)
@@ -101,13 +128,19 @@ void SimpleDraw::AddLine(const Math::Vector3& v0, const Math::Vector3& v1, const
 {
 	sInstance->AddLine(v0, v1, color);
 }
+
+void SimpleDraw::AddDisplacement(float Length)
+{
+	sInstance->AddDisplacement(Length);
+}
+
 void SimpleDraw::AddBox(float Length, const Color & color)
 {
 	sInstance->AddBox(Length, color);
 }
-void SimpleDraw::AddSphere(float radius, int rings, int slices)
+void SimpleDraw::AddSphere(float radius, int rings, int slices, const Color & color)
 {
-
+	sInstance->AddSphere(radius, rings, slices, color);
 }
 void SimpleDraw::Render(const Camera& camera)
 {
