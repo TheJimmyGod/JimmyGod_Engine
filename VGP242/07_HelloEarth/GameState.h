@@ -25,6 +25,7 @@ private:
 	PixelShader mPixelShader;
 	ConstantBuffer mConstantBuffer;
 
+	MeshPX mMesh;
 	Sampler mSampler;
 	Texture mSun;
 	Texture mEarth;
@@ -37,7 +38,6 @@ private:
 	Texture mUranos;
 	Texture mNeptune;
 	Texture mSpace;
-	MeshPX mMesh;
 
 	Vector3 mRotation = 0.0f;
 	Vector3 mEarthRotation = 5.0f;

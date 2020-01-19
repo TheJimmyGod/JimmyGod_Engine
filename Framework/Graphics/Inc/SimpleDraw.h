@@ -10,8 +10,12 @@ namespace JimmyGod::Graphics::SimpleDraw
 	void StaticTerminate();
 
 	void AddLine(const Math::Vector3& v0, const Math::Vector3& v1, const Color& color);
+	void AddFace(const Math::Vector3& v0, const Math::Vector3& v1, const Math::Vector3& v2, const Color& color);
 	void AddDisplacement(float Length);
 	void AddBox(float Length, const Color& color);
 	void AddSphere(float radius, int rings, int slices, const Color & color);
+	void AddTransform(const Math::Matrix4& transform);
+	void AddBone(const Math::Matrix4& transform);
+	void AddGroundPlane(float size, const Color& color);
 	void Render(const Camera& camera);
 } // namespace JimmyGod::Graphics::SimpleDraw

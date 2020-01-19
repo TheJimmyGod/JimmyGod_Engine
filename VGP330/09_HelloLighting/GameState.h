@@ -18,6 +18,11 @@ public:
 	void DebugUI() override;
 private:
 	Camera mCamera;
+	VertexShader mVertexShader;
+	MeshBuffer mMeshBuffer;
+	PixelShader mPixelShader;
+	ConstantBuffer mConstantBuffer;
 
+	MeshPN mMesh;
 	Vector3 mRotation = 0.0f;
 };

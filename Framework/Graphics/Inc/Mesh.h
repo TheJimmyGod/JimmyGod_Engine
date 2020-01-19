@@ -13,4 +13,5 @@ namespace JimmyGod::Graphics
 
 	using MeshPC = MeshBase<VertexPC>;
 	using MeshPX = MeshBase<VertexPX>;
+	using MeshPN = MeshBase<VertexPN>;
 } // namespace JimmyGod::Graphics
