@@ -10,11 +10,25 @@ void GameState::Initialize()
 
 	mCamera.SetPosition({ -75.0f,0.0f,-80.0f });
 	mCamera.SetDirection({ 0.0f,0.0f,1.0f });
+	mMesh = MeshBuilder::CreateSpherePN(15);
+	mMeshBuffer.Initialize(mMesh);
+	mTransformBuffer.Initialize();
+	mLightBuffer.Initialize();
+
+	mMaterialBuffer.Initialize();
+
+	mVertexShader.Initialize("../../Assets/Shaders/DoPhongLighting.fx", VertexPN::Format);
+	mPixelShader.Initialize("../../Assets/Shaders/DoPhongLighting.fx");
 }
 
 void GameState::Terminate()
 {
-
+	mPixelShader.Terminate();
+	mVertexShader.Terminate();
+	mMaterialBuffer.Terminate();
+	mLightBuffer.Terminate();
+	mMaterialBuffer.Terminate();
+	mMeshBuffer.Terminate();
 }
 
 void GameState::Update(float deltaTime)
@@ -43,6 +57,30 @@ void GameState::Update(float deltaTime)
 
 void GameState::Render()
 {
+	auto matView = mCamera.GetViewMatrix();
+	auto matProj = mCamera.GetPerspectiveMatrix();
+	auto matTrans = Matrix4::Translation({ 0.0f });
+	auto matRot = Matrix4::RotationX(mRotation.x) * Matrix4::RotationY(mRotation.y);
+	auto matTranslation = Matrix4::Identity;
+	auto matWorld = matRot * matTrans;
+	auto matWVP = Transpose(matTranslation*matWorld * matView * matProj);
+	TransformData transformData;
+	transformData.world = Transpose(matRot);
+	transformData.wvp = Transpose(matWorld);
+
+	mTransformBuffer.Update(&matWVP);
+	mTransformBuffer.BindVS(0);
+
+	mLightBuffer.Update(&matWVP);
+	mLightBuffer.BindVS(1);
+	
+	mMaterialBuffer.Update(&matWVP);
+	mMaterialBuffer.BindVS(2);
+
+	mVertexShader.Bind();
+	mPixelShader.Bind();
+	mMeshBuffer.Draw();
+	
 	SimpleDraw::Render(mCamera);
 }
 

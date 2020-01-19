@@ -110,7 +110,7 @@ void GameState::Render()
 
 	mVertexShader.Bind();
 	mPixelShader.Bind();
-	mConstantBuffer.Bind();
+	mConstantBuffer.BindVS(0);
 
 	for (int i = 0; i < 11; i++)
 	{
@@ -121,7 +121,7 @@ void GameState::Render()
 		auto matScl = Matrix4::Scaling(static_cast<float>(i) * 0.25f);
 		auto matWVP = Transpose(matScl*matTranslation*matWorld1 * matWorld2 * matWorld3 * matView * matProj);
 		
-		mConstantBuffer.Set(&matWVP);
+		mConstantBuffer.Update(&matWVP);
 		mMeshBuffer.Draw();
 	}
 	/*context->Draw(mVertices.size(), 0);*/ // This is for when we don't have an index buffer

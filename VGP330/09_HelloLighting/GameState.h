@@ -21,7 +21,25 @@ private:
 	VertexShader mVertexShader;
 	MeshBuffer mMeshBuffer;
 	PixelShader mPixelShader;
-	ConstantBuffer mConstantBuffer;
+
+	struct TransformData
+	{
+		JimmyGod::Math::Matrix4 world;
+		JimmyGod::Math::Matrix4 wvp;
+		JimmyGod::Math::Vector3 viewPosition;
+		float padding;
+	};
+
+	using TransformBuffer = JimmyGod::Graphics::TypedConstantBuffer<TransformData>;
+	using LightBuffer = JimmyGod::Graphics::TypedConstantBuffer<JimmyGod::Graphics::DirectionalLight>;
+	using MaterialBuffer = JimmyGod::Graphics::TypedConstantBuffer<Material>;
+
+	TransformBuffer mTransformBuffer; 
+	LightBuffer mLightBuffer; 
+	MaterialBuffer mMaterialBuffer;
+	
+	DirectionalLight mDirection;
+	Material mMaterial;
 
 	MeshPN mMesh;
 	Vector3 mRotation = 0.0f;
