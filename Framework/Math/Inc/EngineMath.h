@@ -152,6 +152,31 @@ namespace JimmyGod::Math
 		return (v.x * v.x) + (v.y * v.y) + (v.z * v.z);
 	}
 
+	inline Vector3 GetRight(const Matrix4& m)
+	{
+		return Vector3{ m._11, m._12, m._13 };
+	}
+
+	inline Vector3 GetForward(const Matrix4& m)
+	{
+		return Vector3{ m._31, m._32, m._33 };
+	}
+
+	inline Vector3 GetUp(const Matrix4& m)
+	{
+		return Vector3{ m._21,m._22,m._23 };
+	}
+
+	inline Vector3 GetTranslation(const Matrix4& m)
+	{
+		return Vector3{ m._41, m._42, m._43 };
+	}
+
+	inline Vector3 GetLook(const Matrix4& m)
+	{
+		return Vector3{ m._14,m._24, m._34 };
+	}
+
 	inline float Magnitude(const Vector3& v)
 	{
 		return sqrtf(MagnitudeSqr(v));

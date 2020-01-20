@@ -46,9 +46,12 @@ namespace
 
 		void AddFace(const Math::Vector3& v0, const Math::Vector3& v1, const Math::Vector3& v2, const Color& color)
 		{
-			mFillVertices[mFillVertexCount++] = VertexPC{ v0,color };
-			mFillVertices[mFillVertexCount++] = VertexPC{ v1,color };
-			mFillVertices[mFillVertexCount++] = VertexPC{ v2,color };
+			if (mFillVertexCount + 3 < mMaxVertexCount)
+			{
+				mFillVertices[mFillVertexCount++] = VertexPC{ v0,color };
+				mFillVertices[mFillVertexCount++] = VertexPC{ v1,color };
+				mFillVertices[mFillVertexCount++] = VertexPC{ v2,color };
+			}
 		}
 
 		void AddDisplacement(float Length)
@@ -56,8 +59,6 @@ namespace
 			AddLine(Vector3::Zero, Vector3::XAxis * Length, Colors::Red);
 			AddLine(Vector3::Zero, Vector3::YAxis * Length, Colors::Blue);
 			AddLine(Vector3::Zero, Vector3::ZAxis * Length, Colors::Green);
-
-			AddFace(mLineVertices[0].position,mLineVertices[0].position + (Length*-0.25f),mLineVertices[0].position + (Length*0.25f),mLineVertices[0].color);
 		}
 
 		void AddBox(float Length, const Color & color)
@@ -100,8 +101,8 @@ namespace
 			auto matView = camera.GetViewMatrix();
 			auto matProj = camera.GetPerspectiveMatrix();
 			auto transform = Math::Transpose(matView * matProj);
-			mConstantBuffer.Set(&transform);
-			mConstantBuffer.Bind();
+			mConstantBuffer.Update(&transform);
+			mConstantBuffer.BindVS(0);
 
 			mVertexShader.Bind();
 			mPixelShader.Bind();
@@ -120,12 +121,11 @@ namespace
 			const uint32_t screenH = system->GetBackBufferHeight();
 			screenToNDC._11 = 2.0f / screenW;
 			screenToNDC._22 = 2.0f / screenH;
-			mConstantBuffer.Set(&Math::Transpose(screenToNDC));
+			mConstantBuffer.Update(&Math::Transpose(screenToNDC));
 
 			//mMeshBuffer.Update(m2DLineVertices.get(), mVertexCount);
 			//mMeshBuffer.SetTopology(MeshBuffer::Topology::Lines);
 			//mMeshBuffer.Draw();
-
 
 			mFillVertexCount = 0;
 			mVertexCount = 0;
@@ -137,6 +137,7 @@ namespace
 		MeshBuffer mMeshBuffer;
 		unique_ptr<VertexPC[]> mLineVertices;
 		unique_ptr<VertexPC[]> mFillVertices;
+		unique_ptr<VertexPC[]> m2DLineVertices;
 		uint32_t mVertexCount = 0;
 		uint32_t mMaxVertexCount = 0;
 		uint32_t mFillVertexCount = 0;
@@ -178,12 +179,13 @@ void SimpleDraw::AddSphere(float radius, int rings, int slices, const Color & co
 {
 	sInstance->AddSphere(radius, rings, slices, color);
 }
+
 void SimpleDraw::AddTransform(const Math::Matrix4 & transform)
 {
-	//auto r = Math::GetRight(transform);
-	//auto u = Math::GetUp(transform);
-	//auto l = Math::GetLook(transform);
-	//auto p = Math::GetTranslation(transform);
+	auto r = Math::GetRight(transform);
+	auto u = Math::GetUp(transform);
+	auto l = Math::GetLook(transform);
+	auto p = Math::GetTranslation(transform);
 
 	//sInstance->AddLine(p, p + r, Colors::Red);
 	//sInstance->AddLine(p, p + u, Colors::Green);
@@ -191,10 +193,10 @@ void SimpleDraw::AddTransform(const Math::Matrix4 & transform)
 }
 void SimpleDraw::AddBone(const Math::Matrix4 & transform)
 {
-	//auto r = Math::GetRight(transform);
-	//auto u = Math::GetUp(transform);
-	//auto l = Math::GetLook(transform);
-	//auto p = Math::GetTranslation(transform);
+	auto r = Math::GetRight(transform);
+	auto u = Math::GetUp(transform);
+	auto l = Math::GetLook(transform);
+	auto p = Math::GetTranslation(transform);
 	//AddSphere(GetTranslation, 0.025f, Colors::BlueViolet,5,6)
 	//sInstance->AddLine(p, p + r * 0.1f, Colors::Red);
 	//sInstance->AddLine(p, p + u * 0.1f, Colors::Green);

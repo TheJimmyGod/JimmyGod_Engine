@@ -39,23 +39,23 @@ struct VS_OUTPUT
 VS_OUTPUT VS(VS_INPUT input)
 {
 	VS_OUTPUT output;
-	float3 worldPosition = mul(float4(input.position, 1.0f), world).xyz;
+	float3 worldPosition = mul(float4(input.position, 1.0f), World).xyz;
 	float3 worldNormal = mul(input.normal, (float3x3)World);
 	
 	float4 ambient = LightAmbient * MaterialAmbient;
 
 	float3 dirToLight = -LightDirection;
-	float diffuseIntentsity = saturate(dot(dirToLight, worldNormal)); // Saturate is comparison of size of number
+	float diffuseIntensity = saturate(dot(dirToLight, worldNormal)); // Saturate is comparison of size of number
 	float4 diffuse = diffuseIntensity * LightDiffuse * MaterialDiffuse;
 
-	float3 dirToView = normalize(worldPosition - worldPosition);
+	float3 dirToView = normalize(ViewPosition - worldPosition);
 	float3 halfAngle = normalize(dirToLight + dirToView);
 	float specularBase = saturate(dot(halfAngle, worldNormal));
-	float specularIntensity = pow()
+	float specularIntensity = pow(specularBase, MaterialPower);
 	float4 specular = specularIntensity * LightSpecular * MaterialSpecular;
 
 	float4 color = ambient + diffuse + specular;
-	output.position = mul(float4(position, 1.0f), WVP);
+	output.position = mul(float4(input.position, 1.0f), WVP);
 	output.color = color;
 	return output;
 }

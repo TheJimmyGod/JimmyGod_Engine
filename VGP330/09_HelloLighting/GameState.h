@@ -32,13 +32,13 @@ private:
 
 	using TransformBuffer = JimmyGod::Graphics::TypedConstantBuffer<TransformData>;
 	using LightBuffer = JimmyGod::Graphics::TypedConstantBuffer<JimmyGod::Graphics::DirectionalLight>;
-	using MaterialBuffer = JimmyGod::Graphics::TypedConstantBuffer<Material>;
+	using MaterialBuffer = JimmyGod::Graphics::TypedConstantBuffer<JimmyGod::Graphics::Material>;
 
 	TransformBuffer mTransformBuffer; 
 	LightBuffer mLightBuffer; 
 	MaterialBuffer mMaterialBuffer;
 	
-	DirectionalLight mDirection;
+	DirectionalLight mDirectionalLight;
 	Material mMaterial;
 
 	MeshPN mMesh;
