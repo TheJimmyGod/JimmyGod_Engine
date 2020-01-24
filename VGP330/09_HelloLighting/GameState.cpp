@@ -12,7 +12,7 @@ void GameState::Initialize()
 	mCamera.SetDirection({ 0.0f,0.0f,1.0f });
 	mMesh = MeshBuilder::CreateSpherePN(15);
 	mMeshBuffer.Initialize(mMesh);
-
+	mConstant.Initialize(sizeof(Matrix4));
 	mTransformBuffer.Initialize();
 	mLightBuffer.Initialize();
 	mMaterialBuffer.Initialize();
@@ -27,8 +27,17 @@ void GameState::Initialize()
 	mMaterial.specular = { 0.5f };
 	mMaterial.power = { 1.0f };
 
+	mSampler.Initialize(Sampler::Filter::Point, Sampler::AddressMode::Clamp);
+	mMeshX = MeshBuilder::CreateSpherePX(1000, 12, 360, true);
+	mDomeMeshBuffer.Initialize(mMeshX);
+	mSpace.Initialize("../../Assets/Textures/Sky.jpg");
+
+
 	mVertexShader.Initialize("../../Assets/Shaders/DoPhongLighting.fx", VertexPN::Format);
 	mPixelShader.Initialize("../../Assets/Shaders/DoPhongLighting.fx");
+
+	mDomeVertexShader.Initialize("../../Assets/Shaders/DoTexturing.fx", VertexPX::Format);
+	mDomePixelShader.Initialize("../../Assets/Shaders/DoTexturing.fx");
 }
 
 void GameState::Terminate()
@@ -39,6 +48,12 @@ void GameState::Terminate()
 	mLightBuffer.Terminate();
 	mMaterialBuffer.Terminate();
 	mMeshBuffer.Terminate();
+	mDomeMeshBuffer.Terminate();
+	mSpace.Terminate();
+	mConstant.Terminate();
+	mDomePixelShader.Terminate();
+	mDomeVertexShader.Terminate();
+	mSampler.Bind();
 }
 
 void GameState::Update(float deltaTime)
@@ -67,12 +82,32 @@ void GameState::Update(float deltaTime)
 
 void GameState::Render()
 {
+	auto matView = mCamera.GetViewMatrix();
+	auto matProj = mCamera.GetPerspectiveMatrix();
+
+
+	auto matWorld0 = Matrix4::RotationY(mRotation.y);
+	auto matTranslation0 = Matrix4::Translation(Vector3(0.0f, 0.0f, 0.0f));
+	auto matSpace = matTranslation0 * matWorld0;
+	auto matWVP = Transpose(matSpace* matView * matProj);
+
+	mDomeVertexShader.Bind();
+	mDomePixelShader.Bind();
+	mSampler.Bind();
+
+	mSpace.Bind();
+	mConstant.Update(&matWVP);
+	mConstant.BindVS(0);
+	mDomeMeshBuffer.Draw();
+
 	auto matTrans = Matrix4::Translation({ 0.0f });
 	auto matRot = Matrix4::RotationX(mRotation.x) * Matrix4::RotationY(mRotation.y);
 	auto matWorld = matRot * matTrans;
-	auto matView = mCamera.GetViewMatrix();
-	auto matProj = mCamera.GetPerspectiveMatrix();
-	
+
+
+	mVertexShader.Bind();
+	mPixelShader.Bind();
+
 	TransformData transformData;
 	transformData.world = Transpose(matWorld);
 	transformData.wvp = Transpose(matWorld * matView * matProj);
@@ -86,13 +121,8 @@ void GameState::Render()
 	
 	mMaterialBuffer.Update(&mMaterial);
 	mMaterialBuffer.BindVS(2);
-
-	mVertexShader.Bind();
-	mPixelShader.Bind();
-
 	
 	mMeshBuffer.Draw();
-	
 	SimpleDraw::Render(mCamera);
 }
 

@@ -18,9 +18,12 @@ public:
 	void DebugUI() override;
 private:
 	Camera mCamera;
-	VertexShader mVertexShader;
 	MeshBuffer mMeshBuffer;
+	VertexShader mVertexShader;
 	PixelShader mPixelShader;
+
+	VertexShader mDomeVertexShader;
+	PixelShader mDomePixelShader;
 
 	struct TransformData
 	{
@@ -40,7 +43,13 @@ private:
 	
 	DirectionalLight mDirectionalLight;
 	Material mMaterial;
+	
+	ConstantBuffer mConstant;
 
+	MeshBuffer mDomeMeshBuffer;
 	MeshPN mMesh;
+	MeshPX mMeshX;
+	Texture mSpace;
+	Sampler mSampler;
 	Vector3 mRotation = 0.0f;
 };
