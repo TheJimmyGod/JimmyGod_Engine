@@ -19,14 +19,16 @@ public:
 private:
 	Camera mCamera;
 	MeshBuffer mMeshBuffer;
-	VertexShader mGourandShadingVertexShader;
-	PixelShader mGourandShadingPixelShader;
 
-	VertexShader mPhongShadingVertexShader;
-	PixelShader mPhongShadingPixelShader;
+	VertexShader mVertexShader;
+	PixelShader mPixelShader;
 
+	ConstantBuffer mConstant;
 	VertexShader mDomeVertexShader;
 	PixelShader mDomePixelShader;
+	MeshBuffer mDomeMeshBuffer;
+	MeshPX mMeshX;
+	Texture mSpace;
 
 	struct TransformData
 	{
@@ -47,12 +49,9 @@ private:
 	DirectionalLight mDirectionalLight;
 	Material mMaterial;
 	
-	ConstantBuffer mConstant;
 
-	MeshBuffer mDomeMeshBuffer;
-	MeshPN mMesh;
-	MeshPX mMeshX;
-	Texture mSpace;
+	Mesh mMesh;
+	Texture mEarth;
 	Sampler mSampler;
 	Vector3 mRotation = 0.0f;
 };

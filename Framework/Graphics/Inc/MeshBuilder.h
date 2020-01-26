@@ -12,5 +12,7 @@ namespace JimmyGod::Graphics
 
 		static MeshPN CreateCylinderPN(float height, float width);
 		static MeshPN CreateSpherePN(float radius, int rings = 12, int slices = 36, bool isSpace = false);
+
+		static Mesh CreateSphere(float radius, int rings = 12, int slices = 36, bool isSpace = false);
 	};
 }

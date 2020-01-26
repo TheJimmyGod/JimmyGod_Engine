@@ -9,7 +9,7 @@ namespace JimmyGod::Graphics
 		void Terminate();
 		void BindVS(uint32_t slot = 0) const;
 		void BindPS(uint32_t slot = 0) const;
-		void Update(void* data);
+		void Update(const void* data) const;
 	private:
 		ID3D11Buffer* mConstantBuffer = nullptr;
 		float mRotation = 0.0f;

@@ -323,3 +323,64 @@ MeshPN MeshBuilder::CreateSpherePN(float radius, int rings, int slices, bool isS
 	}
 	return mMesh;
 }
+
+Mesh MeshBuilder::CreateSphere(float radius, int rings, int slices, bool isSpace)
+{
+	Mesh mMesh;
+	float r = radius;
+
+	for (float phi = 0; phi < Constants::Pi; phi += (Constants::Pi) / (rings))
+	{
+		for (float theta = 0; theta < Constants::TwoPi; theta += (Constants::TwoPi) / (slices))
+		{
+			auto vec = Vector3{
+						sinf(phi)*cosf(theta)*r,
+						cosf(phi)*r,
+						sinf(theta) * sinf(phi) *r
+			};
+			auto vec2 = Vector2{ theta / Constants::TwoPi, phi / Constants::Pi };
+			mMesh.vertices.emplace_back(
+				Vertex{
+					vec,
+					Normalize(vec),
+					vec,
+					vec2
+				});
+		}
+
+	}
+
+	uint32_t a, b, c, d;
+	for (uint32_t y = 0; y < rings; ++y)
+	{
+		for (uint32_t x = 0; x <= slices; ++x)
+		{
+			a = static_cast<uint32_t>(x % (slices + 1));
+			b = static_cast<uint32_t>((x + 1) % (slices + 1));
+			c = static_cast<uint32_t>(y * (slices + 1));
+			d = static_cast<uint32_t>((y + 1)*(slices + 1));
+
+			if (!isSpace)
+			{
+				mMesh.indices.push_back(a + c);
+				mMesh.indices.push_back(b + c);
+				mMesh.indices.push_back(a + d);
+
+				mMesh.indices.push_back(b + c);
+				mMesh.indices.push_back(b + d);
+				mMesh.indices.push_back(a + d);
+			}
+			else
+			{
+				mMesh.indices.push_back(a + d);
+				mMesh.indices.push_back(b + c);
+				mMesh.indices.push_back(a + c);
+
+				mMesh.indices.push_back(a + d);
+				mMesh.indices.push_back(b + d);
+				mMesh.indices.push_back(b + c);
+			}
+		}
+	}
+	return mMesh;
+}

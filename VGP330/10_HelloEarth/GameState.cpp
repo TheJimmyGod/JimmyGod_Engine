@@ -10,7 +10,7 @@ void GameState::Initialize()
 
 	mCamera.SetPosition({ 0.0f,0.0f,-50.0f });
 	mCamera.SetDirection({ 0.0f,0.0f,1.0f });
-	mMesh = MeshBuilder::CreateSpherePN(15);
+	mMesh = MeshBuilder::CreateSphere(15);
 	mMeshBuffer.Initialize(mMesh);
 	mConstant.Initialize(sizeof(Matrix4));
 	mTransformBuffer.Initialize();
@@ -30,15 +30,10 @@ void GameState::Initialize()
 	mSampler.Initialize(Sampler::Filter::Point, Sampler::AddressMode::Clamp);
 	mMeshX = MeshBuilder::CreateSpherePX(1000, 12, 360, true);
 	mDomeMeshBuffer.Initialize(mMeshX);
-	mSpace.Initialize("../../Assets/Textures/Sky.jpg");
-
-
-	mGourandShadingVertexShader.Initialize("../../Assets/Shaders/DoGouraudShading.fx", VertexPN::Format);
-	mGourandShadingPixelShader.Initialize("../../Assets/Shaders/DoGouraudShading.fx");
-
-
-	mPhongShadingVertexShader.Initialize("../../Assets/Shaders/DoPhongShading.fx", VertexPN::Format);
-	mPhongShadingPixelShader.Initialize("../../Assets/Shaders/DoPhongShading.fx");
+	mSpace.Initialize("../../Assets/Textures/Space.jpg");
+	mEarth.Initialize("../../Assets/Textures/Earth.jpg");
+	mVertexShader.Initialize("../../Assets/Shaders/DoPhongShading.fx", Vertex::Format);
+	mPixelShader.Initialize("../../Assets/Shaders/DoPhongShading.fx");
 
 	mDomeVertexShader.Initialize("../../Assets/Shaders/DoTexturing.fx", VertexPX::Format);
 	mDomePixelShader.Initialize("../../Assets/Shaders/DoTexturing.fx");
@@ -46,10 +41,8 @@ void GameState::Initialize()
 
 void GameState::Terminate()
 {
-	mGourandShadingPixelShader.Terminate();
-	mGourandShadingVertexShader.Terminate();
-	mPhongShadingPixelShader.Terminate();
-	mPhongShadingVertexShader.Terminate();
+	mPixelShader.Terminate();
+	mVertexShader.Terminate();
 	mMaterialBuffer.Terminate();
 	mLightBuffer.Terminate();
 	mMaterialBuffer.Terminate();
@@ -60,6 +53,7 @@ void GameState::Terminate()
 	mDomePixelShader.Terminate();
 	mDomeVertexShader.Terminate();
 	mSampler.Bind();
+	mEarth.Terminate();
 }
 
 void GameState::Update(float deltaTime)
@@ -84,19 +78,12 @@ void GameState::Update(float deltaTime)
 	{
 		mCamera.Strafe(kMoveSpeed * deltaTime);
 	}
-
-	//mCamera.Yaw(inputSystem->GetMouseMoveX() * kTurnSpeed * deltaTime);
-	//mCamera.Pitch(inputSystem->GetMouseMoveY() * kTurnSpeed * deltaTime);
-
-	//SimpleDraw::AddDisplacement(25.0f);
-	//SimpleDraw::AddBox(15, Colors::Aqua);
-	SimpleDraw::AddSphere(200, 12, 720, Colors::White);
-
 	//mRotation += deltaTime;
 }
 
 void GameState::Render()
 {
+
 	auto matView = mCamera.GetViewMatrix();
 	auto matProj = mCamera.GetPerspectiveMatrix();
 
@@ -117,6 +104,7 @@ void GameState::Render()
 	auto matRot = Matrix4::RotationX(mRotation.x) * Matrix4::RotationY(mRotation.y);
 	auto matWorld = matRot * matTrans;
 
+
 	TransformData transformData;
 	transformData.world = Transpose(matWorld);
 	transformData.wvp = Transpose(matWorld * matView * matProj);
@@ -133,25 +121,10 @@ void GameState::Render()
 	mMaterialBuffer.BindVS(2);
 	mMaterialBuffer.BindPS(2);
 
-	mGourandShadingVertexShader.Bind();
-	mGourandShadingPixelShader.Bind();
-
+	mPixelShader.Bind();
+	mVertexShader.Bind();
+	mEarth.Bind();
 	mMeshBuffer.Draw();
-
-	//[Phong Shading]
-	auto matTrans2 = Matrix4::Translation({ -30.25f, 0.0f, 0.0f });
-	auto matRot2 = Matrix4::RotationX(mRotation.x) * Matrix4::RotationY(mRotation.y);
-	auto matWorld2 = matRot2 * matTrans2;
-
-	transformData.world = Transpose(matWorld2);
-	transformData.wvp = Transpose(matWorld2 * matView * matProj);
-	mTransformBuffer.Update(&transformData);
-
-	mPhongShadingPixelShader.Bind();
-	mPhongShadingVertexShader.Bind(); 
-
-	mMeshBuffer.Draw();
-
 	SimpleDraw::Render(mCamera);
 }
 
