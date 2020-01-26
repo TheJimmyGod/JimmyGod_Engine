@@ -1,6 +1,8 @@
 // Description : Simple shader that applies transform and phong shading.
 
-Texture2D textureMap : register(t0);
+Texture2D diffuseMap : register(t0);
+Texture2D specularMap : register(t1);
+Texture2D displacementMap : register(t2);
 SamplerState textureSampler : register(s0);
 
 cbuffer TransformBuffer : register(b0)
@@ -28,8 +30,9 @@ cbuffer MaterialBuffer : register(b2)
 
 struct VS_INPUT
 {
-	float3 position : Position;
+	float3 position : POSITION;
 	float3 normal : NORMAL;
+	float3 tangent : TANGENT;
 	float2 texCoord : TEXCOORD;
 };
 
@@ -37,20 +40,21 @@ struct VS_OUTPUT
 {
     float4 position : SV_Position;
 	float3 worldNormal : NORMAL;
-	float3 dirToLight : TEXCOORD1;
-	float3 dirToView : TEXCOORD2;
-	float2 texCoord : TEXCOORD3;
+	float3 dirToLight : TEXCOORD0;
+	float3 dirToView : TEXCOORD1;
+	float2 texCoord : TEXCOORD2;
 };
 
 
 VS_OUTPUT VS(VS_INPUT input)
 {
 	VS_OUTPUT output;
-
-	float3 worldPosition = mul(float4(input.position, 1.0f), World).xyz;
+	float displacement = displacementMap.SampleLevel(textureSampler, input.texCoord, 0).x;
+	float3 localPosition = input.position + (input.normal * displacement * LightAmbient.a);
+	float3 worldPosition = mul(float4(localPosition, 1.0f), World).xyz;
 	float3 worldNormal = mul(input.normal, (float3x3)World);
 	
-	output.position = mul(float4(input.position, 1.0f), WVP);
+	output.position = mul(float4(localPosition, 1.0f), WVP);
 	output.worldNormal = worldNormal;
 	output.dirToLight = -LightDirection;
 	output.dirToView = normalize(ViewPosition - worldPosition);
@@ -65,6 +69,7 @@ VS_OUTPUT VS(VS_INPUT input)
 float4 PS(VS_OUTPUT input) : SV_TARGET
 {
 	// Renormalize normals from vertex shader
+
 	float3 worldNormal = normalize(input.worldNormal);
 	float3 dirToLight = normalize(input.dirToLight);
 	float3 dirToView = normalize(input.dirToView);
@@ -78,7 +83,10 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
 	float specularBase = saturate(dot(halfAngle, worldNormal));
 	float specularIntensity = pow(specularBase, MaterialPower);
 	float4 specular = specularIntensity * LightSpecular * MaterialSpecular;
-	float4 textureColor = textureMap.Sample(textureSampler, input.texCoord);
-	float4 color = (ambient + diffuse) * textureColor  + specular;
+
+	float4 textureColor = diffuseMap.Sample(textureSampler, input.texCoord);
+	float specularFactor = specularMap.Sample(textureSampler, input.texCoord).r;
+
+	float4 color = (ambient + diffuse) * textureColor  + (specular * specularFactor);
     return color;
 }

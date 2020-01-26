@@ -8,9 +8,9 @@ void GameState::Initialize()
 {
 	GraphicsSystem::Get()->SetClearColor(Colors::Black);
 
-	mCamera.SetPosition({ 0.0f,0.0f,-50.0f });
+	mCamera.SetPosition({ 0.0f,0.0f,-500.0f });
 	mCamera.SetDirection({ 0.0f,0.0f,1.0f });
-	mMesh = MeshBuilder::CreateSphere(15);
+	mMesh = MeshBuilder::CreateSphere(100,64,64);
 	mMeshBuffer.Initialize(mMesh);
 	mConstant.Initialize(sizeof(Matrix4));
 	mTransformBuffer.Initialize();
@@ -22,9 +22,9 @@ void GameState::Initialize()
 	mDirectionalLight.diffuse = { 0.7f };
 	mDirectionalLight.specular = { 0.5f };
 
-	mMaterial.ambient = { 0.0f };
-	mMaterial.diffuse = { 0.7f };
-	mMaterial.specular = { 0.5f };
+	mMaterial.ambient = { 1.0f };
+	mMaterial.diffuse = { 1.0f };
+	mMaterial.specular = { 1.0f };
 	mMaterial.power = { 1.0f };
 
 	mSampler.Initialize(Sampler::Filter::Point, Sampler::AddressMode::Clamp);
@@ -32,6 +32,8 @@ void GameState::Initialize()
 	mDomeMeshBuffer.Initialize(mMeshX);
 	mSpace.Initialize("../../Assets/Textures/Space.jpg");
 	mEarth.Initialize("../../Assets/Textures/Earth.jpg");
+	mEarthSpecualr.Initialize("../../Assets/Textures/earth_spec.jpg");
+	mEarthDisplacement.Initialize("../../Assets/Textures/earth_bump.jpg");
 	mVertexShader.Initialize("../../Assets/Shaders/DoPhongShading.fx", Vertex::Format);
 	mPixelShader.Initialize("../../Assets/Shaders/DoPhongShading.fx");
 
@@ -52,8 +54,10 @@ void GameState::Terminate()
 	mConstant.Terminate();
 	mDomePixelShader.Terminate();
 	mDomeVertexShader.Terminate();
-	mSampler.Bind();
+	mSampler.Terminate();
 	mEarth.Terminate();
+	mEarthDisplacement.Terminate();
+	mEarthSpecualr.Terminate();
 }
 
 void GameState::Update(float deltaTime)
@@ -93,11 +97,13 @@ void GameState::Render()
 
 	mDomeVertexShader.Bind();
 	mDomePixelShader.Bind();
-	mSampler.Bind();
 
-	mSpace.Bind();
+
+	mSpace.BindVS(0);
+	mSpace.BindPS(0);
 	mConstant.Update(&matWVP);
 	mConstant.BindVS(0);
+	mConstant.BindPS(0);
 	mDomeMeshBuffer.Draw();
 
 	auto matTrans = Matrix4::Translation({ -1.25f,0.0f,0.0f });
@@ -112,10 +118,14 @@ void GameState::Render()
 
 	mTransformBuffer.Update(&transformData);
 	mTransformBuffer.BindVS(0);
+	mTransformBuffer.BindPS(0);
+
 
 	mLightBuffer.Update(&mDirectionalLight);
 	mLightBuffer.BindVS(1);
 	mLightBuffer.BindPS(1);
+
+
 
 	mMaterialBuffer.Update(&mMaterial);
 	mMaterialBuffer.BindVS(2);
@@ -123,7 +133,17 @@ void GameState::Render()
 
 	mPixelShader.Bind();
 	mVertexShader.Bind();
-	mEarth.Bind();
+
+	mEarth.BindVS(0);
+	mEarth.BindPS(0);
+	mEarthSpecualr.BindVS(1);
+	mEarthSpecualr.BindPS(1);
+	mEarthDisplacement.BindVS(2);
+	mEarthDisplacement.BindPS(2);
+
+	mSampler.BindVS();
+	mSampler.BindPS();
+
 	mMeshBuffer.Draw();
 	SimpleDraw::Render(mCamera);
 }
@@ -148,6 +168,8 @@ void GameState::DebugUI()
 		ImGui::ColorEdit4("Ambient##Light", &mDirectionalLight.ambient.x);
 		ImGui::ColorEdit4("Diffuse##Light", &mDirectionalLight.diffuse.x);
 		ImGui::ColorEdit4("Specular##Light", &mDirectionalLight.specular.x);
+
+		ImGui::DragFloat("Vertex", &mDirectionalLight.ambient.w);
 	}
 	if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen))
 	{

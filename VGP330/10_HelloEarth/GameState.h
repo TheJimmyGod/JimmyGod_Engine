@@ -52,6 +52,8 @@ private:
 
 	Mesh mMesh;
 	Texture mEarth;
+	Texture mEarthDisplacement;
+	Texture mEarthSpecualr;
 	Sampler mSampler;
 	Vector3 mRotation = 0.0f;
 };
