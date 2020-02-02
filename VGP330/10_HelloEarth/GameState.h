@@ -38,14 +38,26 @@ private:
 		float padding;
 	};
 
+	struct SettingsData
+	{
+		float specularWeight = 1.0f;
+		float bumpMapWeight = 1.0f;
+		float normalMapWeight = 1.0f;
+		float padding;
+	};
+
 	using TransformBuffer = JimmyGod::Graphics::TypedConstantBuffer<TransformData>;
 	using LightBuffer = JimmyGod::Graphics::TypedConstantBuffer<JimmyGod::Graphics::DirectionalLight>;
 	using MaterialBuffer = JimmyGod::Graphics::TypedConstantBuffer<JimmyGod::Graphics::Material>;
+	using SettingsBuffer = JimmyGod::Graphics::TypedConstantBuffer<SettingsData>;
 
 	TransformBuffer mTransformBuffer; 
 	LightBuffer mLightBuffer; 
 	MaterialBuffer mMaterialBuffer;
-	
+	SettingsBuffer mSettingsBuffer;
+
+	SettingsData mSettings;
+
 	DirectionalLight mDirectionalLight;
 	Material mMaterial;
 	
@@ -54,6 +66,7 @@ private:
 	Texture mEarth;
 	Texture mEarthDisplacement;
 	Texture mEarthSpecualr;
+	Texture mNormalMap;
 	Sampler mSampler;
 	Vector3 mRotation = 0.0f;
 };

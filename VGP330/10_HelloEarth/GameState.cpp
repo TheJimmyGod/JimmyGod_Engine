@@ -27,6 +27,8 @@ void GameState::Initialize()
 	mMaterial.specular = { 1.0f };
 	mMaterial.power = { 1.0f };
 
+	mSettingsBuffer.Initialize();
+
 	mSampler.Initialize(Sampler::Filter::Point, Sampler::AddressMode::Clamp);
 	mMeshX = MeshBuilder::CreateSpherePX(1000, 12, 360, true);
 	mDomeMeshBuffer.Initialize(mMeshX);
@@ -36,13 +38,15 @@ void GameState::Initialize()
 	mEarthDisplacement.Initialize("../../Assets/Textures/earth_bump.jpg");
 	mVertexShader.Initialize("../../Assets/Shaders/DoPhongShading.fx", Vertex::Format);
 	mPixelShader.Initialize("../../Assets/Shaders/DoPhongShading.fx");
-
+	mNormalMap.Initialize("../../Assets/Textures/earth_normal.jpg");
 	mDomeVertexShader.Initialize("../../Assets/Shaders/DoTexturing.fx", VertexPX::Format);
 	mDomePixelShader.Initialize("../../Assets/Shaders/DoTexturing.fx");
 }
 
 void GameState::Terminate()
 {
+	mSettingsBuffer.Terminate();
+	mNormalMap.Terminate();
 	mPixelShader.Terminate();
 	mVertexShader.Terminate();
 	mMaterialBuffer.Terminate();
@@ -125,22 +129,22 @@ void GameState::Render()
 	mLightBuffer.BindVS(1);
 	mLightBuffer.BindPS(1);
 
-
-
 	mMaterialBuffer.Update(&mMaterial);
 	mMaterialBuffer.BindVS(2);
 	mMaterialBuffer.BindPS(2);
+
+	mSettingsBuffer.Update(&mSettings);
+	mSettingsBuffer.BindVS(3);
+	mSettingsBuffer.BindPS(3);
 
 	mPixelShader.Bind();
 	mVertexShader.Bind();
 
 	mEarth.BindVS(0);
 	mEarth.BindPS(0);
-	mEarthSpecualr.BindVS(1);
 	mEarthSpecualr.BindPS(1);
 	mEarthDisplacement.BindVS(2);
-	mEarthDisplacement.BindPS(2);
-
+	mNormalMap.BindPS(3);
 	mSampler.BindVS();
 	mSampler.BindPS();
 
@@ -168,8 +172,6 @@ void GameState::DebugUI()
 		ImGui::ColorEdit4("Ambient##Light", &mDirectionalLight.ambient.x);
 		ImGui::ColorEdit4("Diffuse##Light", &mDirectionalLight.diffuse.x);
 		ImGui::ColorEdit4("Specular##Light", &mDirectionalLight.specular.x);
-
-		ImGui::DragFloat("Vertex", &mDirectionalLight.ambient.w);
 	}
 	if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen))
 	{
@@ -177,6 +179,20 @@ void GameState::DebugUI()
 		ImGui::ColorEdit4("Diffuse##Material", &mMaterial.diffuse.x);
 		ImGui::ColorEdit4("Specular##Material", &mMaterial.specular.x);
 		ImGui::DragFloat("Power##Material", &mMaterial.power, 1.0f,1.0f,100.0f);
+	}
+	if (ImGui::CollapsingHeader("Settings", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		static bool specularMap = true;
+		static bool normalMap = true;
+		ImGui::SliderFloat("Displacement", &mSettings.bumpMapWeight, 0.0f, 100.0f);
+		if (ImGui::Checkbox("Normal", &normalMap))
+		{
+			mSettings.normalMapWeight = normalMap ? 1.0f : 0.0f;
+		}
+		if (ImGui::Checkbox("Specular", &specularMap))
+		{
+			mSettings.specularWeight = specularMap ? 1.0f : 0.0f;
+		}
 	}
 	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{

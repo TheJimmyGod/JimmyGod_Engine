@@ -338,12 +338,14 @@ Mesh MeshBuilder::CreateSphere(float radius, int rings, int slices, bool isSpace
 						cosf(phi)*r,
 						sinf(theta) * sinf(phi) *r
 			};
-			auto vec2 = Vector2{ theta / Constants::TwoPi, phi / Constants::Pi };
+			auto vec2 = Vector2{ theta / Constants::TwoPi, phi / Constants::Pi }; // Texture coordinate
+			auto vecN = Normalize(vec); // Normal
+			auto vecT = Vector3{ -vecN.x,0,vecN.z }; // Tangent
 			mMesh.vertices.emplace_back(
 				Vertex{
 					vec,
-					Normalize(vec),
-					vec,
+					vecN,
+					vecT,
 					vec2
 				});
 		}
