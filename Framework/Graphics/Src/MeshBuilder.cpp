@@ -340,7 +340,7 @@ Mesh MeshBuilder::CreateSphere(float radius, int rings, int slices, bool isSpace
 			};
 			auto vec2 = Vector2{ theta / Constants::TwoPi, phi / Constants::Pi }; // Texture coordinate
 			auto vecN = Normalize(vec); // Normal
-			auto vecT = Vector3{ -vecN.x,0,vecN.z }; // Tangent
+			auto vecT = Vector3{ -vecN.z,0.0f,vecN.x }; // Tangent
 			mMesh.vertices.emplace_back(
 				Vertex{
 					vec,

@@ -8,9 +8,9 @@ void GameState::Initialize()
 {
 	GraphicsSystem::Get()->SetClearColor(Colors::Black);
 
-	mCamera.SetPosition({ 0.0f,0.0f,-500.0f });
+	mCamera.SetPosition({ 0.0f,0.0f,-100.0f });
 	mCamera.SetDirection({ 0.0f,0.0f,1.0f });
-	mMesh = MeshBuilder::CreateSphere(100,64,64);
+	mMesh = MeshBuilder::CreateSphere(50.0f,64,64);
 	mMeshBuffer.Initialize(mMesh);
 	mConstant.Initialize(sizeof(Matrix4));
 	mTransformBuffer.Initialize();
@@ -18,22 +18,22 @@ void GameState::Initialize()
 	mMaterialBuffer.Initialize();
 
 	mDirectionalLight.direction = Normalize({ 1.0f, -1.0f, 1.0f });
-	mDirectionalLight.ambient = { 0.3f };
-	mDirectionalLight.diffuse = { 0.7f };
+	mDirectionalLight.ambient = { 0.5f };
+	mDirectionalLight.diffuse = { 0.5f };
 	mDirectionalLight.specular = { 0.5f };
 
-	mMaterial.ambient = { 1.0f };
-	mMaterial.diffuse = { 1.0f };
-	mMaterial.specular = { 1.0f };
-	mMaterial.power = { 1.0f };
-
+	mMaterial.ambient = { 0.5f };
+	mMaterial.diffuse = { 0.5f };
+	mMaterial.specular = { 0.5f };
+	mMaterial.power = { 60.0f };
+	mSettings.bumpMapWeight = { 10.0f };
 	mSettingsBuffer.Initialize();
 
-	mSampler.Initialize(Sampler::Filter::Point, Sampler::AddressMode::Clamp);
+	mSampler.Initialize(Sampler::Filter::Anisotropic, Sampler::AddressMode::Clamp);
 	mMeshX = MeshBuilder::CreateSpherePX(1000, 12, 360, true);
 	mDomeMeshBuffer.Initialize(mMeshX);
 	mSpace.Initialize("../../Assets/Textures/Space.jpg");
-	mEarth.Initialize("../../Assets/Textures/Earth.jpg");
+	mEarth.Initialize("../../Assets/Textures/JimmyEarth.jpg");
 	mEarthSpecualr.Initialize("../../Assets/Textures/earth_spec.jpg");
 	mEarthDisplacement.Initialize("../../Assets/Textures/earth_bump.jpg");
 	mVertexShader.Initialize("../../Assets/Shaders/DoPhongShading.fx", Vertex::Format);
@@ -140,7 +140,7 @@ void GameState::Render()
 	mPixelShader.Bind();
 	mVertexShader.Bind();
 
-	mEarth.BindVS(0);
+	//mEarth.BindVS(0);
 	mEarth.BindPS(0);
 	mEarthSpecualr.BindPS(1);
 	mEarthDisplacement.BindVS(2);

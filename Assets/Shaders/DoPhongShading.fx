@@ -85,6 +85,7 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
 	float3 worldNormal = normalize(input.worldNormal);
 	float3 worldTangent = normalize(input.worldTangent);
 	float3 worldBinormal = normalize(cross(worldNormal, worldTangent));
+
 	float3 dirToLight = normalize(input.dirToLight);
 	float3 dirToView = normalize(input.dirToView);
 
@@ -111,6 +112,7 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
 	float4 textureColor = diffuseMap.Sample(textureSampler, input.texCoord);
 	float specularFactor = specularMap.Sample(textureSampler, input.texCoord).r;
 
-	float4 color = (ambient + diffuse) * textureColor  + specular * (specularMapWeight != 0.0f ? specularFactor : 1.0f);
+	float4 color = (ambient + diffuse) * textureColor  + 
+		specular * (specularMapWeight != 0.0f ? specularFactor : 1.0f);
     return color;
 }

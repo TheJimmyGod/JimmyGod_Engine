@@ -41,7 +41,7 @@ private:
 	struct SettingsData
 	{
 		float specularWeight = 1.0f;
-		float bumpMapWeight = 1.0f;
+		float bumpMapWeight = 10.0f;
 		float normalMapWeight = 1.0f;
 		float padding;
 	};
