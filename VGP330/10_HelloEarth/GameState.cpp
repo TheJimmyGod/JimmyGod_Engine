@@ -36,6 +36,7 @@ void GameState::Initialize()
 	mEarth.Initialize("../../Assets/Textures/JimmyEarth.jpg");
 	mEarthSpecualr.Initialize("../../Assets/Textures/earth_spec.jpg");
 	mEarthDisplacement.Initialize("../../Assets/Textures/earth_bump.jpg");
+	mNightMap.Initialize("../../Assets/Textures/earth_lights.jpg");
 	mVertexShader.Initialize("../../Assets/Shaders/DoPhongShading.fx", Vertex::Format);
 	mPixelShader.Initialize("../../Assets/Shaders/DoPhongShading.fx");
 	mNormalMap.Initialize("../../Assets/Textures/earth_normal.jpg");
@@ -62,6 +63,7 @@ void GameState::Terminate()
 	mEarth.Terminate();
 	mEarthDisplacement.Terminate();
 	mEarthSpecualr.Terminate();
+	mNightMap.Terminate();
 }
 
 void GameState::Update(float deltaTime)
@@ -145,6 +147,7 @@ void GameState::Render()
 	mEarthSpecualr.BindPS(1);
 	mEarthDisplacement.BindVS(2);
 	mNormalMap.BindPS(3);
+	mNightMap.BindPS(4);
 	mSampler.BindVS();
 	mSampler.BindPS();
 

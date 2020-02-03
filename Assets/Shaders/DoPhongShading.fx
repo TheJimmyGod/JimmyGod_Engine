@@ -4,6 +4,8 @@ Texture2D diffuseMap : register(t0);
 Texture2D specularMap : register(t1);
 Texture2D displacementMap : register(t2);
 Texture2D normalMap : register(t3);
+Texture2D nightMap : register(t4);
+
 SamplerState textureSampler : register(s0);
 
 cbuffer TransformBuffer : register(b0)
@@ -54,7 +56,6 @@ struct VS_OUTPUT
 	float2 texCoord : TEXCOORD3;
 };
 
-
 VS_OUTPUT VS(VS_INPUT input)
 {
 	VS_OUTPUT output;
@@ -63,14 +64,13 @@ VS_OUTPUT VS(VS_INPUT input)
 	float3 worldPosition = mul(float4(localPosition, 1.0f), World).xyz;
 	float3 worldNormal = mul(input.normal, (float3x3)World);
 	float3 worldTangent = mul(input.tangent, (float3x3)World);
-
+    
 	output.position = mul(float4(localPosition, 1.0f), WVP);
 	output.worldNormal = worldNormal;
 	output.worldTangent = worldTangent;
 	output.dirToLight = -LightDirection;
 	output.dirToView = normalize(ViewPosition - worldPosition);
 	output.texCoord = input.texCoord;
-
 	return output;
 }
 //		|
@@ -98,7 +98,6 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
 		normal = mul(normalSampled, TBNW);
 	}
 
-
 	float4 ambient = LightAmbient * MaterialAmbient;
 	
 	float diffuseIntensity = saturate(dot(dirToLight, normal)); // Saturate is comparison of size of number
@@ -110,9 +109,11 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
 	float4 specular = specularIntensity * LightSpecular * MaterialSpecular;
 
 	float4 textureColor = diffuseMap.Sample(textureSampler, input.texCoord);
+    float4 nightColor = nightMap.Sample(textureSampler, input.texCoord);
 	float specularFactor = specularMap.Sample(textureSampler, input.texCoord).r;
+    
+    textureColor = lerp(textureColor, nightColor, dot(LightDirection, worldNormal));
 
-	float4 color = (ambient + diffuse) * textureColor  + 
-		specular * (specularMapWeight != 0.0f ? specularFactor : 1.0f);
+    float4 color = (ambient + diffuse) * textureColor + specular * (specularMapWeight != 0.0f ? specularFactor : 1.0f);
     return color;
 }

@@ -67,6 +67,7 @@ private:
 	Texture mEarthDisplacement;
 	Texture mEarthSpecualr;
 	Texture mNormalMap;
+	Texture mNightMap;
 	Sampler mSampler;
 	Vector3 mRotation = 0.0f;
 };
