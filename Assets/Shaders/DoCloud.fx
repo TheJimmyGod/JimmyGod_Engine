@@ -109,9 +109,8 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
 	float4 specular = specularIntensity * LightSpecular * MaterialSpecular;
 
 	float4 textureColor = diffuseMap.Sample(textureSampler, input.texCoord);
-    float4 cloudColor = cloudMap.Sample(textureSampler, input.texCoord); // Alpha Blending
 	float specularFactor = specularMap.Sample(textureSampler, input.texCoord).r;
-    
+
     float4 color = (ambient + diffuse) * textureColor + specular * (specularMapWeight != 0.0f ? specularFactor : 1.0f);
     return color;
 }

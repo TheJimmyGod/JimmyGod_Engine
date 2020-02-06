@@ -23,6 +23,8 @@ private:
 	VertexShader mVertexShader;
 	PixelShader mPixelShader;
 
+	AlphaBlending mAlphaBlend;
+
 	ConstantBuffer mConstant;
 	VertexShader mDomeVertexShader;
 	PixelShader mDomePixelShader;
@@ -68,6 +70,7 @@ private:
 	Texture mEarthSpecualr;
 	Texture mNormalMap;
 	Texture mNightMap;
+	Texture mEarthCould;
 	Sampler mSampler;
 	Vector3 mRotation = 0.0f;
 };

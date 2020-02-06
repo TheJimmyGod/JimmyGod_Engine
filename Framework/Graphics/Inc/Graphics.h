@@ -2,6 +2,7 @@
 
 #include "Common.h"
 
+#include "AlphaBlending.h"
 #include "Camera.h"
 #include "Colors.h"
 #include "ConstantBuffer.h"

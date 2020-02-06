@@ -28,7 +28,7 @@ void GameState::Initialize()
 	mMaterial.power = { 60.0f };
 	mSettings.bumpMapWeight = { 10.0f };
 	mSettingsBuffer.Initialize();
-
+	mAlphaBlend.Initialize();
 	mSampler.Initialize(Sampler::Filter::Anisotropic, Sampler::AddressMode::Clamp);
 	mMeshX = MeshBuilder::CreateSpherePX(1000, 12, 360, true);
 	mDomeMeshBuffer.Initialize(mMeshX);
@@ -37,6 +37,8 @@ void GameState::Initialize()
 	mEarthSpecualr.Initialize("../../Assets/Textures/earth_spec.jpg");
 	mEarthDisplacement.Initialize("../../Assets/Textures/earth_bump.jpg");
 	mNightMap.Initialize("../../Assets/Textures/earth_lights.jpg");
+	mEarthCould.Initialize("../../Assets/Textures/earth_clouds.jpg");
+
 	mVertexShader.Initialize("../../Assets/Shaders/DoPhongShading.fx", Vertex::Format);
 	mPixelShader.Initialize("../../Assets/Shaders/DoPhongShading.fx");
 	mNormalMap.Initialize("../../Assets/Textures/earth_normal.jpg");
@@ -64,6 +66,8 @@ void GameState::Terminate()
 	mEarthDisplacement.Terminate();
 	mEarthSpecualr.Terminate();
 	mNightMap.Terminate();
+	mAlphaBlend.Terminate();
+	mEarthCould.Terminate();
 }
 
 void GameState::Update(float deltaTime)
@@ -115,6 +119,7 @@ void GameState::Render()
 	auto matTrans = Matrix4::Translation({ -1.25f,0.0f,0.0f });
 	auto matRot = Matrix4::RotationX(mRotation.x) * Matrix4::RotationY(mRotation.y);
 	auto matWorld = matRot * matTrans;
+	auto matWorldCloud = Matrix4::Scaling(1.05f) * matRot * matTrans;
 
 
 	TransformData transformData;
@@ -142,7 +147,6 @@ void GameState::Render()
 	mPixelShader.Bind();
 	mVertexShader.Bind();
 
-	//mEarth.BindVS(0);
 	mEarth.BindPS(0);
 	mEarthSpecualr.BindPS(1);
 	mEarthDisplacement.BindVS(2);
@@ -151,7 +155,21 @@ void GameState::Render()
 	mSampler.BindVS();
 	mSampler.BindPS();
 
+	mAlphaBlend.UnBind();
 	mMeshBuffer.Draw();
+
+	transformData.world = Transpose(matWorldCloud);
+	transformData.wvp = Transpose(matWorldCloud * matView * matProj);
+	transformData.viewPosition = mCamera.GetPosition();
+	mTransformBuffer.Update(&transformData);
+	mTransformBuffer.BindVS(0);
+	mTransformBuffer.BindPS(0);
+
+	mEarthCould.BindPS(0);
+	mEarthCould.BindVS(0);
+	mAlphaBlend.Bind();
+	mMeshBuffer.Draw();
+
 	SimpleDraw::Render(mCamera);
 }
 
