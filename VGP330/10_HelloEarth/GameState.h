@@ -20,10 +20,13 @@ private:
 	Camera mCamera;
 	MeshBuffer mMeshBuffer;
 
-	VertexShader mVertexShader;
-	PixelShader mPixelShader;
+	VertexShader mEarthVertexShader;
+	PixelShader mEarthPixelShader;
 
-	AlphaBlending mAlphaBlend;
+	VertexShader mCloudVertexShader;
+	PixelShader mCloudPixelShader;
+
+	BlendState mBlendState;
 
 	ConstantBuffer mConstant;
 	VertexShader mDomeVertexShader;
@@ -63,6 +66,7 @@ private:
 	DirectionalLight mDirectionalLight;
 	Material mMaterial;
 	
+	float mCloudRotation = 0.0f;
 
 	Mesh mMesh;
 	Texture mEarth;

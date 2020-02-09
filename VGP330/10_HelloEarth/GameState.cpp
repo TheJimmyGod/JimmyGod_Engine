@@ -28,10 +28,13 @@ void GameState::Initialize()
 	mMaterial.power = { 60.0f };
 	mSettings.bumpMapWeight = { 10.0f };
 	mSettingsBuffer.Initialize();
-	mAlphaBlend.Initialize();
 	mSampler.Initialize(Sampler::Filter::Anisotropic, Sampler::AddressMode::Clamp);
 	mMeshX = MeshBuilder::CreateSpherePX(1000, 12, 360, true);
 	mDomeMeshBuffer.Initialize(mMeshX);
+
+	std::filesystem::path assets = "../../Assets/Shaders/Earth.fx";
+	mBlendState.Initialize(BlendState::Mode::AlphaPremultiplied);
+
 	mSpace.Initialize("../../Assets/Textures/Space.jpg");
 	mEarth.Initialize("../../Assets/Textures/JimmyEarth.jpg");
 	mEarthSpecualr.Initialize("../../Assets/Textures/earth_spec.jpg");
@@ -39,9 +42,14 @@ void GameState::Initialize()
 	mNightMap.Initialize("../../Assets/Textures/earth_lights.jpg");
 	mEarthCould.Initialize("../../Assets/Textures/earth_clouds.jpg");
 
-	mVertexShader.Initialize("../../Assets/Shaders/DoPhongShading.fx", Vertex::Format);
-	mPixelShader.Initialize("../../Assets/Shaders/DoPhongShading.fx");
+	mEarthVertexShader.Initialize(assets, "VSEarth",Vertex::Format);
+	mEarthPixelShader.Initialize(assets, "PSEarth");
+
+	mCloudVertexShader.Initialize(assets, "VSCloud", Vertex::Format);
+	mCloudPixelShader.Initialize(assets, "PSCloud");
+
 	mNormalMap.Initialize("../../Assets/Textures/earth_normal.jpg");
+
 	mDomeVertexShader.Initialize("../../Assets/Shaders/DoTexturing.fx", VertexPX::Format);
 	mDomePixelShader.Initialize("../../Assets/Shaders/DoTexturing.fx");
 }
@@ -50,8 +58,10 @@ void GameState::Terminate()
 {
 	mSettingsBuffer.Terminate();
 	mNormalMap.Terminate();
-	mPixelShader.Terminate();
-	mVertexShader.Terminate();
+	mEarthVertexShader.Terminate();
+	mEarthPixelShader.Terminate();
+	mCloudPixelShader.Terminate();
+	mCloudVertexShader.Terminate();
 	mMaterialBuffer.Terminate();
 	mLightBuffer.Terminate();
 	mMaterialBuffer.Terminate();
@@ -66,7 +76,7 @@ void GameState::Terminate()
 	mEarthDisplacement.Terminate();
 	mEarthSpecualr.Terminate();
 	mNightMap.Terminate();
-	mAlphaBlend.Terminate();
+	mBlendState.Terminate();
 	mEarthCould.Terminate();
 }
 
@@ -92,7 +102,7 @@ void GameState::Update(float deltaTime)
 	{
 		mCamera.Strafe(kMoveSpeed * deltaTime);
 	}
-	//mRotation += deltaTime;
+	mCloudRotation += 0.0001f;
 }
 
 void GameState::Render()
@@ -119,7 +129,6 @@ void GameState::Render()
 	auto matTrans = Matrix4::Translation({ -1.25f,0.0f,0.0f });
 	auto matRot = Matrix4::RotationX(mRotation.x) * Matrix4::RotationY(mRotation.y);
 	auto matWorld = matRot * matTrans;
-	auto matWorldCloud = Matrix4::Scaling(1.05f) * matRot * matTrans;
 
 
 	TransformData transformData;
@@ -144,8 +153,8 @@ void GameState::Render()
 	mSettingsBuffer.BindVS(3);
 	mSettingsBuffer.BindPS(3);
 
-	mPixelShader.Bind();
-	mVertexShader.Bind();
+	mEarthPixelShader.Bind();
+	mEarthVertexShader.Bind();
 
 	mEarth.BindPS(0);
 	mEarthSpecualr.BindPS(1);
@@ -154,22 +163,28 @@ void GameState::Render()
 	mNightMap.BindPS(4);
 	mSampler.BindVS();
 	mSampler.BindPS();
+	BlendState::ClearState();
 
-	mAlphaBlend.UnBind();
 	mMeshBuffer.Draw();
 
-	transformData.world = Transpose(matWorldCloud);
-	transformData.wvp = Transpose(matWorldCloud * matView * matProj);
+	// --- Cloud
+	matRot = Matrix4::RotationX(mRotation.x) * Matrix4::RotationY(mRotation.y + mCloudRotation);
+	matWorld = matRot * matTrans;
+
+	transformData.world = Transpose(matWorld);
+	transformData.wvp = Transpose(matWorld * matView * matProj);
 	transformData.viewPosition = mCamera.GetPosition();
 	mTransformBuffer.Update(&transformData);
 	mTransformBuffer.BindVS(0);
 	mTransformBuffer.BindPS(0);
 
-	mEarthCould.BindPS(0);
-	mEarthCould.BindVS(0);
-	mAlphaBlend.Bind();
-	mMeshBuffer.Draw();
+	mCloudPixelShader.Bind();
+	mCloudVertexShader.Bind();
 
+	mEarthCould.BindPS(5);
+	mEarthCould.BindVS(5);
+	mBlendState.Set();
+	mMeshBuffer.Draw();
 	SimpleDraw::Render(mCamera);
 }
 
@@ -221,3 +236,6 @@ void GameState::DebugUI()
 	}
 	ImGui::End();
 }
+
+// Blending : find color = Source color * SourceBlend + destinationColor * destinationBlend
+// destinationColor = represent the pixel on the backbuffer

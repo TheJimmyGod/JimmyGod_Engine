@@ -69,7 +69,7 @@
     <ClInclude Include="Inc\Material.h">
       <Filter>Inc</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\AlphaBlending.h">
+    <ClInclude Include="Inc\BlendState.h">
       <Filter>Inc</Filter>
     </ClInclude>
   </ItemGroup>
@@ -113,7 +113,7 @@
     <ClCompile Include="Src\SimpleDraw.cpp">
       <Filter>Src</Filter>
     </ClCompile>
-    <ClCompile Include="Src\AlphaBlending.cpp">
+    <ClCompile Include="Src\BlendState.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>

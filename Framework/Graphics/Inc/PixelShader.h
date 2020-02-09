@@ -4,7 +4,7 @@ namespace JimmyGod::Graphics
 	class PixelShader
 	{
 	public:
-		void Initialize(const std::filesystem::path& filePath);
+		void Initialize(const std::filesystem::path& filePath, const char* shaderName = "PS");
 		void Terminate();
 
 		void Bind() const;
