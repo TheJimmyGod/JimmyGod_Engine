@@ -158,6 +158,5 @@ float4 PSCloud(VSCloudOutput input) : SV_TARGET
 	float4 diffuse = diffuseIntensity * LightDiffuse * MaterialDiffuse;
 
 	float4 textureColor = cloudMap.Sample(textureSampler, input.texCoord);
-	//textureColor = nightBlend * diffuse * textureColor + (nightIntensity);
 	return textureColor * diffuse;
 }
