@@ -14,5 +14,7 @@ namespace JimmyGod::Graphics
 		static MeshPN CreateSpherePN(float radius, int rings = 12, int slices = 36, bool isSpace = false);
 
 		static Mesh CreateSphere(float radius, int rings = 12, int slices = 36, bool isSpace = false);
+
+		static MeshPX CreateNDCQuad();
 	};
 }

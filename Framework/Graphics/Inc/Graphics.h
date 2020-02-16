@@ -14,6 +14,7 @@
 #include "Mesh.h"
 #include "MeshBuffer.h"
 #include "MeshBuilder.h"
+#include "RenderTarget.h"
 #include "Sampler.h"
 #include "SimpleDraw.h"
 #include "Texture.h"

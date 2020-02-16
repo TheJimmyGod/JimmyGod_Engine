@@ -386,3 +386,23 @@ Mesh MeshBuilder::CreateSphere(float radius, int rings, int slices, bool isSpace
 	}
 	return mMesh;
 }
+
+MeshPX MeshBuilder::CreateNDCQuad()
+{
+	MeshPX mMesh;
+
+	mMesh.vertices.emplace_back(VertexPX{ Vector3{ -1.0f,1.0f,0.0f}, 0.0f,0.0f });
+	mMesh.vertices.emplace_back(VertexPX{ Vector3{ 1.0f,1.0f,0.0f }, 1.0f,0.0f });
+	mMesh.vertices.emplace_back(VertexPX{ Vector3{ -1.0f,-1.0f,-0.0f}, 0.0f,1.0f });
+	mMesh.vertices.emplace_back(VertexPX{ Vector3{ 1.0f,-1.0f,0.0f}, 1.0f,1.0f });
+
+	mMesh.indices.push_back(0);
+	mMesh.indices.push_back(1);
+	mMesh.indices.push_back(2);
+
+	mMesh.indices.push_back(1);
+	mMesh.indices.push_back(3);
+	mMesh.indices.push_back(2);
+
+	return mMesh;
+}
