@@ -8,10 +8,25 @@ void GameState::Initialize()
 {
 	GraphicsSystem::Get()->SetClearColor(Colors::Gray);
 
-	mCamera.SetPosition({ 0.0f,0.0f,-100.0f });
-	mCamera.SetDirection({ 0.0f,0.0f,1.0f });
-	mMesh = MeshBuilder::CreateSphere(50.0f,64,64);
-	mMeshBuffer.Initialize(mMesh);
+	mTankPos = { 0.0f, 3.5f, 0.0f };
+
+	mDefaultCamera.SetPosition({ 0.0f,0.0f,-100.0f });
+	mDefaultCamera.SetDirection({ 0.0f,0.0f,1.0f });
+	mDefaultCamera.SetLookAt({ 0.0f,0.0f,0.0f });
+
+	mLightCamera.SetDirection(Normalize({ 1.0f,-1.0f,1.0f }));
+	mLightCamera.SetNearPlane(1.0f);
+	mLightCamera.SetFarPlane(200.0f);
+	mLightCamera.SetFov(1.0f);
+	mLightCamera.SetAspectRatio(1.0f);
+
+	mActiveCamera = &mDefaultCamera;
+
+	OBJLoader::Load("../../Assets/Models/Tank/tank.obj", 0.001f, mTankMesh);
+	mTankMeshBuffer.Initialize(mTankMesh);
+
+	mGroundMesh = MeshBuilder::CreatePlane(20.0f);
+
 	mTransformBuffer.Initialize();
 	mLightBuffer.Initialize();
 	mMaterialBuffer.Initialize();
@@ -28,34 +43,17 @@ void GameState::Initialize()
 	mSettings.bumpMapWeight = { 10.0f };
 	mSettingsBuffer.Initialize();
 	mSampler.Initialize(Sampler::Filter::Anisotropic, Sampler::AddressMode::Clamp);
-	mMeshX = MeshBuilder::CreateSpherePX(1000, 12, 360, true);
-
-	std::filesystem::path assets = "../../Assets/Shaders/Earth.fx";
-	mBlendState.Initialize(BlendState::Mode::AlphaPremultiplied);
-
-	mEarth.Initialize("../../Assets/Textures/JimmyEarth.jpg");
-	mEarthSpecualr.Initialize("../../Assets/Textures/earth_spec.jpg");
-	mEarthDisplacement.Initialize("../../Assets/Textures/earth_bump.jpg");
-	mNightMap.Initialize("../../Assets/Textures/earth_lights.jpg");
-	mEarthCould.Initialize("../../Assets/Textures/earth_clouds.jpg");
-
-
-	mEarthVertexShader.Initialize(assets, "VSEarth",Vertex::Format);
-	mEarthPixelShader.Initialize(assets, "PSEarth");
-
-	mCloudVertexShader.Initialize(assets, "VSCloud", Vertex::Format);
-	mCloudPixelShader.Initialize(assets, "PSCloud");
-
-	mNormalMap.Initialize("../../Assets/Textures/earth_normal.jpg");
-
-
+	mGroundTexture.Initialize("../../Assets/Textures/Ground.jpg");
+	mVertexShader.Initialize("../../Assets/Shaders/DoPhongShading.fx",Vertex::Format);
+	mPixelShader.Initialize("../../Assets/Shaders/DoPhongShading.fx");
+	
 	auto graphicsSystem = GraphicsSystem::Get();
 	mRenderTarget.Initialize(graphicsSystem->GetBackBufferWidth(),
 		graphicsSystem->GetBackBufferHeight(),RenderTarget::Format::RGBA_U8);
 	mNDCMesh = MeshBuilder::CreateNDCQuad();
 	mScreenQuadBuffer.Initialize(mNDCMesh);
 	mPostProcessingVertexShader.Initialize("../../Assets/Shaders/PostProcess.fx", VertexPX::Format);
-	mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSGaussian");
+	mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSNoProcessing");
 }
 
 void GameState::Terminate()
@@ -65,22 +63,12 @@ void GameState::Terminate()
 	mPostProcessingPixelShader.Terminate();
 	mPostProcessingVertexShader.Terminate();
 	mSettingsBuffer.Terminate();
-	mNormalMap.Terminate();
-	mEarthVertexShader.Terminate();
-	mEarthPixelShader.Terminate();
-	mCloudPixelShader.Terminate();
-	mCloudVertexShader.Terminate();
 	mMaterialBuffer.Terminate();
 	mLightBuffer.Terminate();
 	mMaterialBuffer.Terminate();
-	mMeshBuffer.Terminate();
+	mTankMeshBuffer.Terminate();
 	mSampler.Terminate();
-	mEarth.Terminate();
-	mEarthDisplacement.Terminate();
-	mEarthSpecualr.Terminate();
-	mNightMap.Terminate();
 	mBlendState.Terminate();
-	mEarthCould.Terminate();
 }
 
 void GameState::Update(float deltaTime)
@@ -91,19 +79,19 @@ void GameState::Update(float deltaTime)
 	auto inputSystem = InputSystem::Get();
 	if (inputSystem->IsKeyDown(KeyCode::W))
 	{
-		mCamera.Walk(kMoveSpeed*deltaTime);
+		mDefaultCamera.Walk(kMoveSpeed*deltaTime);
 	}
 	if (inputSystem->IsKeyDown(KeyCode::S))
 	{
-		mCamera.Walk(-kMoveSpeed * deltaTime);
+		mDefaultCamera.Walk(-kMoveSpeed * deltaTime);
 	}
 	if (inputSystem->IsKeyDown(KeyCode::A))
 	{
-		mCamera.Strafe(-kMoveSpeed * deltaTime);
+		mDefaultCamera.Strafe(-kMoveSpeed * deltaTime);
 	}
 	if (inputSystem->IsKeyDown(KeyCode::D))
 	{
-		mCamera.Strafe(kMoveSpeed * deltaTime);
+		mDefaultCamera.Strafe(kMoveSpeed * deltaTime);
 	}
 	mCloudRotation += 0.0001f;
 }
@@ -113,6 +101,7 @@ void GameState::Render()
 	mRenderTarget.BeginRender();
 	DrawScene();
 	mRenderTarget.EndRender();
+
 	mRenderTarget.BindPS(0);
 	PostProcess();
 	mRenderTarget.UnbindPS(0);
@@ -123,6 +112,14 @@ void GameState::DebugUI()
 	//ImGui::ShowDemoWindow();
 
 	ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+	if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		bool lightCamera = mActiveCamera == &mLightCamera;
+		if (ImGui::Checkbox("Use Light Camera", &lightCamera))
+		{
+			mActiveCamera = lightCamera ? &mLightCamera : &mDefaultCamera;
+		}
+	}
 	if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		bool directionChanged = false;
@@ -162,29 +159,27 @@ void GameState::DebugUI()
 	}
 	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::DragFloat3("Rotation##Transform", &mRotation.x, 0.01f);
+		ImGui::DragFloat3("Rotation##Transform", &mTankRot.x, 0.01f);
 	}
 	ImGui::End();
 }
 
 void GameState::DrawScene()
 {
-	auto matView = mCamera.GetViewMatrix();
-	auto matProj = mCamera.GetPerspectiveMatrix();
+	auto matView = mDefaultCamera.GetViewMatrix();
+	auto matProj = mDefaultCamera.GetPerspectiveMatrix();
 	auto matTrans = Matrix4::Translation({ -1.25f,0.0f,0.0f });
-	auto matRot = Matrix4::RotationX(mRotation.x) * Matrix4::RotationY(mRotation.y);
+	auto matRot = Matrix4::RotationX(mTankRot.x) * Matrix4::RotationY(mTankRot.y);
 	auto matWorld = matRot * matTrans;
-
-
+	
 	TransformData transformData;
 	transformData.world = Transpose(matWorld);
 	transformData.wvp = Transpose(matWorld * matView * matProj);
-	transformData.viewPosition = mCamera.GetPosition();
+	transformData.viewPosition = mDefaultCamera.GetPosition();
 
 	mTransformBuffer.Update(&transformData);
 	mTransformBuffer.BindVS(0);
 	mTransformBuffer.BindPS(0);
-
 
 	mLightBuffer.Update(&mDirectionalLight);
 	mLightBuffer.BindVS(1);
@@ -198,39 +193,14 @@ void GameState::DrawScene()
 	mSettingsBuffer.BindVS(3);
 	mSettingsBuffer.BindPS(3);
 
-	mEarthPixelShader.Bind();
-	mEarthVertexShader.Bind();
+	mVertexShader.Bind();
+	mPixelShader.Bind();
 
-	mEarth.BindPS(0);
-	mEarthSpecualr.BindPS(1);
-	mEarthDisplacement.BindVS(2);
-	mNormalMap.BindPS(3);
-	mNightMap.BindPS(4);
+	mTankMeshBuffer.Draw();
 
-	BlendState::ClearState();
 
-	mMeshBuffer.Draw();
 
-	// --- Cloud
-	matRot = Matrix4::RotationX(mRotation.x) * Matrix4::RotationY(mRotation.y + mCloudRotation);
-	matWorld = matRot * matTrans;
-
-	transformData.world = Transpose(matWorld);
-	transformData.wvp = Transpose(matWorld * matView * matProj);
-	transformData.viewPosition = mCamera.GetPosition();
-	mTransformBuffer.Update(&transformData);
-	mTransformBuffer.BindVS(0);
-	mTransformBuffer.BindPS(0);
-
-	mCloudPixelShader.Bind();
-	mCloudVertexShader.Bind();
-
-	mEarthCould.BindPS(5);
-	mEarthCould.BindVS(5);
-	mBlendState.Set();
-	mMeshBuffer.Draw();
-
-	SimpleDraw::Render(mCamera);
+	SimpleDraw::Render(*mActiveCamera);
 }
 
 void GameState::PostProcess()

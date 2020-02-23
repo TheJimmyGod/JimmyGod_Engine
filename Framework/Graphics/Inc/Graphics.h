@@ -9,6 +9,7 @@
 #include "DebugUI.h"
 #include "GraphicsSystem.h"
 #include "LightTypes.h"
+#include "OBJLoader.h"
 #include "PixelShader.h"
 #include "Material.h"
 #include "Mesh.h"

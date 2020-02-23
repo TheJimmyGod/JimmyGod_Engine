@@ -70,6 +70,11 @@ void Camera::SetFarPlane(float farPlane)
 	mFarPlane = farPlane;
 }
 
+void Camera::SetAspectRatio(float ratio)
+{
+	mAspectratio = ratio;
+}
+
 Matrix4 Camera::GetViewMatrix() const
 {
 	const Vector3 l = mDirection;
@@ -88,11 +93,13 @@ Matrix4 Camera::GetViewMatrix() const
 
 Matrix4 Camera::GetPerspectiveMatrix() const
 {
-	const auto width = GraphicsSystem::Get()->GetBackBufferWidth();
-	const auto height = GraphicsSystem::Get()->GetBackBufferHeight();
-	if (height == 0) return Matrix4();
-	const float aspectRatio = static_cast<float>(width) / height;
-	if (aspectRatio == 0)return Matrix4();
+	float aspectRatio = mAspectratio;
+	if (aspectRatio == 0)
+	{
+		const auto width = GraphicsSystem::Get()->GetBackBufferWidth();
+		const auto height = GraphicsSystem::Get()->GetBackBufferHeight();
+		aspectRatio = static_cast<float>(width) / height;
+	}
 	const float h = 1.0f / tanf(mFov * 0.5f);
 	const float w = h / aspectRatio;
 	const float zf = mFarPlane;

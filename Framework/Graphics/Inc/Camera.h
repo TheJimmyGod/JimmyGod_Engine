@@ -23,7 +23,7 @@ namespace JimmyGod::Graphics
 		void SetFov(float fov);
 		void SetNearPlane(float nearPlane);
 		void SetFarPlane(float farPlane);
-
+		void SetAspectRatio(float ratio);
 		const Vector3& GetPosition() const { return mPosition; }
 		const Vector3& GetDirection() const { return mDirection; }
 
@@ -32,7 +32,7 @@ namespace JimmyGod::Graphics
 	private:
 		Vector3 mPosition = Vector3::Zero;
 		Vector3 mDirection = Vector3::ZAxis;
-
+		float mAspectratio = 0.0f;
 		float mFov = 60.0f * Constants::DegToRad;
 		float mNearPlane = 1.0f;
 		float mFarPlane = 10000.0f;
