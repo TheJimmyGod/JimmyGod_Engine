@@ -4,7 +4,8 @@ Texture2D diffuseMap : register(t0);
 Texture2D specularMap : register(t1);
 Texture2D displacementMap : register(t2);
 Texture2D normalMap : register(t3);
-Texture2D nightMap : register(t4);
+Texture2D aoMap : register(t4);
+Texture2D depthMap : register(t5);
 SamplerState textureSampler : register(s0);
 
 cbuffer TransformBuffer : register(b0)
@@ -35,6 +36,14 @@ cbuffer SettingsBuffer : register(b3)
 	float specularMapWeight : packoffset(c0.x);
 	float bumpMapWeight : packoffset(c0.y);
 	float normalMapWeight : packoffset(c0.z);
+	float aoMapWeight : packoffset(c0.w);
+	float brightness : packoffset(c1.x);
+	bool useShadow : packoffset(c1.y);
+}
+
+cbuffer ShadowBuffer : register(b4)
+{
+	matrix WVPLight;
 }
 
 struct VS_INPUT
@@ -53,6 +62,7 @@ struct VS_OUTPUT
 	float3 dirToLight : TEXCOORD1;
 	float3 dirToView : TEXCOORD2;
 	float2 texCoord : TEXCOORD3;
+	float4 positionNDC : TEXCOORD4;
 };
 
 VS_OUTPUT VS(VS_INPUT input)
@@ -70,6 +80,9 @@ VS_OUTPUT VS(VS_INPUT input)
 	output.dirToLight = -LightDirection;
 	output.dirToView = normalize(ViewPosition - worldPosition);
 	output.texCoord = input.texCoord;
+
+	if (useShadow)
+		output.positionNDC = mul(float4(localPosition, 1.0f), WVPLight);
 	return output;
 }
 //		|
@@ -98,6 +111,8 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
 	}
 
 	float4 ambient = LightAmbient * MaterialAmbient;
+	if (aoMapWeight != 0.0f)
+		ambient += aoMap.Sample(textureSampler, input.texCoord);
 	
 	float diffuseIntensity = saturate(dot(dirToLight, normal)); // Saturate is comparison of size of number
 	float4 diffuse = diffuseIntensity * LightDiffuse * MaterialDiffuse;
@@ -107,12 +122,32 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
 	float specularIntensity = pow(specularBase, MaterialPower);
 	float4 specular = specularIntensity * LightSpecular * MaterialSpecular;
 
-	float4 textureColor = diffuseMap.Sample(textureSampler, input.texCoord);
-    float4 nightColor = nightMap.Sample(textureSampler, input.texCoord);
-	float specularFactor = specularMap.Sample(textureSampler, input.texCoord).r;
-    
-    textureColor = lerp(textureColor, nightColor, dot(LightDirection, worldNormal));
 
-    float4 color = (ambient + diffuse) * textureColor + specular * (specularMapWeight != 0.0f ? specularFactor : 1.0f);
+	float4 textureColor = diffuseMap.Sample(textureSampler, input.texCoord);
+
+	float specularFactor = 1.0f;
+    
+	if(specularMapWeight > 0.0f)
+		specularFactor = specularMap.Sample(textureSampler, input.texCoord).r;
+
+
+    //textureColor = lerp(textureColor, nightColor, dot(LightDirection, worldNormal));
+
+    float4 color = (ambient + diffuse) * textureColor * brightness + specular * specularFactor;
+
+	if (useShadow)
+	{
+		float actualDepth = 1.0f - input.positionNDC.z / input.positionNDC.w;
+		float2 shadowUV = input.positionNDC.xy / input.position.w;
+		shadowUV = (shadowUV + 1.0f) * 0.5f;
+		shadowUV.y = 1.0f - shadowUV.y;
+		if (saturate(shadowUV.x) == shadowUV.x && saturate(shadowUV.y) == shadowUV.y)
+		{
+			float savedDepth = depthMap.Sample(textureSampler, shadowUV).r;
+			if (savedDepth > actualDepth)
+				color = ambient * textureColor;
+		}
+	}
+
     return color;
 }

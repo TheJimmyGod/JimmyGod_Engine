@@ -390,20 +390,22 @@ Mesh MeshBuilder::CreateSphere(float radius, int rings, int slices, bool isSpace
 Mesh MeshBuilder::CreatePlane(float size, int rows, int columns, bool isSpace)
 {
 	Mesh mMesh;
-	float r = 1.0f;
-	const float xStep = size / static_cast<float>(rows - 1);
-	const float zStep = size / static_cast<float>(columns - 1);
-	const float uStep = size / static_cast<float>(rows - 1);
-	const float vStep = size / static_cast<float>(columns - 1);
+
+	const float offsetX = size * -0.5f;
+	const float offsetZ = size * -0.5f;
+	const float xStep = size / static_cast<float>(columns - 1);
+	const float zStep = size / static_cast<float>(rows - 1);
+	const float uStep = size / static_cast<float>(columns - 1);
+	const float vStep = size / static_cast<float>(rows - 1);
 
 
-	for (int x = 0; x < rows; ++x)
+	for (int z = 0; z < rows; ++z)
 	{
-		for (int z = 0; z < columns; ++z)
+		for (int x = 0; x < columns; ++x)
 		{
-			float xx = xStep * x;
-			float zz = zStep * z;
-			float y = 0.0f;
+			float xx = xStep * x + offsetX;
+			float zz = zStep * z + offsetZ;
+			float y = -5.0f;
 
 			auto vec = Vector3{
 				xx,
@@ -411,9 +413,9 @@ Mesh MeshBuilder::CreatePlane(float size, int rows, int columns, bool isSpace)
 				zz
 			};
 
-			auto vec2 = Vector2{ uStep, vStep }; // Texture coordinate
-			auto vecN = Normalize(vec); // Normal
-			auto vecT = Vector3{ -vecN.z,0.0f,vecN.x }; // Tangent
+			auto vec2 = Vector2{ x* uStep, z*vStep }; // Texture coordinate
+			auto vecN = Vector3::YAxis; // Normal
+			auto vecT = Vector3::XAxis; // Tangent
 			mMesh.vertices.emplace_back(
 				Vertex{
 					vec,
@@ -424,36 +426,18 @@ Mesh MeshBuilder::CreatePlane(float size, int rows, int columns, bool isSpace)
 		}
 	}
 
-	uint32_t a, b, c, d;
-	for (uint32_t y = 0; y < rows; ++y)
+	uint32_t index = 0;
+	for (uint32_t z = 0; z < rows - 1; ++z)
 	{
-		for (uint32_t x = 0; x <= columns; ++x)
+		for (uint32_t x = 0; x < columns - 1; ++x)
 		{
-			a = static_cast<uint32_t>(x % (columns + 1));
-			b = static_cast<uint32_t>((x + 1) % (columns + 1));
-			c = static_cast<uint32_t>(y * (columns + 1));
-			d = static_cast<uint32_t>((y + 1)*(columns + 1));
+			mMesh.indices.push_back((x + 0) + ((z + 0) * columns));
+			mMesh.indices.push_back((x + 0) + ((z + 1) * columns));
+			mMesh.indices.push_back((x + 1) + ((z + 1) * columns));
 
-			if (!isSpace)
-			{
-				mMesh.indices.push_back(a + c);
-				mMesh.indices.push_back(b + c);
-				mMesh.indices.push_back(a + d);
-
-				mMesh.indices.push_back(b + c);
-				mMesh.indices.push_back(b + d);
-				mMesh.indices.push_back(a + d);
-			}
-			else
-			{
-				mMesh.indices.push_back(a + d);
-				mMesh.indices.push_back(b + c);
-				mMesh.indices.push_back(a + c);
-
-				mMesh.indices.push_back(a + d);
-				mMesh.indices.push_back(b + d);
-				mMesh.indices.push_back(b + c);
-			}
+			mMesh.indices.push_back((x + 0) + ((z + 0) * columns));
+			mMesh.indices.push_back((x + 1) + ((z + 1) * columns));
+			mMesh.indices.push_back((x + 1) + ((z + 0) * columns));
 		}
 	}
 	return mMesh;

@@ -17,6 +17,9 @@ namespace JimmyGod::Graphics
 		RenderTarget() = default;
 		~RenderTarget();
 
+		RenderTarget(const RenderTarget&) = delete;
+		RenderTarget& operator= (const RenderTarget&) = delete;
+
 		void Initialize(uint32_t width, uint32_t height, Format format);
 		void Terminate();
 
@@ -26,8 +29,8 @@ namespace JimmyGod::Graphics
 		void BindPS(uint32_t slot);
 		void UnbindPS(uint32_t slot);
 
-		RenderTarget(const RenderTarget&) = delete;
-		RenderTarget& operator= (const RenderTarget&) = delete;
+		void* GetShaderResourceView() const { return mShaderResourceView; }
+
 
 	private:
 		ID3D11ShaderResourceView* mShaderResourceView = nullptr;

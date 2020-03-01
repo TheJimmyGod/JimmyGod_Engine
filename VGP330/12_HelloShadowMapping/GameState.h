@@ -19,6 +19,7 @@ public:
 
 private:
 	void DrawScene();
+	void DrawDepthMap();
 	void PostProcess();
 private:
 	Camera mDefaultCamera;
@@ -36,6 +37,15 @@ private:
 	VertexShader mPostProcessingVertexShader;
 	PixelShader mPostProcessingPixelShader;
 
+	// Shadow
+
+	using DepthMapConstantBuffer = JimmyGod::Graphics::TypedConstantBuffer<Math::Matrix4>;
+	using ShadowConstantBuffer = JimmyGod::Graphics::TypedConstantBuffer<Math::Matrix4>;
+	RenderTarget mDepthMapRenderTarget;
+	VertexShader mDepthVertexShader;
+	PixelShader mDepthPixelShader;
+	DepthMapConstantBuffer mDepthMapConstantBuffer;
+	ShadowConstantBuffer mShadowConstantBuffer;
 	struct TransformData
 	{
 		JimmyGod::Math::Matrix4 world;
@@ -49,7 +59,16 @@ private:
 		float specularWeight = 1.0f;
 		float bumpMapWeight = 10.0f;
 		float normalMapWeight = 1.0f;
+		float aoMapWeight = 1.0f;
+		float brightness = 1.0f;
+		float depthBias = 0.0003f;
+		int useShadow = 1;
 		float padding;
+	};
+
+	struct ShadowData
+	{
+		Matrix4 wvpLight;
 	};
 
 	using TransformBuffer = JimmyGod::Graphics::TypedConstantBuffer<TransformData>;
@@ -66,8 +85,6 @@ private:
 
 	DirectionalLight mDirectionalLight;
 	Material mMaterial;
-	
-	float mCloudRotation = 0.0f;
 
 	Mesh mGroundMesh;
 	MeshBuffer mGroundMeshBuffer;
@@ -75,6 +92,11 @@ private:
 	Mesh mTankMesh;
 	MeshBuffer mTankMeshBuffer;
 
+	Texture mTankSpecualr;
+	Texture mTankDiffuse;
+	Texture mTankNormal;
+	Texture mTankAoMap;
+	Texture mTankDisplacementMap;
 	Texture mGroundTexture;
 	Sampler mSampler;
 	Vector3 mRotation = 0.0f;
