@@ -10,16 +10,15 @@ void GameState::Initialize()
 
 	mTankPos = { 0.0f, 3.5f, 0.0f };
 
-	mDefaultCamera.SetPosition({ 0.0f,0.0f,-100.0f });
-	mDefaultCamera.SetDirection({ 0.0f,0.0f,1.0f });
-	mDefaultCamera.SetLookAt({ 0.0f,0.0f,0.0f });
+	mDefaultCamera.SetNearPlane(0.001f);
+	mDefaultCamera.SetPosition({ 0.0f, 5.0f, -20.0f });
+	mDefaultCamera.SetLookAt({ 0.0f, 0.0f, 0.0f });
 
-	mLightCamera.SetDirection(Normalize({1.0f,-1.0f,1.0f}));
+	mLightCamera.SetDirection(Normalize({ 1.0f, -1.0f, 1.0f }));
 	mLightCamera.SetNearPlane(1.0f);
 	mLightCamera.SetFarPlane(200.0f);
 	mLightCamera.SetFov(1.0f);
 	mLightCamera.SetAspectRatio(1.0f);
-	mLightCamera.SetPosition({ 15.0f,50.0f,10.0f });
 	mActiveCamera = &mDefaultCamera;
 
 	OBJLoader::Load("../../Assets/Models/Tank/tank.obj", 0.001f, mTankMesh);
@@ -33,17 +32,23 @@ void GameState::Initialize()
 	mMaterialBuffer.Initialize();
 
 	mDirectionalLight.direction = Normalize({ 1.0f, -1.0f, 1.0f });
-	mDirectionalLight.ambient = { 0.5f };
-	mDirectionalLight.diffuse = { 0.5f };
-	mDirectionalLight.specular = { 0.5f };
+	mDirectionalLight.ambient = { 0.8f, 0.8f, 0.8f, 1.0f };
+	mDirectionalLight.diffuse = { 0.75f, 0.75f, 0.75f, 1.0f };
+	mDirectionalLight.specular = { 0.5f, 0.5f, 0.5f, 1.0f };
 
-	mMaterial.ambient = { 0.5f };
-	mMaterial.diffuse = { 0.5f };
-	mMaterial.specular = { 0.5f };
-	mMaterial.power = { 1.0f };
-	mSettings.bumpMapWeight = { 10.0f };
+	mMaterial.ambient = { 0.8f, 0.8f, 0.8f, 1.0f };
+	mMaterial.diffuse = { 0.8f, 0.8f, 0.8f, 1.0f };
+	mMaterial.specular = { 0.5f, 0.5f, 0.5f, 1.0f };
+	mMaterial.power = { 40.0f };
+	mSettings.specularMapWeight = 1.0f;
+	mSettings.bumpMapWeight = 0.0f;
+	mSettings.normalMapWeight = 0.0f;
+	mSettings.aoMapWeight = 1.0f;
+	mSettings.brightness = 3.5f;
+	mSettings.useShadow = 1;
+	mSettings.depthBias = 0.0f;
 	mSettingsBuffer.Initialize();
-	mSampler.Initialize(Sampler::Filter::Anisotropic, Sampler::AddressMode::Clamp);
+	mSampler.Initialize(Sampler::Filter::Anisotropic, Sampler::AddressMode::Wrap);
 	mTankSpecualr.Initialize("../../Assets/Models/Tank/tank_specular.jpg");
 	mTankDiffuse.Initialize("../../Assets/Models/Tank/tank_diffuse.jpg");
 	mTankNormal.Initialize("../../Assets/Models/Tank/tank_normal.jpg");
@@ -55,13 +60,13 @@ void GameState::Initialize()
 	
 
 	constexpr uint32_t depthMapSize = 1024;
+	mDepthMapRenderTarget.Initialize(depthMapSize, depthMapSize, RenderTarget::Format::RGBA_U32);
 	mDepthVertexShader.Initialize("../../Assets/Shaders/DepthMap.fx",Vertex::Format);
 	mDepthPixelShader.Initialize("../../Assets/Shaders/DepthMap.fx");
 	mDepthMapConstantBuffer.Initialize();
 	
 	mShadowConstantBuffer.Initialize();
 
-	mDepthMapRenderTarget.Initialize(depthMapSize, depthMapSize, RenderTarget::Format::RGBA_U32);
 
 	auto graphicsSystem = GraphicsSystem::Get();
 
@@ -193,18 +198,18 @@ void GameState::DebugUI()
 	}
 	if (ImGui::CollapsingHeader("Settings", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		static bool specularMap = false;
-		static bool normalMap = false;
-		static bool aoMap = false;
-		static bool useShadow = false;
-		ImGui::SliderFloat("Displacement", &mSettings.bumpMapWeight, 0.0f, 100.0f);
+		static bool specularMap = mSettings.specularMapWeight > 0.0f;
+		static bool normalMap = mSettings.normalMapWeight > 0.0f;
+		static bool aoMap = mSettings.aoMapWeight > 0.0f;
+		static bool useShadow = mSettings.useShadow == 1;
+		ImGui::SliderFloat("Displacement", &mSettings.bumpMapWeight, 0.0f, 1.0f);
 		if (ImGui::Checkbox("Normal", &normalMap))
 		{
 			mSettings.normalMapWeight = normalMap ? 1.0f : 0.0f;
 		}
 		if (ImGui::Checkbox("Specular", &specularMap))
 		{
-			mSettings.specularWeight = specularMap ? 1.0f : 0.0f;
+			mSettings.specularMapWeight = specularMap ? 1.0f : 0.0f;
 		}
 		if (ImGui::Checkbox("Ambient Occlusion Map", &aoMap))
 		{
@@ -214,11 +219,12 @@ void GameState::DebugUI()
 		{
 			mSettings.useShadow = useShadow ? 1 : 0;
 		}
-		//ImGui::SliderFloat("Depth Bias", &mSettings.depthBias, 0.0f, 0.01f, "%.4f");
-		//ImGui::SliderFloat("Brightness", &mSettings.brightness, 1.0f, 10.0f);
+		ImGui::SliderFloat("Depth Bias", &mSettings.depthBias, 0.0f, 0.01f, "%.4f");
+		ImGui::SliderFloat("Brightness", &mSettings.brightness, 1.0f, 10.0f);
 	}
 	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
+		ImGui::DragFloat3("Translation##Transform", &mTankPos.x, 0.01f);
 		ImGui::DragFloat3("Rotation##Transform", &mTankRot.x, 0.01f);
 	}
 	ImGui::End();
@@ -230,23 +236,6 @@ void GameState::DrawScene()
 	auto matProj = mActiveCamera->GetPerspectiveMatrix();
 	auto matViewLight = mLightCamera.GetViewMatrix();
 	auto matProjLight = mLightCamera.GetPerspectiveMatrix();
-	auto matTrans = Matrix4::Translation({ 0.0f,0.0f,0.0f });
-	auto matRot = Matrix4::RotationX(mTankRot.x) * Matrix4::RotationY(mTankRot.y);
-	auto matWorld = matRot * matTrans;
-
-	TransformData transformData;
-	transformData.world = Transpose(matWorld);
-	transformData.wvp = Transpose(matWorld * matView * matProj);
-	transformData.viewPosition = mActiveCamera->GetPosition();
-
-	mTransformBuffer.Update(&transformData);
-	mTransformBuffer.BindVS(0);
-	mTransformBuffer.BindPS(0);
-
-
-	auto wvpLight = Transpose(matWorld * matViewLight * matProjLight);
-	mShadowConstantBuffer.Update(&wvpLight);
-	mShadowConstantBuffer.BindPS(4);
 
 	mLightBuffer.Update(&mDirectionalLight);
 	mLightBuffer.BindVS(1);
@@ -260,10 +249,8 @@ void GameState::DrawScene()
 	mSettingsBuffer.BindVS(3);
 	mSettingsBuffer.BindPS(3);
 
-	mSampler.BindPS();
 	mSampler.BindVS();
-	mVertexShader.Bind();
-	mPixelShader.Bind();
+	mSampler.BindPS();
 
 	mTankDiffuse.BindPS(0);
 	mTankSpecualr.BindPS(1);
@@ -271,8 +258,26 @@ void GameState::DrawScene()
 	mTankNormal.BindPS(3);
 	mTankAoMap.BindPS(4);
 	mDepthMapRenderTarget.BindPS(5);
-	mTankMeshBuffer.Draw();
 
+	auto matTrans = Matrix4::Translation(mTankPos);
+	auto matRot = Matrix4::RotationX(mTankRot.x) * Matrix4::RotationY(mTankRot.y);
+	auto matWorld = matRot * matTrans;
+
+	TransformData transformData;
+	transformData.world = Transpose(matWorld);
+	transformData.wvp = Transpose(matWorld * matView * matProj);
+	transformData.viewPosition = mActiveCamera->GetPosition();
+	mTransformBuffer.Update(&transformData);
+	mTransformBuffer.BindVS(0);
+
+	auto wvpLight = Transpose(matWorld * matViewLight * matProjLight);
+	mShadowConstantBuffer.Update(&wvpLight);
+	mShadowConstantBuffer.BindVS(4);
+
+	mVertexShader.Bind();
+	mPixelShader.Bind();
+
+	mTankMeshBuffer.Draw();
 
 	matWorld = Matrix4::Identity;
 	transformData.world = Transpose(matWorld);
@@ -281,19 +286,17 @@ void GameState::DrawScene()
 
 	wvpLight = Transpose(matWorld * matViewLight * matProjLight);
 	mShadowConstantBuffer.Update(&wvpLight);
-	mShadowConstantBuffer.BindPS(4);
+	mShadowConstantBuffer.BindVS(4);
 
 	mGroundTexture.BindPS(0);
 
 	SettingsData settings;
+	settings.specularMapWeight = 0.0f;
 	settings.bumpMapWeight = 0.0f;
 	settings.normalMapWeight = 0.0f;
-	settings.specularWeight = 0.0f;
 	settings.aoMapWeight = 0.0f;
 	settings.useShadow = 1;
 	mSettingsBuffer.Update(&settings);
-	mSettingsBuffer.BindPS(3);
-	mSettingsBuffer.BindVS(3);
 
 	mGroundMeshBuffer.Draw();
 

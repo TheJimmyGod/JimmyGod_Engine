@@ -393,18 +393,18 @@ Mesh MeshBuilder::CreatePlane(float size, int rows, int columns, bool isSpace)
 
 	const float offsetX = size * -0.5f;
 	const float offsetZ = size * -0.5f;
-	const float xStep = size / static_cast<float>(columns - 1);
-	const float zStep = size / static_cast<float>(rows - 1);
-	const float uStep = size / static_cast<float>(columns - 1);
-	const float vStep = size / static_cast<float>(rows - 1);
+	const float xStep = size / static_cast<float>(rows - 1);
+	const float zStep = size / static_cast<float>(columns - 1);
+	const float uStep = rows / static_cast<float>(rows - 1);
+	const float vStep = columns / static_cast<float>(columns - 1);
 
 
 	for (int z = 0; z < rows; ++z)
 	{
 		for (int x = 0; x < columns; ++x)
 		{
-			float xx = xStep * x + offsetX;
-			float zz = zStep * z + offsetZ;
+			float xx = (xStep * x) + offsetX;
+			float zz = (zStep * z) + offsetZ;
 			float y = -5.0f;
 
 			auto vec = Vector3{
@@ -413,7 +413,7 @@ Mesh MeshBuilder::CreatePlane(float size, int rows, int columns, bool isSpace)
 				zz
 			};
 
-			auto vec2 = Vector2{ x* uStep, z*vStep }; // Texture coordinate
+			auto vec2 = Vector2{ 1.0f - x* uStep, 1.0f - z*vStep }; // Texture coordinate
 			auto vecN = Vector3::YAxis; // Normal
 			auto vecT = Vector3::XAxis; // Tangent
 			mMesh.vertices.emplace_back(

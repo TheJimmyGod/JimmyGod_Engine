@@ -39,6 +39,7 @@ cbuffer SettingsBuffer : register(b3)
 	float aoMapWeight : packoffset(c0.w);
 	float brightness : packoffset(c1.x);
 	bool useShadow : packoffset(c1.y);
+	float depthBias : packoffset(c1.z);
 }
 
 cbuffer ShadowBuffer : register(b4)
@@ -122,11 +123,8 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
 	float specularIntensity = pow(specularBase, MaterialPower);
 	float4 specular = specularIntensity * LightSpecular * MaterialSpecular;
 
-
 	float4 textureColor = diffuseMap.Sample(textureSampler, input.texCoord);
-
 	float specularFactor = 1.0f;
-    
 	if(specularMapWeight > 0.0f)
 		specularFactor = specularMap.Sample(textureSampler, input.texCoord).r;
 
@@ -144,7 +142,7 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
 		if (saturate(shadowUV.x) == shadowUV.x && saturate(shadowUV.y) == shadowUV.y)
 		{
 			float savedDepth = depthMap.Sample(textureSampler, shadowUV).r;
-			if (savedDepth > actualDepth)
+			if (savedDepth > actualDepth + depthBias)
 				color = ambient * textureColor;
 		}
 	}
