@@ -128,10 +128,10 @@ namespace JimmyGod::Math
 	constexpr Vector3 TransformCoord(const Vector3& v, const Matrix4& m)
 	{
 		Vector3 mVecResult;
-
-		mVecResult.x = m._11*v.x + m._21*v.y + m._31*v.z + m._41;
-		mVecResult.y = m._12*v.x + m._22*v.y + m._32*v.z + m._42;
-		mVecResult.z = m._13*v.x + m._23*v.y + m._33*v.z + m._43;
+		const float w = (m._14*v.x) + (m._24*v.y) + (m._34*v.z) + (1.0f * m._44);
+		mVecResult.x = ((m._11*v.x) + (m._21*v.y) + (m._31*v.z) + (1.0f * m._41)) / w;
+		mVecResult.y = ((m._12*v.x) + (m._22*v.y) + (m._32*v.z) + (1.0f * m._42)) / w;
+		mVecResult.z = ((m._13*v.x) + (m._23*v.y) + (m._33*v.z) + (1.0f * m._43)) / w;
 
 		return mVecResult;
 	}

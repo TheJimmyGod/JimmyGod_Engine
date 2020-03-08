@@ -405,7 +405,7 @@ Mesh MeshBuilder::CreatePlane(float size, int rows, int columns, bool isSpace)
 		{
 			float xx = (xStep * x) + offsetX;
 			float zz = (zStep * z) + offsetZ;
-			float y = -5.0f;
+			float y = 0.0f;
 
 			auto vec = Vector3{
 				xx,

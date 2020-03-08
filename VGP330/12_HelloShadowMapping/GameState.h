@@ -2,11 +2,6 @@
 
 #include <JimmyGodEngine/Inc/JimmyGodEngine.h>
 
-using namespace JimmyGod;
-using namespace JimmyGod::Graphics;
-using namespace std;
-using namespace Math;
-
 class GameState : public JimmyGod::AppState
 {
 public:
@@ -18,34 +13,25 @@ public:
 	void DebugUI() override;
 
 private:
-	void DrawScene();
 	void DrawDepthMap();
+	void DrawScene();
 	void PostProcess();
+
 private:
-	Camera mDefaultCamera;
-	Camera mLightCamera;
-	Camera* mActiveCamera = nullptr;
+	JimmyGod::Graphics::Camera mDefaultCamera;
+	JimmyGod::Graphics::Camera mDebugCamera;
+	JimmyGod::Graphics::Camera mLightCamera;
+	JimmyGod::Graphics::Camera* mActiveCamera = nullptr;
 
-	VertexShader mVertexShader;
-	PixelShader mPixelShader;
+	JimmyGod::Math::Matrix4 mLightProjectMatrix;
+	std::vector<JimmyGod::Math::Vector3> mViewFrustumVertices;
 
-	BlendState mBlendState;
-	
-	MeshPX mNDCMesh;
-	RenderTarget mRenderTarget;
-	MeshBuffer mScreenQuadBuffer;
-	VertexShader mPostProcessingVertexShader;
-	PixelShader mPostProcessingPixelShader;
+	JimmyGod::Graphics::Mesh mTankMesh;
+	JimmyGod::Graphics::MeshBuffer mTankMeshBuffer;
 
-	// Shadow
+	JimmyGod::Graphics::Mesh mGroundMesh;
+	JimmyGod::Graphics::MeshBuffer mGroundMeshBuffer;
 
-	using DepthMapConstantBuffer = JimmyGod::Graphics::TypedConstantBuffer<Math::Matrix4>;
-	using ShadowConstantBuffer = JimmyGod::Graphics::TypedConstantBuffer<Math::Matrix4>;
-	RenderTarget mDepthMapRenderTarget;
-	VertexShader mDepthVertexShader;
-	PixelShader mDepthPixelShader;
-	DepthMapConstantBuffer mDepthMapConstantBuffer;
-	ShadowConstantBuffer mShadowConstantBuffer;
 	struct TransformData
 	{
 		JimmyGod::Math::Matrix4 world;
@@ -53,53 +39,72 @@ private:
 		JimmyGod::Math::Vector3 viewPosition;
 		float padding;
 	};
-
 	struct SettingsData
 	{
 		float specularMapWeight = 1.0f;
-		float bumpMapWeight = 10.0f;
+		float bumpMapWeight = 1.0f;
 		float normalMapWeight = 1.0f;
 		float aoMapWeight = 1.0f;
 		float brightness = 1.0f;
-		float depthBias = 0.0003f;
 		int useShadow = 1;
+		float depthBias = 0.0f;
 		float padding;
 	};
-
-	struct ShadowData
+	struct PostProcessSettingsData
 	{
-		Matrix4 wvpLight;
+		float screenWidth = 0.0f;
+		float screenHeight = 0.0f;
+		float time = 0.0f;
+		float padding;
 	};
 
 	using TransformBuffer = JimmyGod::Graphics::TypedConstantBuffer<TransformData>;
 	using LightBuffer = JimmyGod::Graphics::TypedConstantBuffer<JimmyGod::Graphics::DirectionalLight>;
 	using MaterialBuffer = JimmyGod::Graphics::TypedConstantBuffer<JimmyGod::Graphics::Material>;
 	using SettingsBuffer = JimmyGod::Graphics::TypedConstantBuffer<SettingsData>;
+	using PostProcessingSettingsBuffer = JimmyGod::Graphics::TypedConstantBuffer<PostProcessSettingsData>;
+	using DepthMapConstantBuffer = JimmyGod::Graphics::TypedConstantBuffer<JimmyGod::Math::Matrix4>;
+	using ShadowConstantBuffer = JimmyGod::Graphics::TypedConstantBuffer<JimmyGod::Math::Matrix4>;
 
-	TransformBuffer mTransformBuffer; 
-	LightBuffer mLightBuffer; 
+	TransformBuffer mTransformBuffer;
+	LightBuffer mLightBuffer;
 	MaterialBuffer mMaterialBuffer;
 	SettingsBuffer mSettingsBuffer;
+	PostProcessingSettingsBuffer mPostProcessingSettingsBuffer;
+
+	JimmyGod::Graphics::DirectionalLight mDirectionalLight;
+	JimmyGod::Graphics::Material mMaterial;
+
+	JimmyGod::Graphics::VertexShader mVertexShader;
+	JimmyGod::Graphics::PixelShader mPixelShader;
+
+	JimmyGod::Graphics::Sampler mSampler;
+	JimmyGod::Graphics::Texture mDiffuseMap;
+	JimmyGod::Graphics::Texture mSpecularMap;
+	JimmyGod::Graphics::Texture mDisplacementMap;
+	JimmyGod::Graphics::Texture mNormalMap;
+	JimmyGod::Graphics::Texture mAOMap;
+
+	JimmyGod::Graphics::Texture mGroundDiffuseMap;
+
+	std::vector<JimmyGod::Math::Vector3> mTankPositions;
+	JimmyGod::Math::Vector3 mTankRotation = 0.0f;
+	float mTankSpacing = 20.0f;
 
 	SettingsData mSettings;
 
-	DirectionalLight mDirectionalLight;
-	Material mMaterial;
+	// Shadow
+	JimmyGod::Graphics::RenderTarget mDepthMapRenderTarget;
+	JimmyGod::Graphics::VertexShader mDepthMapVertexShader;
+	JimmyGod::Graphics::PixelShader mDepthMapPixelShader;
+	DepthMapConstantBuffer mDepthMapConstantBuffer;
+	ShadowConstantBuffer mShadowConstantBuffer;
 
-	Mesh mGroundMesh;
-	MeshBuffer mGroundMeshBuffer;
-
-	Mesh mTankMesh;
-	MeshBuffer mTankMeshBuffer;
-
-	Texture mTankSpecualr;
-	Texture mTankDiffuse;
-	Texture mTankNormal;
-	Texture mTankAoMap;
-	Texture mTankDisplacementMap;
-	Texture mGroundTexture;
-	Sampler mSampler;
-	Vector3 mRotation = 0.0f;
-	Vector3 mTankRot = 0.0f;
-	Vector3 mTankPos = 0.0f;
+	// Post processing
+	JimmyGod::Graphics::RenderTarget mRenderTarget;
+	JimmyGod::Graphics::MeshPX mScreenQuad;
+	JimmyGod::Graphics::MeshBuffer mScreenQuadBuffer;
+	JimmyGod::Graphics::VertexShader mPostProcessingVertexShader;
+	JimmyGod::Graphics::PixelShader mPostProcessingPixelShader;
+	PostProcessSettingsData mPostProcessSettings;
 };

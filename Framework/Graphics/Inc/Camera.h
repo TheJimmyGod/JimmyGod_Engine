@@ -29,6 +29,8 @@ namespace JimmyGod::Graphics
 
 		Matrix4 GetViewMatrix() const;
 		Matrix4 GetPerspectiveMatrix() const;
+
+		Matrix4 GetOrthographioMatrix(float width, float height) const;
 	private:
 		Vector3 mPosition = Vector3::Zero;
 		Vector3 mDirection = Vector3::ZAxis;
