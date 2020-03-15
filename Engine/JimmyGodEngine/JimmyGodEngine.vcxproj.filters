@@ -7,11 +7,23 @@
     <Filter Include="Src">
       <UniqueIdentifier>{230eb62f-2eb1-4e47-ad18-d6c4bcef73f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Inc\App">
+      <UniqueIdentifier>{e9ce0718-1713-4543-8cdd-6fbdcdcd77b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inc\Terrain">
+      <UniqueIdentifier>{6e851077-ce00-43a5-b767-0fb54f9c21a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\App">
+      <UniqueIdentifier>{ac95f8c5-6e27-4c99-bf27-ffbe54ded84e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Terrain">
+      <UniqueIdentifier>{2ba8762f-5f83-4fb1-a112-fb0ea7aa4d69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Pch">
+      <UniqueIdentifier>{ca678006-4819-4e3d-9034-97e84fb8a617}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Src\Precompiled.h">
-      <Filter>Src</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Common.h">
       <Filter>Inc</Filter>
     </ClInclude>
@@ -19,21 +31,30 @@
       <Filter>Inc</Filter>
     </ClInclude>
     <ClInclude Include="Inc\App.h">
-      <Filter>Inc</Filter>
+      <Filter>Inc\App</Filter>
     </ClInclude>
     <ClInclude Include="Inc\AppState.h">
-      <Filter>Inc</Filter>
+      <Filter>Inc\App</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Terrain.h">
+      <Filter>Inc\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Precompiled.h">
+      <Filter>Src\Pch</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Src\Precompiled.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
     <ClCompile Include="Src\JimmyGodEngine.cpp">
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\App.cpp">
-      <Filter>Src</Filter>
+      <Filter>Src\App</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Terrain.cpp">
+      <Filter>Src\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Precompiled.cpp">
+      <Filter>Src\Pch</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

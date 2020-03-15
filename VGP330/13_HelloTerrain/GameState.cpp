@@ -15,7 +15,7 @@ namespace
 		Vector3 cameraRight = { defaultMatView._11, defaultMatView._21, defaultMatView._31 };
 		Vector3 cameraUp = { defaultMatView._12, defaultMatView._22, defaultMatView._32 };
 		Vector3 cameraLook = { defaultMatView._13, defaultMatView._23, defaultMatView._33 };
-		//SimpleDraw::AddSphere(cameraPosition, 0.1f, Colors::White, 6, 8);
+
 		SimpleDraw::AddLine(cameraPosition, cameraPosition + cameraRight, Colors::Red);
 		SimpleDraw::AddLine(cameraPosition, cameraPosition + cameraUp, Colors::Green);
 		SimpleDraw::AddLine(cameraPosition, cameraPosition + cameraLook, Colors::Blue);
@@ -83,7 +83,7 @@ void GameState::Initialize()
 	mNormalMap.Initialize("../../Assets/Models/Tank/tank_normal.jpg");
 	mAOMap.Initialize("../../Assets/Models/Tank/tank_ao.jpg");
 
-	mGroundDiffuseMap.Initialize("../../Assets/Textures/Ground.jpg");
+	mGroundDiffuseMap.Initialize("../../Assets/Textures/grass_2048.jpg");
 
 	auto graphicsSystem = GraphicsSystem::Get();
 
@@ -103,11 +103,16 @@ void GameState::Initialize()
 	mScreenQuadBuffer.Initialize(mScreenQuad);
 
 	mPostProcessingVertexShader.Initialize("../../Assets/Shaders/PostProcess.fx", VertexPX::Format);
-	mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSGaussian");
+	mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSNoProcessing");
+
+	mTerrain.Initialize(200, 200, 1.0f);
+	mTerrain.SetHeightScale(30.0f);
+	mTerrain.LoadHeightMap("../../Assets/HeightMaps/heightmap_200x200.raw");
 }
 
 void GameState::Terminate()
 {
+	mTerrain.Terminate();
 	mPostProcessingPixelShader.Terminate();
 	mPostProcessingVertexShader.Terminate();
 	mScreenQuadBuffer.Terminate();
@@ -451,6 +456,9 @@ void GameState::DrawScene()
 	mSettingsBuffer.Update(&settings);
 
 	mGroundMeshBuffer.Draw();
+
+	mTerrain.SetDirectionalLight(mDirectionalLight);
+	mTerrain.Render(*mActiveCamera);
 
 	SimpleDraw::AddLine(mViewFrustumVertices[0], mViewFrustumVertices[1], Colors::White);
 	SimpleDraw::AddLine(mViewFrustumVertices[1], mViewFrustumVertices[2], Colors::White);
