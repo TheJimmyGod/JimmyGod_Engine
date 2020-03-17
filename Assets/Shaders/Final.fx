@@ -1,4 +1,4 @@
-// Description: Standard shader for PCEngine.
+// Description: Refraction shader.
 
 cbuffer ConstantBuffer : register(b0)
 {
@@ -40,8 +40,8 @@ VS_OUTPUT VS(VS_INPUT input)
 	output.worldNormal = mul(input.normal,(float3x3)world);
 	output.worldTangent = mul(input.tangent,(float3x3)world);
 	output.dirToView = ViewPosition - mul(input.position.xyz, (float3x3)world);
-	output.texCoord = input.texCoord * 10.0f;
-
+	output.texCoord = input.texCoord;
+	
 	return output;
 }
 
@@ -50,13 +50,12 @@ float4 PS(VS_OUTPUT input) : SV_Target
 	float3 normal = normalize(input.worldNormal);
 	float3 dirToLight = normalize(-LightDirection.xyz);
 	float3 dirToView = normalize(input.dirToView);
-
+	
 	float4 ambient = LightAmbient;
-
-	float4 diffuse = LightDiffuse * saturate(dot(normal,dirToLight));
-
-	float4 textureColor = diffuseMap.Sample(textureSampler, input.texCoord);
+	normal *= 2.0f - 1.0f;
+	float4 diffuse = LightDiffuse * saturate(dot(normal, dirToLight));
+	float3 Refract = refract(dirToView, normal, 0.66f);
+	float4 textureColor = diffuseMap.Sample(textureSampler, Refract.xy);
 	float4 color = (ambient + diffuse) * textureColor;
-
 	return color;
 }

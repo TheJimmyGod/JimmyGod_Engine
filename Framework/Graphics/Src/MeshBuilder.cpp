@@ -445,45 +445,32 @@ Mesh MeshBuilder::CreatePlane(float size, int rows, int columns, bool isSpace)
 
 void MeshBuilder::ComputeNormals(Mesh& mesh)
 {
-	int size = mesh.indices.size();
-	Mesh mMesh = mesh;
+	int indexSize = mesh.indices.size();
+	int vertexSize = mesh.vertices.size();
+
 	std::vector<Math::Vector3> normals;
-	normals.reserve(size);
-	for (int i = 0; i < size - 1; i++)
+	normals.resize(vertexSize);
+	for (uint32_t i = 0; i < indexSize; i += 3)
 	{
-		auto tempCross = Cross(mesh.vertices[i].position, mesh.vertices[i + 1].position);
-		normals.push_back(tempCross);
+		uint32_t index_0 = mesh.indices[i + 0];
+		uint32_t index_1 = mesh.indices[i + 1];
+		uint32_t index_2 = mesh.indices[i + 2];
+
+		auto& vertex_0 = mesh.vertices[index_0];
+		auto& vertex_1 = mesh.vertices[index_1];
+		auto& vertex_2 = mesh.vertices[index_2];
+
+		Math::Vector3 diff_1 = vertex_1.position - vertex_0.position;
+		Math::Vector3 diff_2 = vertex_2.position - vertex_0.position;
+		auto tempCross = Math::Normalize(Cross(diff_1, diff_2));
+		normals[index_0] += tempCross;
+		normals[index_1] += tempCross;
+		normals[index_2] += tempCross;
 	}
-	int i = 0;
-	for (auto& normal : normals)
+	for (uint32_t i = 0; i < vertexSize; ++i)
 	{
-		mMesh.vertices[i].normal = normal;
-		i++;
+		mesh.vertices[i].normal = normals[i];
 	}
-
-	//std::vector<Math::Vector3> normals;
-	//normals.resize(mesh.GetVertexCount());
-
-	//for (uint32_t i = 0; i < mesh.GetIndexCount(); i += 3)
-	//{
-	//	uint32_t i0 = mesh.GetIndex(i + 0);
-	//	uint32_t i1 = mesh.GetIndex(i + 1);
-	//	uint32_t i2 = mesh.GetIndex(i + 2);
-	//	const auto& a = mesh.GetVertex(i0);
-	//	const auto& b = mesh.GetVertex(i1);
-	//	const auto& c = mesh.GetVertex(i2);
-	//	Math::Vector3 ab = b.position - a.position;
-	//	Math::Vector3 ac = c.position - a.position;
-	//	Math::Vector3 normal = Math::Normalize(Math::Cross(ab, ac));
-	//	normals[i0] += normal;
-	//	normals[i1] += normal;
-	//	normals[i2] += normal;
-	//}
-
-	//for (uint32_t i = 0; i < mesh.GetVertexCount(); ++i)
-	//{
-	//	mesh.GetVertex(i).normal = Math::Normalize(normals[i]);
-	//}
 }
 
 MeshPX MeshBuilder::CreateNDCQuad()

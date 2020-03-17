@@ -77,7 +77,7 @@ void GameState::Initialize()
 	mVertexShader.Initialize("../../Assets/Shaders/DoPhongShading.fx", Vertex::Format);
 	mPixelShader.Initialize("../../Assets/Shaders/DoPhongShading.fx");
 
-	mSampler.Initialize(Sampler::Filter::Anisotropic, Sampler::AddressMode::Wrap);
+	mSampler.Initialize(Sampler::Filter::Linear, Sampler::AddressMode::Clamp);
 	mDiffuseMap.Initialize("../../Assets/Models/Tank/tank_diffuse.jpg");
 	mSpecularMap.Initialize("../../Assets/Models/Tank/tank_specular.jpg");
 	mNormalMap.Initialize("../../Assets/Models/Tank/tank_normal.jpg");
