@@ -26,8 +26,8 @@ private:
 	JimmyGod::Math::Matrix4 mLightProjectMatrix;
 	std::vector<JimmyGod::Math::Vector3> mViewFrustumVertices;
 
-	JimmyGod::Graphics::Mesh mMesh;
-	JimmyGod::Graphics::MeshBuffer mGlassBuffer;
+	JimmyGod::Graphics::Mesh mTankMesh;
+	JimmyGod::Graphics::MeshBuffer mTankMeshBuffer;
 
 	JimmyGod::Graphics::Mesh mGroundMesh;
 	JimmyGod::Graphics::MeshBuffer mGroundMeshBuffer;
@@ -107,4 +107,7 @@ private:
 	JimmyGod::Graphics::VertexShader mPostProcessingVertexShader;
 	JimmyGod::Graphics::PixelShader mPostProcessingPixelShader;
 	PostProcessSettingsData mPostProcessSettings;
+
+
+	JimmyGod::Terrain mTerrain;
 };

@@ -17,7 +17,7 @@ void Terrain::Initialize(uint32_t numRows, uint32_t numCols, float cellSize)
 	mTerrainPixelShader.Initialize(L"../../Assets/Shaders/Final.fx");
 
 	mSampler.Initialize(Graphics::Sampler::Filter::Anisotropic, Graphics::Sampler::AddressMode::Wrap);
-	mGrassTexture.Initialize("../../Assets/Textures/grass_2048.jpg");
+	mGrassTexture.Initialize("../../Assets/Textures/Uranos.jpg");
 
 	GenerateIndices();
 	GenerateVertices();

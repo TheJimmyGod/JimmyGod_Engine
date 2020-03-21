@@ -120,10 +120,14 @@ float4 PS(VS_OUTPUT input) : SV_Target
 	float specularIntensity = pow(specularBase, MaterialPower);
 	float4 specular = specularIntensity * LightSpecular * MaterialSpecular;
 
-	float4 textureColor = diffuseMap.Sample(textureSampler, input.texCoord);
+	float3 Refract = refract(dirToView, normal, 0.66f);
+	float4 textureColor = diffuseMap.Sample(textureSampler, Refract.xy * input.texCoord.xy);
 	float specularFactor = 1.0f;
 	if (specularMapWeight > 0.0f)
 		specularFactor = specularMap.Sample(textureSampler, input.texCoord).r;
+
+	
+	//float4 color = (ambient + diffuse) * textureColor;
 
 	float4 color = (ambient + diffuse) * textureColor * brightness + specular * specularFactor;
 

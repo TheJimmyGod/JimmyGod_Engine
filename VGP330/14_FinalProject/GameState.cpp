@@ -15,7 +15,7 @@ namespace
 		Vector3 cameraRight = { defaultMatView._11, defaultMatView._21, defaultMatView._31 };
 		Vector3 cameraUp = { defaultMatView._12, defaultMatView._22, defaultMatView._32 };
 		Vector3 cameraLook = { defaultMatView._13, defaultMatView._23, defaultMatView._33 };
-		//SimpleDraw::AddSphere(cameraPosition, 0.1f, Colors::White, 6, 8);
+
 		SimpleDraw::AddLine(cameraPosition, cameraPosition + cameraRight, Colors::Red);
 		SimpleDraw::AddLine(cameraPosition, cameraPosition + cameraUp, Colors::Green);
 		SimpleDraw::AddLine(cameraPosition, cameraPosition + cameraLook, Colors::Blue);
@@ -44,8 +44,8 @@ void GameState::Initialize()
 
 	mActiveCamera = &mDefaultCamera;
 
-	OBJLoader::Load("../../Assets/Models/Tank/tank.obj", 0.001f, mMesh);
-	mGlassBuffer.Initialize(mMesh);
+	OBJLoader::Load("../../Assets/Models/Tank/tank.obj", 0.001f, mTankMesh);
+	mTankMeshBuffer.Initialize(mTankMesh);
 
 	mGroundMesh = MeshBuilder::CreatePlane(300.0f, 16, 16, false);
 	mGroundMeshBuffer.Initialize(mGroundMesh);
@@ -77,13 +77,13 @@ void GameState::Initialize()
 	mVertexShader.Initialize("../../Assets/Shaders/DoPhongShading.fx", Vertex::Format);
 	mPixelShader.Initialize("../../Assets/Shaders/DoPhongShading.fx");
 
-	mSampler.Initialize(Sampler::Filter::Anisotropic, Sampler::AddressMode::Wrap);
+	mSampler.Initialize(Sampler::Filter::Linear, Sampler::AddressMode::Clamp);
 	mDiffuseMap.Initialize("../../Assets/Models/Tank/tank_diffuse.jpg");
 	mSpecularMap.Initialize("../../Assets/Models/Tank/tank_specular.jpg");
 	mNormalMap.Initialize("../../Assets/Models/Tank/tank_normal.jpg");
 	mAOMap.Initialize("../../Assets/Models/Tank/tank_ao.jpg");
 
-	mGroundDiffuseMap.Initialize("../../Assets/Textures/Ground.jpg");
+	mGroundDiffuseMap.Initialize("../../Assets/Textures/Uranos.jpg");
 
 	auto graphicsSystem = GraphicsSystem::Get();
 
@@ -103,11 +103,16 @@ void GameState::Initialize()
 	mScreenQuadBuffer.Initialize(mScreenQuad);
 
 	mPostProcessingVertexShader.Initialize("../../Assets/Shaders/PostProcess.fx", VertexPX::Format);
-	mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSGaussian");
+	mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSRadialBlur");
+
+	mTerrain.Initialize(200, 200, 1.0f);
+	mTerrain.SetHeightScale(30.0f);
+	mTerrain.LoadHeightMap("../../Assets/HeightMaps/heightmap_200x200.raw");
 }
 
 void GameState::Terminate()
 {
+	mTerrain.Terminate();
 	mPostProcessingPixelShader.Terminate();
 	mPostProcessingVertexShader.Terminate();
 	mScreenQuadBuffer.Terminate();
@@ -132,7 +137,7 @@ void GameState::Terminate()
 	mLightBuffer.Terminate();
 	mTransformBuffer.Terminate();
 	mGroundMeshBuffer.Terminate();
-	mGlassBuffer.Terminate();
+	mTankMeshBuffer.Terminate();
 }
 
 void GameState::Update(float deltaTime)
@@ -172,7 +177,7 @@ void GameState::Update(float deltaTime)
 
 	mTankPositions.clear();
 
-	const int count = 5;
+	const int count = 2;
 	const float offsetX = (count - 1) * mTankSpacing * -0.5f;
 	const float offsetZ = (count - 1) * mTankSpacing * -0.5f;
 	for (int z = 0; z < count; ++z)
@@ -374,7 +379,7 @@ void GameState::DrawDepthMap()
 		auto matWorld = matRot * matTrans;
 		auto wvp = Transpose(matWorld * matViewLight * matProjLight);
 		mDepthMapConstantBuffer.Update(&wvp);
-		mGlassBuffer.Draw();
+		mTankMeshBuffer.Draw();
 	}
 }
 
@@ -428,7 +433,7 @@ void GameState::DrawScene()
 		auto wvpLight = Transpose(matWorld * matViewLight * matProjLight);
 		mShadowConstantBuffer.Update(&wvpLight);
 
-		mGlassBuffer.Draw();
+		mTankMeshBuffer.Draw();
 	}
 
 	auto matWorld = Matrix4::Identity;
@@ -451,6 +456,9 @@ void GameState::DrawScene()
 	mSettingsBuffer.Update(&settings);
 
 	mGroundMeshBuffer.Draw();
+
+	mTerrain.SetDirectionalLight(mDirectionalLight);
+	mTerrain.Render(*mActiveCamera);
 
 	SimpleDraw::AddLine(mViewFrustumVertices[0], mViewFrustumVertices[1], Colors::White);
 	SimpleDraw::AddLine(mViewFrustumVertices[1], mViewFrustumVertices[2], Colors::White);
