@@ -21,3 +21,7 @@
 #include "Texture.h"
 #include "VertexShader.h"
 #include "VertexTypes.h"
+
+#include "Animation.h"
+#include "AnimationBuilder.h"
+#include "KeyFrame.h"
