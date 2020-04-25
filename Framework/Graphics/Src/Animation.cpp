@@ -56,7 +56,7 @@ Quaternion Animation::GetRotation(float time) const
 		for (int i = 0; i < rotationSize; ++i)
 		{
 			currentKey = i;
-			if (mPositionKeys[i].time > time)
+			if (mRotationKeys[i].time > time)
 				break;
 		}
 		nextKey = (currentKey + 1) % rotationSize;
@@ -94,7 +94,7 @@ Vector3 Animation::GetScale(float time) const
 		for (int i = 0; i < scaleSize; ++i)
 		{
 			currentKey = i;
-			if (mPositionKeys[i].time > time)
+			if (mScaleKeys[i].time > time)
 				break;
 		}
 		nextKey = (currentKey + 1) % scaleSize;
@@ -118,5 +118,5 @@ Matrix4 Animation::GetTransform(float time) const
 
 	Matrix4 scaleVal = Matrix4::Translation(GetScale(time));
 
-	return translationVal * rotationVal * scaleVal;
+	return translationVal * scaleVal * rotationVal;
 }

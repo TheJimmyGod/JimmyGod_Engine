@@ -230,38 +230,80 @@ namespace JimmyGod::Math
 	//Spherical Linear Interpolations
 	inline Quaternion Slerp(Quaternion& from, Quaternion& to, float time)
 	{
-		/*
-		Reference:
-		https://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/index.htm
-		*/
-		// Only unit quaternions are valid rotations.
-		// Normalize to avoid undefined behavior.
-		/*from = Normalize(from);
-		to = Normalize(to);*/
-
-		// Compute the cosine of the angle between the two vectors.
+		const float Threshold = 0.9995f;
+		float n1;
+		float n2;
+		//Angle between quaternions
 		float angle = Dot(from, to);
+		bool negative = false;
 
 		// If the dot product is negative, slerp won't take
-		// the shorter path. Note that v1 and -v1 are equivalent when
-		// the negation is applied to all four components. Fix by 
-		// reversing one quaternion.
+		// the shorter path. Note that q0 and q1 are equivalent when
+		// the negation is applied to all four components. 
+		//Fix by negating one of them so *-1 if their dot product is < 0
 		if (angle < 0.0f)
 		{
-			to = -to;
+			negative = true;
 			angle = -angle;
 		}
-		else if (angle > 0.9995f)
+		if (angle > Threshold)
 		{
-			return Normalize(Lerp(from, to, time));
+			n2 = 1 - time;
+			n1 = negative ? -time : time;
 		}
+		else
+		{
+			float thetha = acosf(angle);
+			float inverseSinThetha = 1.0f / sinf(thetha);
+			n2 = sinf((1.0f - time) * thetha) * inverseSinThetha;
+			if (negative)
+			{
+				n1 = -sinf(time * thetha) * inverseSinThetha;
+			}
+			else
+			{
+				n1 = sinf(time * thetha) * inverseSinThetha;
+			}
+		}
+		Quaternion quaternion;
+		//Lerps xyz
+		quaternion.x = (n2 * from.x) + (n1 * to.x);
+		quaternion.y = (n2 * from.y) + (n1 * to.y);
+		quaternion.z = (n2 * from.z) + (n1 * to.z);
+		quaternion.w = (n2 * from.w) + (n1 * to.w);
+		return Normalize(quaternion);
+	}
 
-		// Since dot is in range [0, angleThreshold], acos is safe
-		const float theta = acosf(angle);        // theta_0 = angle between input vectors
-		const float inverseSinTheta = 1.0f / sinf(theta);
-		const float scale = sinf(theta * (1.0f - time)) * inverseSinTheta;
-		const float inverseScale = sinf(theta * time) * inverseSinTheta;
-		return (from * scale) + (to * inverseScale);
+	static Matrix4 RotationAxis(const Vector3& axis, float radian)
+	{
+		const Vector3 u = Normalize(axis);
+		const float x = u.x;
+		const float y = u.y;
+		const float z = u.z;
+		const float s = sinf(radian);
+		const float c = cosf(radian);
+
+		return {
+			c + (x * x * (1.0f - c)),
+			x * y * (1.0f - c) + z * s,
+			x * z * (1.0f - c) - y * s,
+			0.0f,
+
+			x * y * (1.0f - c) - z * s,
+			c + (y * y * (1.0f - c)),
+			y * z * (1.0f - c) + x * s,
+			0.0f,
+
+			x * z * (1.0f - c) + y * s,
+			y * z * (1.0f - c) - x * s,
+			c + (z * z * (1.0f - c)),
+			0.0f,
+
+			0.0f,
+			0.0f,
+			0.0f,
+			1.0f
+		};
 	}
 
 	inline Matrix4 RotationQuaternion(const Quaternion& q)
@@ -283,17 +325,12 @@ namespace JimmyGod::Math
 		return mat;
 	}
 
-	inline Quaternion RotationAxisAngle(const Vector3& v, float radian)
+	static Quaternion RotationAxisAngle(const Vector3& v, float radian)
 	{
-		Vector3 normal = Normalize(v);
-		Quaternion result;
-
-		result.w = cosf(radian / 2.0f);
-		result.x = normal.x * sinf(radian / 2.0f);
-		result.y = normal.y * sinf(radian / 2.0f);
-		result.z = normal.z * sinf(radian / 2.0f);
-
-		return result;
+		const float halfAngle = radian * 0.5f;
+		const float s = sinf(halfAngle);
+		const Vector3 normalize = Normalize(v);
+		return { normalize.x * s, normalize.y * s, normalize.z * s, cosf(halfAngle) };
 	}
 
 	inline Quaternion RotationMatrix(const Matrix4& m)

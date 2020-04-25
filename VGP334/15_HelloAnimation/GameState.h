@@ -20,6 +20,7 @@ private:
 private:
 
 	JimmyGod::Graphics::AnimationBulider mAnimationBuilder;
+	JimmyGod::Graphics::Animation mAnimaion;
 	float mAnimationTimer = 0.0f;
 
 	JimmyGod::Graphics::Camera mDefaultCamera;

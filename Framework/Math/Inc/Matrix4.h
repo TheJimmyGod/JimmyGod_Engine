@@ -5,11 +5,19 @@ namespace JimmyGod::Math
 	struct Matrix4
 	{
 		// row + column subscript
-		float _11, _12, _13, _14;
-		float _21, _22, _23, _24;
-		float _31, _32, _33, _34;
-		float _41, _42, _43, _44;
+		union
+		{
+			struct
+			{
+				// row + column subscript
+				float _11, _12, _13, _14;
+				float _21, _22, _23, _24;
+				float _31, _32, _33, _34;
+				float _41, _42, _43, _44;
+				//std::array<float, 16>v;
+			};
 
+		};
 		const static Matrix4 Identity;
 
 		constexpr Matrix4 operator+(const Matrix4& m) const
