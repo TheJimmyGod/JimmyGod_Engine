@@ -1,9 +1,12 @@
 #pragma once
 
+
 #include "Vector3.h"
 
 namespace JimmyGod::Math
 {
+	struct Matrix4;
+
 	struct Quaternion
 	{
 		float x, y, z, w;
@@ -11,8 +14,14 @@ namespace JimmyGod::Math
 		const static Quaternion Identity;
 		const static Quaternion Zero;
 
-		constexpr Quaternion() noexcept : Quaternion{ 0.0f } {}
-		constexpr Quaternion(float f) noexcept : Quaternion{ f,f,f,f } {}
+		static Quaternion RotationAxis(const Vector3& v, float radian);
+		static Quaternion RotationMatrix(const Matrix4& m);
+		static Quaternion RotationLook(const Vector3& v);
+		static Quaternion RotationFromTo(Vector3 from, Vector3 to);
+
+
+		constexpr Quaternion() noexcept : Quaternion{ 0.0f,0.0f,0.0f,1.0f } {}
+		//constexpr Quaternion(float f) noexcept : Quaternion{ f,f,f,f } {}
 		constexpr Quaternion(float x, float y, float z, float w) noexcept : x{ x }, y{ y }, z{ z }, w{ w }{}
 
 		constexpr Quaternion operator-() const { return{ -x,-y,-z,-w }; }
@@ -92,21 +101,6 @@ namespace JimmyGod::Math
 			}
 		}
 
-		constexpr Quaternion operator== (const Quaternion& q) const
-		{
-			return (x == q.x &&
-				y == q.y &&
-				z == q.z &&
-				w == q.w);
-		}
-
-		constexpr Quaternion operator!= (const Quaternion& q) const
-		{
-			return !(x == q.x &&
-				y == q.y &&
-				z == q.z &&
-				w == q.w);
-		}
 
 		constexpr Quaternion operator*= (Quaternion& q) const
 		{
@@ -138,6 +132,8 @@ namespace JimmyGod::Math
 			y += q.y;
 			z += q.z;
 			w += q.w;
+
+			return *this;
 		}
 
 		Quaternion& operator-= (const Quaternion& q)
@@ -146,6 +142,8 @@ namespace JimmyGod::Math
 			y -= q.y;
 			z -= q.z;
 			w -= q.w;
+
+			return *this;
 		}
 	};
 }

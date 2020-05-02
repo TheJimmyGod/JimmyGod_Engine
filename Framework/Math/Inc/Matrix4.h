@@ -1,7 +1,10 @@
 #pragma once
+#include "Quaternion.h"
 
 namespace JimmyGod::Math 
 {
+	struct Quaternion;
+
 	struct Matrix4
 	{
 		// row + column subscript
@@ -14,11 +17,14 @@ namespace JimmyGod::Math
 				float _21, _22, _23, _24;
 				float _31, _32, _33, _34;
 				float _41, _42, _43, _44;
-				//std::array<float, 16>v;
-			};
 
+			};
+			std::array<float, 16>v;
 		};
 		const static Matrix4 Identity;
+
+		static Matrix4 RotationAxis(const Vector3& axis, float radian);
+		static Matrix4 RotationQuaternion(const Quaternion& q);
 
 		constexpr Matrix4 operator+(const Matrix4& m) const
 		{
@@ -133,21 +139,7 @@ namespace JimmyGod::Math
 			mResult._41 = 0.0f; mResult._42 = 0.0f; mResult._43 = 0.0f; mResult._44 = 1.0f;
 			return mResult;
 		}
-		static Matrix4 RotationAxis(const Vector3& axis, float radian)
-		{
-			float cos = cosf(radian);
-			float sin = sinf(radian);
-			float wx = axis.x;
-			float wy = axis.y;
-			float wz = axis.z;
 
-			return{
-				cos + wx*wx*(1-cos), wz*sin+wx*wy*(1-cos),-wy*sin*wx*wz*(1-cos),0.0f,
-				wx*wy*(1-cos)-wz *sin, cos+wy*wy*(1-cos),wx*sin+wy*wz*(1-cos),0.0f,
-				wy*sin+wx*wz*(1-cos),-wx*sin+wy*wz*(1-cos),cos+wz*wz*(1-cos),0.0f,
-				0.0f,0.0f,0.0f,1.0f
-			};
-		}
 		static Matrix4 Scaling(float scale)
 		{
 			Matrix4 mResult;

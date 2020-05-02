@@ -110,10 +110,10 @@ void GameState::Initialize()
 	mTerrain.LoadHeightMap("../../Assets/HeightMaps/heightmap_200x200.raw");
 
 	mAnimationBuilder.
-		AddPositionKey({ Vector3::Zero }, 0.0f).
-		AddRotationKey(Quaternion::Identity, 0.0f).
-		AddPositionKey({ 0.0f,3.0f,0.0f }, 1.0f).
-		AddRotationKey(RotationAxisAngle(Vector3(-1.0f, 1.0f, -1.0f), 90.0f), 2.0f);
+		AddPositionKey({ Vector3::Zero}, 0.0f).
+		AddRotationKey(Quaternion::RotationAxis({ 1.0f,1.0f,1.0f },1.0f), 0.0f).
+		AddRotationKey(Quaternion::RotationAxis(Vector3(0.5f, 1.0f, 1.0f), 1.0f), 2.0f).
+		AddPositionKey({ 1.0f,5.0f,1.0f }, 2.0f);
 }
 
 void GameState::Terminate()

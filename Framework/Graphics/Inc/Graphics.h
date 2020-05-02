@@ -25,3 +25,6 @@
 #include "Animation.h"
 #include "AnimationBuilder.h"
 #include "KeyFrame.h"
+
+#include "Model.h"
+#include "MeshIO.h"

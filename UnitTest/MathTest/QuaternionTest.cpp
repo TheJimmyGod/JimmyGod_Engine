@@ -99,7 +99,7 @@ namespace MathTest
 
 		TEST_METHOD(TestFromAxisAngle)
 		{
-			Quaternion q0 = RotationAxisAngle({ 1.0f, -1.0f, 2.0f }, 1.5f);
+			Quaternion q0 = Quaternion::RotationAxis({ 1.0f, -1.0f, 2.0f }, 1.5f);
 
 			Assert::AreEqual(q0.x, 0.2782779f, 0.000001f);
 			Assert::AreEqual(q0.y, -0.2782779f, 0.000001f);
@@ -109,10 +109,10 @@ namespace MathTest
 
 		TEST_METHOD(TestFromMatrix)
 		{
-			Quaternion qx = RotationMatrix(Matrix4::RotationX(0.72f));
-			Quaternion qy = RotationMatrix(Matrix4::RotationY(0.84f));
-			Quaternion qz = RotationMatrix(Matrix4::RotationZ(0.96f));
-			Quaternion qa = RotationMatrix(RotationAxis({ 3.0f, -2.0f, 1.0f }, 0.44f));
+			Quaternion qx = Quaternion::RotationMatrix(Matrix4::RotationX(0.72f));
+			Quaternion qy = Quaternion::RotationMatrix(Matrix4::RotationY(0.84f));
+			Quaternion qz = Quaternion::RotationMatrix(Matrix4::RotationZ(0.96f));
+			Quaternion qa = Quaternion::RotationMatrix(Matrix4::RotationAxis({ 3.0f, -2.0f, 1.0f }, 0.44f));
 
 			Assert::AreEqual(qx.x, 0.3522742f, 0.000001f);
 			Assert::AreEqual(qx.y, 0.0f, 0.000001f);
@@ -137,7 +137,7 @@ namespace MathTest
 
 		TEST_METHOD(TestFromLook)
 		{
-			Quaternion q0 = RotationLook({ 1.0f, 1.0f, 1.0f });
+			Quaternion q0 = Quaternion::RotationLook({ 1.0f, 1.0f, 1.0f });
 
 			Assert::AreEqual(q0.x, -0.279848129f, 0.000001f);
 			Assert::AreEqual(q0.y, 0.364705175f, 0.000001f);
@@ -147,7 +147,7 @@ namespace MathTest
 
 		TEST_METHOD(TestFromFromTo)
 		{
-			Quaternion q0 = RotationFromTo({ 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f, 1.0f });
+			Quaternion q0 = Quaternion::RotationFromTo({ 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f, 1.0f });
 
 			Assert::AreEqual(q0.x, -0.325057596f, 0.000001f);
 			Assert::AreEqual(q0.y, 0.325057596f, 0.000001f);
@@ -155,16 +155,16 @@ namespace MathTest
 			Assert::AreEqual(q0.w, 0.888073862f, 0.000001f);
 		}
 
-		//TEST_METHOD(TestToMatrix)
-		//{
-		//	Vector3 axis{ -1.0f, 1.0f, 1.0f };
-		//	float angle = 0.45f;
-		//	Matrix4 m0 = RotationQuaternion(RotationAxisAngle(axis, angle));
-		//	Matrix4 m1 = Matrix4::RotationAxis(axis, angle);
+		TEST_METHOD(TestToMatrix)
+		{
+			Vector3 axis{ -1.0f, 1.0f, 1.0f };
+			float angle = 0.45f;
+			Matrix4 m0 = Matrix4::RotationQuaternion(Quaternion::RotationAxis(axis, angle));
+			Matrix4 m1 = Matrix4::RotationAxis(axis, angle);
 
-		//	for (size_t i = 0; i < std::size(m0.v); ++i)
-		//		Assert::AreEqual(m0.v[i], m1.v[i], 0.000001f);
-		//}
+			for (size_t i = 0; i < std::size(m0.v); ++i)
+				Assert::AreEqual(m0.v[i], m1.v[i], 0.000001f);
+		}
 
 		TEST_METHOD(TestMagitude)
 		{
@@ -186,8 +186,8 @@ namespace MathTest
 
 		TEST_METHOD(TestSlerp)
 		{
-			Quaternion q0 = RotationAxisAngle({ 1.0f, 2.0f, 3.0f }, 4.0f);
-			Quaternion q1 = RotationAxisAngle({ 1.0f, -1.0f, 2.0f }, -2.0f);
+			Quaternion q0 = Quaternion::RotationAxis({ 1.0f, 2.0f, 3.0f }, 4.0f);
+			Quaternion q1 = Quaternion::RotationAxis({ 1.0f, -1.0f, 2.0f }, -2.0f);
 			Quaternion q2 = Slerp(q0, q1, 0.47f);
 
 			Assert::AreEqual(q2.x, 0.320419908f, 0.000001f);
