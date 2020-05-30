@@ -10,6 +10,8 @@ namespace JimmyGod::Graphics
 	constexpr uint32_t VE_Tangent	= 0x1 << 2;		// 0000 0100
 	constexpr uint32_t VE_Color		= 0x1 << 3;		// 0000 1000
 	constexpr uint32_t VE_TexCoord	= 0x1 << 4;		// 0001 0000
+	constexpr uint32_t VE_BlendIndex = 0x1 << 5;	// 0010 0000
+	constexpr uint32_t VE_BlendWeight = 0x1 << 6;	// 0100	0000
 
 #define VERTEX_FORMAT(fmt)\
 	static constexpr uint32_t Format = fmt
@@ -43,5 +45,16 @@ namespace JimmyGod::Graphics
 		Math::Vector3 normal;
 		Math::Vector3 tangent;
 		Math::Vector2 texcoord;
+	};
+
+	struct BoneVertex
+	{
+		VERTEX_FORMAT(VE_Position | VE_Normal | VE_Tangent | VE_TexCoord | VE_BlendIndex | VE_BlendWeight);
+		Math::Vector3 position;
+		Math::Vector3 normal;
+		Math::Vector3 tangent;
+		Math::Vector2 texCoord;
+		int boneIndices[4] = { 0 };
+		float boneWeights[4] = { 0.0f };
 	};
 }

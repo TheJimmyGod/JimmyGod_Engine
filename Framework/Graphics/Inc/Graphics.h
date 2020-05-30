@@ -24,7 +24,13 @@
 
 #include "Animation.h"
 #include "AnimationBuilder.h"
+#include "AnimationClip.h"
+#include "AnimationIO.h"
 #include "KeyFrame.h"
 
 #include "Model.h"
 #include "MeshIO.h"
+
+#include "Bone.h"
+#include "Skeleton.h"
+#include "SkeletonIO.h"

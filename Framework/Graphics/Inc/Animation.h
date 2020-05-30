@@ -13,23 +13,31 @@ namespace JimmyGod::Graphics
 		//std::tuple<Math::Vector3, Math::Quaternion, Math::Vector3> GetTransform(float time) const;
 
 		float GetWrappedTime(float time) const;
-		float GetDuration() const;
+		float GetDuration() const
+		{
+			return mTime;
+		}
 
 		void SetLooping(bool looping) { mLooping = looping; }
 		bool IsLooping() const { return mLooping; }
 
 		Math::Matrix4 GetTransform(float time) const;
+		std::vector<float> mTimes;
+
+
 
 	private:
 		friend class AnimationBulider;
-
-		KeyFrames<float> mKeyFrames;
+		friend class AnimationIO;
 
 		PositionsKeys mPositionKeys;
 		RotationKeys mRotationKeys;
 		ScaleKeys mScaleKeys;
 
+		KeyFrames<float> mKeyFrames;
+
 		bool mLooping = false;
+		float mTime = 0.0f;
 	};
 	using Animations = std::vector<std::unique_ptr<Animation>>;
 

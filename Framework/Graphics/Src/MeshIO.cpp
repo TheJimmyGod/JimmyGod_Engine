@@ -5,100 +5,77 @@ using namespace JimmyGod;
 using namespace JimmyGod::Math;
 using namespace JimmyGod::Graphics;
 
-void MeshIO::Write(FILE * file, const Mesh & mesh)
+void MeshIO::Write(FILE * file, const SkinnedMesh & mesh)
 {
-	const uint32_t size = mesh.vertices.size();
-	fprintf_s(file, "%d vertices\n", &size);
-
-
-	if ((mesh.vertices[0].position.x ||
-		mesh.vertices[0].position.y ||
-		mesh.vertices[0].position.z) != 0.0f)
+	const uint32_t size = static_cast<uint32_t>(mesh.vertices.size());
+	fprintf_s(file, "VertexCount: %d\n", size);
+	for (auto& vertex : mesh.vertices)
 	{
-		for (uint32_t i = 0; i < size; i++)
-		{
-			fprintf_s(file, "v %f %f %f\n", mesh.vertices[i].position.x, mesh.vertices[i].position.y, mesh.vertices[i].position.z);
-		}
+		fprintf(file, "%f %f %f %f %f %f %f %f %f %f %f %d %d %d %d %f %f %f %f\n",
+			vertex.position.x, vertex.position.y, vertex.position.z,
+			vertex.normal.x, vertex.normal.y, vertex.normal.z,
+			vertex.tangent.x, vertex.tangent.y, vertex.tangent.z,
+			vertex.texCoord.x, vertex.texCoord.y,
+			vertex.boneIndices[0], vertex.boneIndices[1], vertex.boneIndices[2], vertex.boneIndices[3],
+			vertex.boneWeights[0], vertex.boneWeights[1], vertex.boneWeights[2], vertex.boneWeights[3]);
 	}
-
-	if ((mesh.vertices[0].normal.x ||
-		mesh.vertices[0].normal.y ||
-		mesh.vertices[0].normal.z) != 0.0f)
+	
+	const uint32_t indicesSize = static_cast<uint32_t>(mesh.indices.size());
+	fprintf_s(file, "IndexCount: %d\n", indicesSize);
+	for (uint32_t i = 0; i < indicesSize; i += 3)
 	{
-		for (uint32_t i = 0; i < size; i++)
-		{
-			fprintf_s(file, "vn %f %f %f\n", mesh.vertices[i].normal.x, mesh.vertices[i].normal.y, mesh.vertices[i].normal.z);
-		}
-	}
-
-	if ((mesh.vertices[0].tangent.x ||
-		mesh.vertices[0].tangent.y ||
-		mesh.vertices[0].tangent.z) != 0.0f)
-	{
-		for (uint32_t i = 0; i < size; i++)
-		{
-			fprintf_s(file, "t %f %f %f\n", mesh.vertices[i].tangent.x, mesh.vertices[i].tangent.y, mesh.vertices[i].tangent.z);
-		}
-	}
-
-	if ((mesh.vertices[0].texcoord.x ||
-		mesh.vertices[0].texcoord.y ) != 0.0f)
-	{
-		for (uint32_t i = 0; i < size; i++)
-		{
-			fprintf_s(file, "vt %f %f %f\n", mesh.vertices[i].texcoord.x, mesh.vertices[i].texcoord.y, nullptr);
-		}
-	}
-
-	fprintf_s(file, "%d indices\n", mesh.indices.size());
-	for (uint32_t i = 0; i + 2 < mesh.indices.size(); ++i)
-	{
-		fprintf_s(file, "f %d/%d/%d\n", mesh.indices[i], mesh.indices[i + 1], mesh.indices[i + 2]);
+		fprintf_s(file, "%i %i %i\n",
+			mesh.indices[i + 0],
+			mesh.indices[i + 1],
+			mesh.indices[i + 2]);
 	}
 }
 
-void MeshIO::Read(FILE * file, Mesh & mesh)
+void MeshIO::Write(FILE * file, Material & material)
 {
-	Vector3 vertex;
-	Vector3 normal;
-	Vector2 coord;
+	fprintf_s(file, "%f %f %f %f %f %f %f %f %f %f %f %f %f\n",
+		material.ambient.x, material.ambient.y, material.ambient.z, material.ambient.w,
+		material.diffuse.x, material.diffuse.y, material.diffuse.z, material.diffuse.w,
+		material.specular.x, material.specular.y, material.specular.z, material.specular.w,
+		material.power);
+}
+
+void MeshIO::Read(FILE * file, SkinnedMesh & mesh)
+{
 	uint32_t numVertices = 0;
-	uint32_t numNormal = 0;
-	uint32_t numCoord = 0;
-
-	fscanf_s(file, "%d vertices\n", &numVertices);
-	fscanf_s(file, "%d vertex normals\n", &numNormal);
-	fscanf_s(file, "%d texture coords\n", &numCoord);
-
+	fscanf_s(file, "VertexCount: %d\n", &numVertices);
 	mesh.vertices.resize(numVertices);
-
-	for (uint32_t i = 0; i < numVertices; i++)
+	for (auto& v : mesh.vertices)
 	{
-		fscanf_s(file, "v %f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
-		mesh.vertices[i].position = vertex;
+		fscanf_s(file, "%f %f %f %f %f %f %f %f %f %f %f %d %d %d %d %f %f %f %f\n",
+			&v.position.x, &v.position.y, &v.position.z,
+			&v.normal.x, &v.normal.y, &v.normal.z,
+			&v.tangent.x, &v.tangent.y, &v.tangent.z,
+			&v.texCoord.x, &v.texCoord.y,
+			&v.boneIndices[0], &v.boneIndices[1], &v.boneIndices[2], &v.boneIndices[3],
+			&v.boneWeights[0], &v.boneWeights[1], &v.boneWeights[2], &v.boneWeights[3]);
 	}
 
-	for (uint32_t i = 0; i < numNormal; i++)
-	{
-		fscanf_s(file, "vn %f %f %f\n", &normal.x, &normal.y, &normal.z);
-		mesh.vertices[i].normal = normal;
-	}
+	uint32_t numIndices = 0;
+	fscanf_s(file, "IndexCount: %d\n", &numIndices);
+	mesh.indices.resize(numIndices);
 
-	for (uint32_t i = 0; i < numCoord; i++)
-	{
-		fscanf_s(file, "vt %f %f %f\n", &coord.x, &coord.y);
-		mesh.vertices[i].texcoord = coord;
-	}
-
-	for (uint32_t i = 0; i + 2 < mesh.indices.size(); i += 3)
+	for (uint32_t i = 0; i < numIndices; i += 3)
 	{
 		uint32_t a, b, c;
-		fscanf_s(file, "f %d/%d/%d\n", &a, &b, &c);
-		mesh.indices[i] = a;
+		fscanf_s(file, "%i %i %i\n", &a, &b, &c);
+		mesh.indices[i + 0] = a;
 		mesh.indices[i + 1] = b;
 		mesh.indices[i + 2] = c;
 	}
+}
 
-
-	fclose(file);
+void MeshIO::Read(FILE * file, Material & material)
+{
+	
+	fscanf_s(file, "%f %f %f %f %f %f %f %f %f %f %f %f %f\n",
+		&material.ambient.x, &material.ambient.y, &material.ambient.z, &material.ambient.w,
+		&material.diffuse.x, &material.diffuse.y, &material.diffuse.z, &material.diffuse.w,
+		&material.specular.x, &material.specular.y, &material.specular.z, &material.specular.w,
+		&material.power);
 }

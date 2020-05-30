@@ -8,7 +8,9 @@
 #include "MeshBuffer.h"
 #include "VertexTypes.h"
 #include "GraphicsSystem.h"
+
 using namespace JimmyGod;
+using namespace JimmyGod::Math;
 using namespace JimmyGod::Graphics;
 using namespace std;
 namespace
@@ -41,6 +43,57 @@ namespace
 			{
 				mLineVertices[mVertexCount++] = VertexPC{ v0,color };
 				mLineVertices[mVertexCount++] = VertexPC{ v1,color };
+			}
+		}
+
+		void AddAABB(const Math::Vector3& center, float radius, const Color& color)
+		{
+			// Check if we have enough space
+			if (mVertexCount + 24 <= mMaxVertexCount)
+			{
+				float minX = center.x - radius;
+				float minY = center.y - radius;
+				float minZ = center.z - radius;
+				float maxX = center.x + radius;
+				float maxY = center.y + radius;
+				float maxZ = center.z + radius;
+				
+				// Add lines
+				mLineVertices[mVertexCount++] = { Math::Vector3(minX, minY, minZ), color };
+				mLineVertices[mVertexCount++] = { Math::Vector3(minX, minY, maxZ), color };
+
+				mLineVertices[mVertexCount++] = { Math::Vector3(minX, minY, maxZ), color };
+				mLineVertices[mVertexCount++] = { Math::Vector3(maxX, minY, maxZ), color };
+
+				mLineVertices[mVertexCount++] = { Math::Vector3(maxX, minY, maxZ), color };
+				mLineVertices[mVertexCount++] = { Math::Vector3(maxX, minY, minZ), color };
+
+				mLineVertices[mVertexCount++] = { Math::Vector3(maxX, minY, minZ), color };
+				mLineVertices[mVertexCount++] = { Math::Vector3(minX, minY, minZ), color };
+
+				mLineVertices[mVertexCount++] = { Math::Vector3(minX, minY, minZ), color };
+				mLineVertices[mVertexCount++] = { Math::Vector3(minX, maxY, minZ), color };
+
+				mLineVertices[mVertexCount++] = { Math::Vector3(minX, minY, maxZ), color };
+				mLineVertices[mVertexCount++] = { Math::Vector3(minX, maxY, maxZ), color };
+
+				mLineVertices[mVertexCount++] = { Math::Vector3(maxX, minY, maxZ), color };
+				mLineVertices[mVertexCount++] = { Math::Vector3(maxX, maxY, maxZ), color };
+
+				mLineVertices[mVertexCount++] = { Math::Vector3(maxX, minY, minZ), color };
+				mLineVertices[mVertexCount++] = { Math::Vector3(maxX, maxY, minZ), color };
+
+				mLineVertices[mVertexCount++] = { Math::Vector3(minX, maxY, minZ), color };
+				mLineVertices[mVertexCount++] = { Math::Vector3(minX, maxY, maxZ), color };
+
+				mLineVertices[mVertexCount++] = { Math::Vector3(minX, maxY, maxZ), color };
+				mLineVertices[mVertexCount++] = { Math::Vector3(maxX, maxY, maxZ), color };
+
+				mLineVertices[mVertexCount++] = { Math::Vector3(maxX, maxY, maxZ), color };
+				mLineVertices[mVertexCount++] = { Math::Vector3(maxX, maxY, minZ), color };
+
+				mLineVertices[mVertexCount++] = { Math::Vector3(maxX, maxY, minZ), color };
+				mLineVertices[mVertexCount++] = { Math::Vector3(minX, maxY, minZ), color };
 			}
 		}
 
@@ -77,22 +130,62 @@ namespace
 			AddLine(Vector3{ -Length,-Length,Length }, Vector3{ -Length,Length,Length }, color);
 		}
 
-		void AddSphere(float radius, int rings, int slices, const Color & color)
+		void AddSphere(const Math::Vector3& sphere, float radius, const Color & color, uint32_t rings, uint32_t slices)
 		{
+			float x = sphere.x;
+			float y = sphere.y;
+			float z = sphere.z;
+
+			//if (x == y == z == 0)
+			//{
+			//	return;
+			//}
+
 			float r = radius;
-			for (float phi = 0; phi < Constants::Pi; phi += (Constants::Pi) / (rings))
+			const uint32_t kLines = (4 * slices * rings) - (2 * slices);
+			// Check if we have enough space
+			if (mVertexCount + kLines <= mMaxVertexCount)
 			{
-				for (float theta = 0; theta < Constants::TwoPi; theta += (Constants::TwoPi) / (slices))
+				// Add lines
+				const float kTheta = Constants::Pi / (float)rings;
+				const float kPhi = Constants::TwoPi / (float)slices;
+				for (uint32_t j = 0; j < slices; ++j)
 				{
-					auto vec = Vector3{
-								sinf(phi)*cosf(theta)*r,
-								cosf(phi)*r,
-								sinf(theta) * sinf(phi) *r
-					};
+					for (uint32_t i = 0; i < rings; ++i)
+					{
+						const float a = i * kTheta;
+						const float b = a + kTheta;
+						const float ay = radius * cos(a);
+						const float by = radius * cos(b);
 
-					mLineVertices[mVertexCount++] = VertexPC{ vec,color };
+						const float theta = j * kPhi;
+						const float phi = theta + kPhi;
+
+						const float ar = sqrt(radius * radius - ay * ay);
+						const float br = sqrt(radius * radius - by * by);
+
+						const float x0 = x + (ar * sin(theta));
+						const float y0 = y + (ay);
+						const float z0 = z + (ar * cos(theta));
+
+						const float x1 = x + (br * sin(theta));
+						const float y1 = y + (by);
+						const float z1 = z + (br * cos(theta));
+
+						const float x2 = x + (br * sin(phi));
+						const float y2 = y + (by);
+						const float z2 = z + (br * cos(phi));
+
+						mLineVertices[mVertexCount++] = { Math::Vector3(x0, y0, z0), color };
+						mLineVertices[mVertexCount++] = { Math::Vector3(x1, y1, z1), color };
+
+						if (i < rings - 1)
+						{
+							mLineVertices[mVertexCount++] = { Math::Vector3(x1, y1, z1), color };
+							mLineVertices[mVertexCount++] = { Math::Vector3(x2, y2, z2), color };
+						}
+					}
 				}
-
 			}
 		}
 
@@ -175,11 +268,14 @@ void SimpleDraw::AddBox(float Length, const Color & color)
 {
 	sInstance->AddBox(Length, color);
 }
-void SimpleDraw::AddSphere(float radius, int rings, int slices, const Color & color)
+void SimpleDraw::AddSphere(const Math::Vector3& sphere, float radius, const Color & color, uint32_t rings, uint32_t slices)
 {
-	sInstance->AddSphere(radius, rings, slices, color);
+	sInstance->AddSphere(sphere, radius, color, rings, slices);
 }
-
+void SimpleDraw::AddAABB(const Math::Vector3& center, float radius, const Color& color)
+{
+	sInstance->AddAABB(center,radius,color);
+}
 void SimpleDraw::AddTransform(const Math::Matrix4 & transform)
 {
 	auto r = Math::GetRight(transform);
@@ -197,10 +293,10 @@ void SimpleDraw::AddBone(const Math::Matrix4 & transform)
 	auto u = Math::GetUp(transform);
 	auto l = Math::GetLook(transform);
 	auto p = Math::GetTranslation(transform);
-	//AddSphere(GetTranslation, 0.025f, Colors::BlueViolet,5,6)
-	//sInstance->AddLine(p, p + r * 0.1f, Colors::Red);
-	//sInstance->AddLine(p, p + u * 0.1f, Colors::Green);
-	//sInstance->AddLine(p, p + l * 0.1f, Colors::Blue);
+	AddSphere(p, 0.025f, Colors::BlueViolet, 5, 6);
+	sInstance->AddLine(p, p + r * 0.1f, Colors::Red);
+	sInstance->AddLine(p, p + u * 0.1f, Colors::Green);
+	sInstance->AddLine(p, p + l * 0.1f, Colors::Blue);
 }
 void SimpleDraw::AddGroundPlane(float size, const Color & color)
 {

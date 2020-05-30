@@ -8,6 +8,8 @@
 
 using namespace JimmyGod::Graphics;
 
+using BoneIndexLookup = std::map<std::string, int>; // Used to lookup bone by name
+
 struct Arguments
 {
 	const char* inputFileName = nullptr;
@@ -91,18 +93,18 @@ void ExportEmbeddedTexture(const aiTexture& texture, const Arguments& args,
 	fclose(file);
 }
 
-std::string FindTexture(const aiScene* scene, const aiMaterial* inputMaterial,
+std::string FindTexture(const aiScene& scene, const aiMaterial& inputMaterial,
 	aiTextureType textureType, const Arguments& args, const char* suffix)
 {
 	std::filesystem::path textureName;
-	const uint32_t textureCount = inputMaterial->GetTextureCount(textureType);
+	const uint32_t textureCount = inputMaterial.GetTextureCount(textureType);
 	if (textureCount > 0)
 	{
 		aiString texturePath;
-		if (inputMaterial->GetTexture(textureType, 0, &texturePath) == aiReturn_SUCCESS)
+		if (inputMaterial.GetTexture(textureType, 0, &texturePath) == aiReturn_SUCCESS)
 		{
 			
-			if (auto embeddedTexture = scene->GetEmbeddedTexture(texturePath.C_Str()); embeddedTexture)
+			if (auto embeddedTexture = scene.GetEmbeddedTexture(texturePath.C_Str()); embeddedTexture)
 			{
 				// embeddedFilePath "E:/dev/ ... / monster.tga"
 				std::filesystem::path embeddedFilePath = texturePath.C_Str();
@@ -132,6 +134,71 @@ std::string FindTexture(const aiScene* scene, const aiMaterial* inputMaterial,
 	return textureName.filename().u8string().c_str();
 }
 
+// Check if inputBone exists in skeleton, if so just return the index.
+// Otherwise, add it to the skeleton. The aiBone must have a name!
+int TryAddBone(const aiBone* inputBone, Skeleton& skeleton, BoneIndexLookup& boneIndexLookup)
+{
+	std::string name = inputBone->mName.C_Str();
+	ASSERT(!name.empty(), "Error: inputBone has no name!");
+
+	auto iter = boneIndexLookup.find(name);
+	if (iter != boneIndexLookup.end())
+		return iter->second;
+
+	// Add a new bone in the skeleton for this
+	auto& newBone = skeleton.bones.emplace_back(std::make_unique<Bone>());
+	newBone->name = std::move(name);
+	newBone->index = static_cast<int>(skeleton.bones.size()) - 1;
+	newBone->offsetTransform = Convert(inputBone->mOffsetMatrix);
+
+	// Cache the bone index
+	boneIndexLookup.emplace(newBone->name, newBone->index);
+	return newBone->index;
+}
+
+// Recursively walk the aiScene tree and add/link bones to our skeleton as we find them.
+Bone* BuildSkeleton(const aiNode& sceneNode, Bone* parent, Skeleton& skeleton, BoneIndexLookup& boneIndexLookup)
+{
+	Bone* bone = nullptr;
+
+	std::string name = sceneNode.mName.C_Str();
+	auto iter = boneIndexLookup.find(name);
+	if (iter != boneIndexLookup.end())
+	{
+		// Bone already exists
+		bone = skeleton.bones[iter->second].get();
+	}
+	else
+	{
+		// Add a new bone in the skeleton for this (possible need to generate a name for it)
+		bone = skeleton.bones.emplace_back(std::make_unique<Bone>()).get();
+		bone->index = static_cast<int>(skeleton.bones.size()) - 1;
+		bone->offsetTransform = Matrix4::Identity;
+		if (name.empty())
+			bone->name = "NoName" + std::to_string(bone->index);
+		else
+			bone->name = std::move(name);
+
+		// Cache the bone index
+		boneIndexLookup.emplace(bone->name, bone->index);
+	}
+
+	// Link to your parent
+	bone->parent = parent;
+	bone->toParentTransform = Convert(sceneNode.mTransformation);
+
+	// Recurse through your children
+	bone->children.reserve(sceneNode.mNumChildren);
+	for (uint32_t i = 0; i < sceneNode.mNumChildren; ++i)
+	{
+		Bone* child = BuildSkeleton(*sceneNode.mChildren[i], bone, skeleton, boneIndexLookup);
+		child->parentIndex = bone->index; // new line to save Parent Index
+		bone->children.push_back(child);
+	}
+	return bone;
+}
+
+
 void SaveModel(const Arguments& args, Model& model)
 {
 	std::filesystem::path fileName = args.inputFileName;
@@ -141,25 +208,78 @@ void SaveModel(const Arguments& args, Model& model)
 
 	FILE* file = nullptr;
 	fopen_s(&file, fileName.u8string().c_str(), "w");
-	uint32_t numMeshes = model.meshData.size();
+	const uint32_t numMeshes = static_cast<uint32_t>(model.meshData.size());
+	
+	fprintf_s(file, "MeshCount: %d\n", numMeshes);
 
 	for (uint32_t i = 0; i < numMeshes; i++)
 	{
+		fprintf_s(file, "MaterialIndex: %d\n", model.meshData[i].materialIndex);
 		MeshIO::Write(file, model.meshData[i].mesh);
 	}
+
 
 	//For homework, save out model.materialData as well...
 	// if diffuseMapName is empty string, write <none>
 	fclose(file);
-	//for (auto& data : model.meshData)
-	//{
-	//	data.meshBuffer.Initialize(data.mesh);
-	//}
 
 	// Homework, this is basically the oppostie of LoadModel
 	// You will need MeshIO::Write;
+
+	FILE* fileMaterial = nullptr;
+
+	fileName.replace_extension("Material");
+	fopen_s(&fileMaterial, fileName.u8string().c_str(), "w");
+
+	uint32_t materialCount = static_cast<uint32_t>(model.materialData.size());
+	fprintf_s(fileMaterial, "MaterialCount: %d\n", materialCount);
+
+	for (uint32_t i = 0; i < materialCount; ++i)
+	{
+		if (model.materialData[i].diffuseMapName == "")
+			model.materialData[i].diffuseMapName = "<none>\n";
+		fprintf_s(fileMaterial, "DiffuseMapName: %s\n", model.materialData[i].diffuseMapName.c_str());
+
+		MeshIO::Write(fileMaterial, model.materialData[i].material);
+	}
+
+	fclose(fileMaterial);
 }
 
+void SaveSkeleton(const Arguments& args, const Skeleton& skeleton)
+{
+	std::filesystem::path path = args.inputFileName;
+	path.replace_extension("skeleton");
+
+	printf("Saving skeleton: %s...\n", path.u8string().c_str());
+
+	FILE* file = nullptr;
+	fopen_s(&file, path.u8string().c_str(), "w");
+
+	SkeletonIO::Write(file, skeleton);
+
+	fclose(file);
+}
+
+void SaveAnimationSet(const Arguments& args, const AnimationSet& animationSet)
+{
+	std::filesystem::path path = args.inputFileName;
+	path.replace_extension("animset");
+
+	printf("Saving animations: %s...\n", path.u8string().c_str());
+
+	FILE* file = nullptr;
+	fopen_s(&file, path.u8string().c_str(), "w");
+
+	const uint32_t clipCount = static_cast<uint32_t>(animationSet.clips.size());
+	fprintf_s(file, "ClipCount: %d\n", clipCount);
+	for (auto& animationClip : animationSet.clips)
+	{
+		AnimationIO::Write(file, *animationClip);
+	}
+
+	fclose(file);
+}
 
 // Description:
 // Imports a 3D model file and save data out into a file
@@ -201,6 +321,7 @@ int main(int argc, char* argv[])
 	//		+- Node
 
 	Model model;
+	BoneIndexLookup boneindexlookup;
 
 	if (scene->HasMeshes())
 	{
@@ -223,7 +344,7 @@ int main(int argc, char* argv[])
 			printf("Reading vertices...\n");
 
 
-			std::vector<Vertex> vertices;
+			std::vector<BoneVertex> vertices;
 			vertices.reserve(numVertices);
 
 			const aiVector3D* positions = inputMesh->mVertices;
@@ -232,35 +353,14 @@ int main(int argc, char* argv[])
 			const aiVector3D* texCoords = inputMesh->HasTextureCoords(0) ? inputMesh->mTextureCoords[0] : nullptr;
 
 			// // For homework, add data to vertices
-			if (positions)
+			for (uint32_t i = 0; i < numVertices; ++i)
 			{
-				for (uint32_t i = 0; i < numVertices; i++)
-				{
-					vertices.push_back({ positions[i].x * args.scale,
-						positions[i].y * args.scale,
-						positions[i].z * args.scale });
-				}
-			}
-			if (normals)
-			{
-				for (uint32_t i = 0; i < numVertices; i++)
-				{
-					vertices[i].normal = { normals[i].x, normals[i].y,normals[i].z };
-				}
-			}
-			if (tangents)
-			{
-				for (uint32_t i = 0; i < numVertices; i++)
-				{
-					vertices[i].tangent = { tangents[i].x, tangents[i].y,tangents[i].z };
-				}
-			}
-			if (texCoords)
-			{
-				for (uint32_t i = 0; i < numVertices; i++)
-				{
-					vertices[i].texcoord = { texCoords[i].x, texCoords[i].y};
-				}
+				auto& vertex = vertices.emplace_back(BoneVertex{});
+				vertex.position = Convert(positions[i]);
+				vertex.normal = Convert(normals[i]);
+				vertex.tangent = Convert(tangents[i]);
+				vertex.texCoord = texCoords ? Vector2{ texCoords[i].x,texCoords[i].y } : 0.0f;
+				
 			}
 
 			printf("Reading indices...\n");
@@ -276,7 +376,38 @@ int main(int argc, char* argv[])
 				indices.push_back(faces[i].mIndices[2]);
 			}
 
-			Mesh mesh;
+			if (inputMesh->HasBones())
+			{
+				printf("Reading bone weights...\n");
+
+				// Track how many weights have we added to each vertex so far
+				std::vector<int> numWeights(vertices.size(), 0);
+
+				for (uint32_t meshBoneIndex = 0; meshBoneIndex < inputMesh->mNumBones; ++meshBoneIndex)
+				{
+					aiBone* inputBone = inputMesh->mBones[meshBoneIndex];
+					int boneIndex = TryAddBone(inputBone, model.mSkeleton, boneindexlookup);
+					
+					// BEGIN
+					for (uint32_t weightIndex = 0; weightIndex < inputBone->mNumWeights; ++weightIndex)
+					{
+						const aiVertexWeight& weight = inputBone->mWeights[weightIndex];
+						auto& vertex = vertices[weight.mVertexId];
+						auto& count = numWeights[weight.mVertexId];
+
+						// Our vertices can hold at most up to 4 weights
+						if (count < 4)
+						{
+							vertex.boneIndices[count] = boneIndex;
+							vertex.boneWeights[count] = weight.mWeight;
+							++count;
+						}
+					}
+					// END
+				}
+			}
+
+			SkinnedMesh mesh;
 			mesh.vertices = std::move(vertices);
 			mesh.indices = std::move(indices);
 			model.meshData[meshIndex].mesh = std::move(mesh);
@@ -308,12 +439,72 @@ int main(int argc, char* argv[])
 			material.material.diffuse = Convert(diffuseColor);
 			material.material.specular = Convert(specularColor);
 			material.material.power = specularPower;
-			material.diffuseMapName = FindTexture(scene, inputMaterial, aiTextureType_DIFFUSE, args, "_diffuse");
+			material.diffuseMapName = FindTexture(*scene, *inputMaterial, aiTextureType_DIFFUSE, args, "_diffuse");
+		}
+	}
+
+	// look for bones
+	if (!model.mSkeleton.bones.empty())
+	{
+		printf("Buliding skeleton ... \n");
+		BuildSkeleton(*scene->mRootNode, nullptr, model.mSkeleton, boneindexlookup);
+	}
+
+	// Look for animation data.
+	if (scene->HasAnimations())
+	{
+		printf("Reading animations...\n");
+		for (uint32_t animIndex = 0; animIndex < scene->mNumAnimations; ++animIndex)
+		{
+			const aiAnimation* inputAnim = scene->mAnimations[animIndex];
+			auto animClip = std::make_unique<AnimationClip>();
+
+			if (inputAnim->mName.length > 0)
+				animClip->name = inputAnim->mName.C_Str();
+			else
+				animClip->name = "Anim" + std::to_string(animIndex);
+
+			animClip->duration = static_cast<float>(inputAnim->mDuration);
+			animClip->ticksPerSecond = static_cast<float>(inputAnim->mTicksPerSecond);
+
+			animClip->boneAnimations.resize(model.mSkeleton.bones.size());
+
+			printf("Reading bone animations for %s ... \n", animClip->name.c_str());
+
+			for (uint32_t boneAnimIndex = 0; boneAnimIndex < inputAnim->mNumChannels; ++boneAnimIndex)
+			{
+				const aiNodeAnim* inputBoneAnim = inputAnim->mChannels[boneAnimIndex];
+				int slotIndex = boneindexlookup[inputBoneAnim->mNodeName.C_Str()];
+				auto& boneAnim = animClip->boneAnimations[slotIndex];
+				boneAnim = std::make_unique<Animation>();
+
+				AnimationBulider builder;
+				for (uint32_t keyIndex = 0; keyIndex < inputBoneAnim->mNumPositionKeys; ++keyIndex)
+				{
+					auto& key = inputBoneAnim->mPositionKeys[keyIndex];
+					builder.AddPositionKey(Convert(key.mValue) * args.scale, static_cast<float>(key.mTime));
+				}
+				for (uint32_t keyIndex = 0; keyIndex < inputBoneAnim->mNumRotationKeys; ++keyIndex)
+				{
+					auto& key = inputBoneAnim->mRotationKeys[keyIndex];
+					builder.AddRotationKey(Convert(key.mValue), static_cast<float>(key.mTime));
+				}
+				for (uint32_t keyIndex = 0; keyIndex < inputBoneAnim->mNumScalingKeys; ++keyIndex)
+				{
+					auto& key = inputBoneAnim->mScalingKeys[keyIndex];
+					builder.AddScale(Convert(key.mValue), static_cast<float>(key.mTime));
+				}
+				
+				*boneAnim = builder.Build();
+			}
+			// Add the new clip to our animation set
+			model.mAnimationSet.clips.emplace_back(std::move(animClip));
 		}
 	}
 
 	SaveModel(args, model); // ../../Assets/Models/<name>.model
-
+	SaveSkeleton(args, model.mSkeleton);
+	SaveAnimationSet(args, model.mAnimationSet);
 	printf("All done!\n");
 	return 0;
 }

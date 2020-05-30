@@ -28,6 +28,12 @@
     <ClInclude Include="Inc\Quaternion.h">
       <Filter>Inc</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Plane.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\AABB.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\EngineMath.cpp">

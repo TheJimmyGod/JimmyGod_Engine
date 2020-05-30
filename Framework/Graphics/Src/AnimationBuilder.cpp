@@ -8,6 +8,7 @@ using namespace JimmyGod::Math;
 AnimationBulider & AnimationBulider::AddTime(float time)
 {
 	mTime = time;
+	mAnimation.mTimes.push_back(time);
 	return *this;
 }
 
@@ -36,5 +37,5 @@ Matrix4 AnimationBulider::GetAnimation(float time)
 
 Animation AnimationBulider::Build()
 {
-	return Animation();
+	return mAnimation;
 }

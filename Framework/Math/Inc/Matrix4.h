@@ -149,6 +149,17 @@ namespace JimmyGod::Math
 			mResult._41 = 0.0f; mResult._42 = 0.0f; mResult._43 = 0.0f; mResult._44 = 1.0f;
 			return mResult;
 		}
+
+		static Matrix4 Scaling(const Vector3& v)
+		{
+			Matrix4 mResult = Matrix4::Identity;
+
+			mResult._11 *= v.x;
+			mResult._22 *= v.y;
+			mResult._33 *= v.z;
+
+			return mResult;
+		}
 	};
 }
 

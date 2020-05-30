@@ -6,7 +6,8 @@
 #include "Vector4.h"
 #include "Matrix4.h"
 #include "Quaternion.h"
-
+#include "Plane.h"
+#include "AABB.h"
 namespace JimmyGod::Math
 {
 	template<class T>

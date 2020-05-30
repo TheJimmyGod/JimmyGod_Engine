@@ -6,6 +6,10 @@
 
 using namespace JimmyGod::Graphics;
 
+JimmyGod::Graphics::Texture::~Texture()
+{
+}
+
 void Texture::Initialize(const std::filesystem::path& fileName)
 {
 	HRESULT hr = DirectX::CreateWICTextureFromFile(GetDevice(), GetContext(), fileName.c_str(), nullptr, &mShaderResourceView);

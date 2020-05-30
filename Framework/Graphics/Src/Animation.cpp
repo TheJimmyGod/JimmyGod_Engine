@@ -33,7 +33,7 @@ Vector3 Animation::GetPosition(float time) const
 
 		Vector3 curr = mPositionKeys[currentKey].key;
 		Vector3 next = mPositionKeys[nextKey].key;
-		translationLerped = Lerp<Vector3>(curr, next, t);
+		return Lerp<Vector3>(curr, next, t);
 	}
 	return translationLerped;
 }
@@ -97,12 +97,12 @@ Vector3 Animation::GetScale(float time) const
 		}
 		nextKey = (currentKey + 1) % scaleSize;
 		total_t = mScaleKeys[nextKey].time - mScaleKeys[currentKey].time;
-
+		
 		t = (time - mScaleKeys[currentKey].time) / total_t;
 
 		Vector3 curr = mScaleKeys[currentKey].key;
 		Vector3 next = mScaleKeys[nextKey].key;
-		scaleLerped = Lerp<Vector3>(curr, next, t);
+		return Lerp<Vector3>(curr, next, t);
 	}
 	return scaleLerped;
 }
@@ -113,7 +113,7 @@ Matrix4 Animation::GetTransform(float time) const
 
 	Matrix4 rotationVal = Matrix4::RotationQuaternion(GetRotation(time));
 
-	Matrix4 scaleVal = Matrix4::Translation(GetScale(time));
+	Matrix4 scaleVal = Matrix4::Scaling(GetScale(time));
 
-	return translationVal * scaleVal * rotationVal;
+	return translationVal * rotationVal * scaleVal;
 }
