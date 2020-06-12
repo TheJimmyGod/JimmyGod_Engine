@@ -8,6 +8,9 @@
 #include "Quaternion.h"
 #include "Plane.h"
 #include "AABB.h"
+#include "Ray.h"
+#include "Sphere.h"
+#include "OBB.h"
 namespace JimmyGod::Math
 {
 	template<class T>
@@ -221,6 +224,11 @@ namespace JimmyGod::Math
 		const float invNorm = 1.0f / length;
 		return { q * invNorm };
 	}
+
+	bool IsContained(const Vector3& point, const AABB& aabb);
+	bool IsContained(const Vector3& point, const OBB& obb);
+	bool GetContactPoint(const Ray& ray, const OBB& obb, Vector3& point, Vector3& normal);
+	bool Intersect(const Ray& ray, const Plane& plane, float& distance);
 
 	//Linear Interpolations
 	constexpr Quaternion Lerp(const Quaternion& from, const Quaternion& to, float time)

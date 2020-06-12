@@ -13,11 +13,11 @@ void Terrain::Initialize(uint32_t numRows, uint32_t numCols, float cellSize)
 	mCellSize = cellSize;
 
 	mConstantBuffer.Initialize();
-	mTerrainVertexShader.Initialize(L"../../Assets/Shaders/Final.fx", Graphics::Vertex::Format);
-	mTerrainPixelShader.Initialize(L"../../Assets/Shaders/Final.fx");
+	mTerrainVertexShader.Initialize(L"../../Assets/Shaders/DoPhongShading.fx", Graphics::Vertex::Format);
+	mTerrainPixelShader.Initialize(L"../../Assets/Shaders/DoPhongShading.fx");
 
 	mSampler.Initialize(Graphics::Sampler::Filter::Anisotropic, Graphics::Sampler::AddressMode::Wrap);
-	mGrassTexture.Initialize("../../Assets/Textures/Uranos.jpg");
+	mGrassTexture.Initialize("../../Assets/Textures/grass_2048.jpg");
 
 	GenerateIndices();
 	GenerateVertices();

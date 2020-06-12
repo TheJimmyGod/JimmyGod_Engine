@@ -25,7 +25,7 @@ namespace
 			mConstantBuffer.Initialize(sizeof(Math::Matrix4));
 			mMeshBuffer.Initialize<VertexPC>(nullptr,maxVertexCount,true);
 			mLineVertices = make_unique<VertexPC[]>(maxVertexCount);
-			mFillVertices = make_unique<VertexPC[]>(maxVertexCount * 3.0f);
+			mFillVertices = make_unique<VertexPC[]>(maxVertexCount * 3);
 			mVertexCount = 0;
 			mFillVertexCount = 0;
 			mMaxVertexCount = maxVertexCount;
@@ -189,6 +189,48 @@ namespace
 			}
 		}
 
+		void AddOBB(const Math::OBB& obb, const Color& color)
+		{
+			Math::Matrix4 matTrans = Math::Matrix4::Translation(obb.center);
+			Math::Matrix4 matRot = Math::Matrix4::RotationQuaternion(obb.rot);
+			Math::Matrix4 matScale = Math::Matrix4::Scaling(obb.extend);
+			Math::Matrix4 toWorld = matScale * matRot * matTrans;
+
+			Math::Vector3 points[] =
+			{
+				// Front quad
+				Math::Vector3(-1.0f,-1.0f,-1.0f),
+				Math::Vector3(-1.0f,+1.0f,-1.0f),
+				Math::Vector3(+1.0f,+1.0f,-1.0f),
+				Math::Vector3(+1.0f,-1.0f,-1.0f),
+				// Back quad
+				Math::Vector3(-1.0f,-1.0f,+1.0f),
+				Math::Vector3(-1.0f,+1.0f,+1.0f),
+				Math::Vector3(+1.0f,+1.0f,+1.0f),
+				Math::Vector3(+1.0f,-1.0f,+1.0f)
+			};
+
+			for (auto& p : points)
+			{
+				p = Math::TransformCoord(p, toWorld);
+			}
+
+			AddLine(points[0], points[1], color);
+			AddLine(points[1], points[2], color);
+			AddLine(points[2], points[3], color);
+			AddLine(points[3], points[0], color);
+
+			AddLine(points[0], points[4], color);
+			AddLine(points[1], points[5], color);
+			AddLine(points[2], points[6], color);
+			AddLine(points[3], points[7], color);
+
+			AddLine(points[4], points[5], color);
+			AddLine(points[5], points[6], color);
+			AddLine(points[6], points[7], color);
+			AddLine(points[7], points[4], color);
+		}
+
 		void Render(const Camera& camera)
 		{
 			auto matView = camera.GetViewMatrix();
@@ -276,6 +318,10 @@ void SimpleDraw::AddAABB(const Math::Vector3& center, float radius, const Color&
 {
 	sInstance->AddAABB(center,radius,color);
 }
+void SimpleDraw::AddOBB(const Math::OBB & obb, const Color & color)
+{
+	sInstance->AddOBB(obb, color);
+}
 void SimpleDraw::AddTransform(const Math::Matrix4 & transform)
 {
 	auto r = Math::GetRight(transform);
@@ -301,7 +347,7 @@ void SimpleDraw::AddBone(const Math::Matrix4 & transform)
 void SimpleDraw::AddGroundPlane(float size, const Color & color)
 {
 	const float halfSize = size * 0.5f;
-	for (float i = 0; i < halfSize; i += 1.0f)
+	for (float i = -halfSize; i <= halfSize; i += 1.0f)
 	{
 		sInstance->AddLine({i,0.0f, -halfSize}, {i,0.0f,halfSize}, color);
 		sInstance->AddLine({-halfSize,0.0f,i}, {halfSize,0.0f,i}, color);

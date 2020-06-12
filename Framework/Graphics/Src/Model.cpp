@@ -113,11 +113,11 @@ void ModelLoader::LoadAnimationSet(std::filesystem::path fileName, AnimationSet 
 
 	uint32_t clipCount;
 	fscanf_s(file, "ClipCount: %d\n", &clipCount);
-
 	animationSet.clips.resize(clipCount);
 
 	for (auto& clip : animationSet.clips)
 	{
+		clip = std::make_unique<AnimationClip>();
 		AnimationIO::Read(file, *clip);
 	}
 
@@ -129,7 +129,7 @@ void Model::Initialize(const std::filesystem::path & fileName)
 {
 	ModelLoader::LoadModel(fileName, *this);
 	ModelLoader::LoadSkeleton(fileName, mSkeleton);
-	//ModelLoader::LoadAnimationSet(fileName, mAnimationSet);
+	ModelLoader::LoadAnimationSet(fileName, mAnimationSet);
 }
 
 void Model::Terminate()

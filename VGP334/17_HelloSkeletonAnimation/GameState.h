@@ -126,5 +126,7 @@ private:
 
 	using BoneTransformBuffer = JimmyGod::Graphics::TypedConstantBuffer<BoneTransformData>;
 	BoneTransformBuffer mBoneTransformBuffer;
-	
+
+	JimmyGod::Graphics::Animator mAnimator;
+	bool showSkeleton = false;
 };

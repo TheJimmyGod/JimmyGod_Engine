@@ -22,6 +22,7 @@
 #include "VertexShader.h"
 #include "VertexTypes.h"
 
+#include "Animator.h"
 #include "Animation.h"
 #include "AnimationBuilder.h"
 #include "AnimationClip.h"

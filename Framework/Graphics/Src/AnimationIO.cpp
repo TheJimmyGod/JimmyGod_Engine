@@ -42,18 +42,20 @@ void AnimationIO::Read(FILE* file, Animation& animation)
 	float x, y, z, w, t;
 	uint32_t size = static_cast<uint32_t>(animation.mPositionKeys.size());
 	fscanf_s(file, "PositionKeyCount: %d\n", &size);
-	for (uint32_t i = 0; i < animation.mPositionKeys.size(); ++i)
+	animation.mPositionKeys.resize(size);
+	for (uint32_t i = 0; i < size; ++i)
 	{
 		fscanf_s(file, "%f %f %f %f\n",&x,&y,&z,&t);
 
 		animation.mPositionKeys[i].key.x = x;
-		animation.mPositionKeys[i].key.x = y;
-		animation.mPositionKeys[i].key.x = z;
+		animation.mPositionKeys[i].key.y = y;
+		animation.mPositionKeys[i].key.z = z;
 		animation.mPositionKeys[i].time = t;
 	}
 	size = static_cast<uint32_t>(animation.mRotationKeys.size());
 	fscanf_s(file, "RotationKeyCount: %d\n", &size);
-	for (uint32_t i = 0; i < animation.mRotationKeys.size(); ++i)
+	animation.mRotationKeys.resize(size);
+	for (uint32_t i = 0; i < size; ++i)
 	{
 		fscanf_s(file, "%f %f %f %f %f\n",&x,&y,&z,&w,&t);
 
@@ -65,7 +67,8 @@ void AnimationIO::Read(FILE* file, Animation& animation)
 	}
 	size = static_cast<uint32_t>(animation.mScaleKeys.size());
 	fscanf_s(file, "ScaleKeyCount: %d\n", &size);
-	for (uint32_t i = 0; i < animation.mScaleKeys.size(); ++i)
+	animation.mScaleKeys.resize(size);
+	for (uint32_t i = 0; i < size; ++i)
 	{
 		fscanf_s(file, "%f %f %f %f\n",&x,&y,&z,&t);
 
@@ -105,6 +108,7 @@ void AnimationIO::Write(FILE* file, const AnimationClip& animationClip)
 	{
 		if (clips)
 		{
+			fprintf_s(file, "Animation: \n");
 			Write(file, *clips);
 		}
 		else
@@ -117,9 +121,7 @@ void AnimationIO::Write(FILE* file, const AnimationClip& animationClip)
 
 void AnimationIO::Read(FILE* file, AnimationClip& animationClip)
 {
-
-
-	char name[128];
+	char name[256];
 	fscanf_s(file, "Animation: %s\n", &name, sizeof(name));
 	animationClip.name = name;
 	fscanf_s(file, "Duration: %f\n", &animationClip.duration);
@@ -131,10 +133,10 @@ void AnimationIO::Read(FILE* file, AnimationClip& animationClip)
 	for (uint32_t i = 0; i < boneAnimationCout; ++i)
 	{
 		char empty[20];
-		fscanf_s(file, "[%s]", &empty, sizeof(empty));
-		if (empty == "[Empty]")
+		fscanf_s(file, "%s\n", &empty, sizeof(empty));
+		if (std::string(empty) == "[Empty]")
 		{
-			break;
+			continue;
 		}
 		auto boneAnimation = std::make_unique<Animation>();
 		animationClip.boneAnimations[i] = std::move(boneAnimation);

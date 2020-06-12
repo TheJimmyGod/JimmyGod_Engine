@@ -15,8 +15,8 @@ public:
 private:
 
 	JimmyGod::Physics::PhysicsWorld mPhysicsWorld;
-
+	std::vector<JimmyGod::Physics::Particle*> particles;
 	JimmyGod::Graphics::Camera mCamera;
-
+	float mTime = 0.0f;
 	
 };

@@ -7,32 +7,41 @@
     <ClInclude Include="Src\Precompiled.h">
       <Filter>Src</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Vector3.h">
-      <Filter>Inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\Matrix4.h">
-      <Filter>Inc</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Common.h">
-      <Filter>Inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\Vector4.h">
       <Filter>Inc</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Constants.h">
       <Filter>Inc</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Vector2.h">
-      <Filter>Inc</Filter>
+    <ClInclude Include="Inc\AABB.h">
+      <Filter>Inc\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Quaternion.h">
-      <Filter>Inc</Filter>
+    <ClInclude Include="Inc\OBB.h">
+      <Filter>Inc\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Ray.h">
+      <Filter>Inc\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Plane.h">
-      <Filter>Inc</Filter>
+      <Filter>Inc\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\AABB.h">
-      <Filter>Inc</Filter>
+    <ClInclude Include="Inc\Sphere.h">
+      <Filter>Inc\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Vector4.h">
+      <Filter>Inc\LinearAlgebra</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Matrix4.h">
+      <Filter>Inc\LinearAlgebra</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Quaternion.h">
+      <Filter>Inc\LinearAlgebra</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Vector2.h">
+      <Filter>Inc\LinearAlgebra</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Vector3.h">
+      <Filter>Inc\LinearAlgebra</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -49,6 +58,12 @@
     </Filter>
     <Filter Include="Src">
       <UniqueIdentifier>{00a90de2-7aae-461b-953a-d9f88d5df11e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inc\LinearAlgebra">
+      <UniqueIdentifier>{6244b9bf-1447-4168-b716-e66e9c2d932e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inc\Geometry">
+      <UniqueIdentifier>{3f577944-52a0-4e59-bb72-885b8f699e28}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

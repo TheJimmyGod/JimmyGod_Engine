@@ -188,5 +188,8 @@
     <ClCompile Include="Src\AnimationIO.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Animator.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

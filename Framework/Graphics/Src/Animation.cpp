@@ -8,12 +8,10 @@ using namespace JimmyGod::Math;
 Vector3 Animation::GetPosition(float time) const
 {
 	const int positionSize = mPositionKeys.size();
-	Vector3 translationLerped;
 	int currentKey = 0;
 	int nextKey = 0;
 	float total_t;
 	float t;
-
 
 	if (positionSize > 0)
 	{
@@ -28,14 +26,16 @@ Vector3 Animation::GetPosition(float time) const
 		}
 		nextKey = (currentKey + 1) % positionSize;
 		total_t = mPositionKeys[nextKey].time - mPositionKeys[currentKey].time;
-
-		t = (time - mPositionKeys[currentKey].time) / total_t;
+		if (total_t == 0)
+			t = time - mPositionKeys[currentKey].time;
+		else
+			t = (time - mPositionKeys[currentKey].time) / total_t;
 
 		Vector3 curr = mPositionKeys[currentKey].key;
 		Vector3 next = mPositionKeys[nextKey].key;
 		return Lerp<Vector3>(curr, next, t);
 	}
-	return translationLerped;
+	return Vector3::One;
 }
 
 Quaternion Animation::GetRotation(float time) const
@@ -61,24 +61,22 @@ Quaternion Animation::GetRotation(float time) const
 		nextKey = (currentKey + 1) % rotationSize;
 
 		total_t = mRotationKeys[nextKey].time - mRotationKeys[currentKey].time;
-
-		t = (time - mRotationKeys[currentKey].time) / total_t;
+		if (total_t == 0)
+			t = time - mRotationKeys[currentKey].time;
+		else
+			t = (time - mRotationKeys[currentKey].time) / total_t;
 
 		Quaternion curr = mRotationKeys[currentKey].key;
 		Quaternion next = mRotationKeys[nextKey].key;
 
 		return Slerp(curr, next, t);
 	}
-
-
-
 	return Quaternion::Identity;
 }
 
 Vector3 Animation::GetScale(float time) const
 {
 	const int scaleSize = mScaleKeys.size();
-	Vector3 scaleLerped;
 	int currentKey = 0;
 	int nextKey = 0;
 	float total_t;
@@ -97,14 +95,16 @@ Vector3 Animation::GetScale(float time) const
 		}
 		nextKey = (currentKey + 1) % scaleSize;
 		total_t = mScaleKeys[nextKey].time - mScaleKeys[currentKey].time;
-		
-		t = (time - mScaleKeys[currentKey].time) / total_t;
+		if (total_t == 0)
+			t = time - mScaleKeys[currentKey].time;
+		else
+			t = (time - mScaleKeys[currentKey].time) / total_t;
 
 		Vector3 curr = mScaleKeys[currentKey].key;
 		Vector3 next = mScaleKeys[nextKey].key;
 		return Lerp<Vector3>(curr, next, t);
 	}
-	return scaleLerped;
+	return Vector3::One;
 }
 
 Matrix4 Animation::GetTransform(float time) const

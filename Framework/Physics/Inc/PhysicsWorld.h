@@ -21,9 +21,15 @@ namespace JimmyGod::Physics
 		void Update(float deltaTime);
 		void DebugDraw() const;
 		
+		// For Simulation
 		void AddParticle(Particle* p);
 		void AddConstraint(Constraint* c);
+		// For Environment
+		void AddStaticPlane(const Math::Plane& plane);
+		void AddStaticOBB(const Math::OBB& obb);
+
 		void AddPlane(const Math::Plane& plane);
+		void AddOBB(const Math::OBB& obb);
 		void Clear(bool onlyDynamic = false);
 
 	private:
@@ -33,7 +39,11 @@ namespace JimmyGod::Physics
 
 		std::vector<Particle*> mParticles;
 		std::vector<Constraint*> mConstraints;
+		std::vector<Math::Plane> mPlane;
+		std::vector<Math::OBB> mOBB;
+
 		std::vector<Math::Plane> mPlanes;
+		std::vector<Math::OBB> mOBBs;
 		Settings mSettings;
 		float mTimer = 0.0f;
 	};

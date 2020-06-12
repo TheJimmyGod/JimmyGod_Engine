@@ -184,6 +184,7 @@
     <ClCompile Include="Src\AnimationBuilder.cpp" />
     <ClCompile Include="Src\AnimationClip.cpp" />
     <ClCompile Include="Src\AnimationIO.cpp" />
+    <ClCompile Include="Src\Animator.cpp" />
     <ClCompile Include="Src\BlendState.cpp" />
     <ClCompile Include="Src\Camera.cpp" />
     <ClCompile Include="Src\ConstantBuffer.cpp" />

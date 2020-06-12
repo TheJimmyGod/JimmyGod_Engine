@@ -40,7 +40,7 @@ void JimmyGod::Graphics::DrawSkeleton(Bone* bone, std::vector<Math::Matrix4>& bo
 		auto myPos = GetTranslation(myMatrix);
 		auto parentPos = GetTranslation(parentMatrix);
 
-		SimpleDraw::AddLine(myPos, parentPos, Colors::Green);
+		SimpleDraw::AddLine(myPos * 0.01f, parentPos * 0.01f, Colors::Green);
 	}
 
 	for (auto& child : bone->children)
@@ -67,14 +67,18 @@ void JimmyGod::Graphics::UpdateBoneRecursive(Bone* bone, std::vector<Math::Matri
 
 void JimmyGod::Graphics::UpdateBoneRecursive(Bone* bone, std::vector<Math::Matrix4>& boneMatrices, const AnimationClip & clip, float time)
 {
+	if (bone == nullptr)
+		return;
+	Matrix4 transform = bone->toParentTransform;
+	clip.GetTransform(time, bone->index, transform);
 	if (bone->parent != nullptr)
 	{
-		boneMatrices[bone->index] = clip.boneAnimations[bone->index]->GetTransform(time) * boneMatrices[bone->parent->index];
+		boneMatrices[bone->index] = transform * boneMatrices[bone->parent->index];
 	}
 	else
 	{
-		boneMatrices[bone->index] = clip.boneAnimations[bone->index]->GetTransform(time);
+		boneMatrices[bone->index] = Matrix4::Identity;
 	}
 	for (auto& c : bone->children)
-		UpdateBoneRecursive(c, boneMatrices);
+		UpdateBoneRecursive(c, boneMatrices,clip,time);
 }

@@ -40,13 +40,12 @@ void JimmyGod::Graphics::SkeletonIO::Write(FILE * file, const Skeleton & skeleto
 		}
 		
 		WriteMatrix(file, bone->toParentTransform);
+		WriteMatrix(file, bone->offsetTransform);
 	}	
 }
 
 void JimmyGod::Graphics::SkeletonIO::Read(FILE * file, Skeleton & skeleton)
 {
-
-
 	for (size_t i = 0; i < skeleton.bones.size(); i++)
 	{
 		auto bone = std::make_unique<Bone>();
@@ -63,13 +62,10 @@ void JimmyGod::Graphics::SkeletonIO::Read(FILE * file, Skeleton & skeleton)
 			uint32_t index = 0;
 			fscanf_s(file, "ChildIndices: %d\n", &index);
 			bone->childIndice.push_back(index);
-
 		}
 		ReadMatrix(file, bone->toParentTransform);
-		//bone->children.reserve(count);
-		//fscanf_s(file, "ChildIndices: %d\n", &count);
-		//bone->childIndice.reserve(count);
-		
+		ReadMatrix(file, bone->offsetTransform);
+
 		skeleton.bones[i] = std::move(bone);
 	}
 
