@@ -2,6 +2,7 @@
 #include "App.h"
 
 using namespace JimmyGod;
+using namespace JimmyGod::Core;
 using namespace JimmyGod::Graphics;
 using namespace JimmyGod::Input;
 
@@ -14,6 +15,9 @@ void App::ChangeState(const std::string & name)
 void App::Run(AppConfig appConfig)
 {
 	mAppConfig = std::move(appConfig);
+
+	// Initialize timer
+	TimeUtil::GetTime();
 
 	// Setup our application window
 	mWindow.Initialize(
@@ -64,9 +68,11 @@ void App::Run(AppConfig appConfig)
 			continue;
 		}
 
+		float deltaTime = TimeUtil::GetDeltaTime();
 
-		// TODO
-		float deltaTime = 1.0f / 60.0f;
+		//if (pasued)
+		//	deltaTime = 0.0f;
+
 		mCurrentState->Update(deltaTime);
 		
 		auto graphicSystem = GraphicsSystem::Get();

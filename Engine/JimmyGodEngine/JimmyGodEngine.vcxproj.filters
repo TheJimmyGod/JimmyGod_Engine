@@ -22,6 +22,18 @@
     <Filter Include="Src\Pch">
       <UniqueIdentifier>{ca678006-4819-4e3d-9034-97e84fb8a617}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Inc\World">
+      <UniqueIdentifier>{1c90e4b0-0ba6-4ee3-bac8-82ad703a4b5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\World">
+      <UniqueIdentifier>{97931798-77f0-4711-a5f9-c622a6556913}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inc\Component">
+      <UniqueIdentifier>{e4c4a420-c52b-4b13-8277-e2cdbbe967a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Component">
+      <UniqueIdentifier>{a0911d07-162b-41ce-933e-4f497f7013e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\Common.h">
@@ -42,6 +54,27 @@
     <ClInclude Include="Src\Precompiled.h">
       <Filter>Src\Pch</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\GameObject.h">
+      <Filter>Inc\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Component.h">
+      <Filter>Inc\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\GameWorld.h">
+      <Filter>Inc\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\GameObjectFactory.h">
+      <Filter>Inc\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\TransformComponent.h">
+      <Filter>Inc\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\ColliderComponent.h">
+      <Filter>Inc\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Service.h">
+      <Filter>Inc\World</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\JimmyGodEngine.cpp">
@@ -55,6 +88,27 @@
     </ClCompile>
     <ClCompile Include="Src\Precompiled.cpp">
       <Filter>Src\Pch</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GameObject.cpp">
+      <Filter>Src\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Component.cpp">
+      <Filter>Src\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GameWorld.cpp">
+      <Filter>Src\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GameObjectFactory.cpp">
+      <Filter>Src\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\TransformComponent.cpp">
+      <Filter>Src\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ColliderComponent.cpp">
+      <Filter>Src\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Service.cpp">
+      <Filter>Src\World</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

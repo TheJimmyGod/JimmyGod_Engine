@@ -85,15 +85,15 @@ void GameState::Render()
 
 	mVertexShader.Bind();
 	mPixelShader.Bind();
-	mConstantBuffer.Bind();
-	mSampler.Bind();
+	mConstantBuffer.BindPS();
+	mSampler.BindPS();
 
 	auto matWorld0 = Matrix4::RotationY(mRotation.y * 0.25f);
 	auto matTranslation0 = Matrix4::Translation(Vector3(0.0f, 0.0f, 0.0f));
 	auto matSpace = matTranslation0 * matWorld0;
 	auto matWVP0 = Transpose(matSpace* matView * matProj);
-	mConstantBuffer.Set(&matWVP0);
-	mSpace.Bind();
+	mConstantBuffer.Update(&matWVP0);
+	mSpace.BindPS();
 	mMeshDomeBuffer.Draw();
 
 	auto matWorld = Matrix4::RotationY(mRotation.y);
@@ -101,8 +101,8 @@ void GameState::Render()
 	auto matScl = Matrix4::Scaling(0.3f);
 	auto matSun = matTranslation * matWorld;
 	auto matWVP = Transpose(matScl*matSun* matView * matProj);
-	mConstantBuffer.Set(&matWVP);
-	mSun.Bind();
+	mConstantBuffer.Update(&matWVP);
+	mSun.BindPS();
 	mMeshBuffer.Draw();
 
 	auto matWorld1 = Matrix4::RotationY(mRotation.y*1.3f);
@@ -110,8 +110,8 @@ void GameState::Render()
 	auto matScl1 = Matrix4::Scaling(0.08f);
 	auto matEarth = matTranslation1 * matWorld1;
 	auto matWVP1 = Transpose(matScl1 * matEarth * matView * matProj);
-	mConstantBuffer.Set(&matWVP1);
-	mEarth.Bind();
+	mConstantBuffer.Update(&matWVP1);
+	mEarth.BindPS();
 	mMeshBuffer.Draw();
 
 	auto matWorld2 = Matrix4::RotationY(mRotation.y * 2.0f);
@@ -120,8 +120,8 @@ void GameState::Render()
 	auto matScl2 = Matrix4::Scaling(0.05f);
 	auto matMoon = matWorld2 * matTranslation2 * moonSpin;
 	auto matWVP2 = Transpose(matScl2 * matMoon * matEarth * matView * matProj);
-	mConstantBuffer.Set(&matWVP2);
-	mMoon.Bind();
+	mConstantBuffer.Update(&matWVP2);
+	mMoon.BindPS();
 	mMeshBuffer.Draw();
 
 	auto matWorld3 = Matrix4::RotationY(mRotation.y * 1.2f);
@@ -129,8 +129,8 @@ void GameState::Render()
 	auto matScl3 = Matrix4::Scaling(0.07f);
 	auto matMercury = matTranslation3 * matWorld3;
 	auto matWVP3 = Transpose(matScl3 * matMercury * matView * matProj);
-	mConstantBuffer.Set(&matWVP3);
-	mMercury.Bind();
+	mConstantBuffer.Update(&matWVP3);
+	mMercury.BindPS();
 	mMeshBuffer.Draw();
 
 	auto matWorld4= Matrix4::RotationY(mRotation.y * 0.54f);
@@ -138,8 +138,8 @@ void GameState::Render()
 	auto matScl4 = Matrix4::Scaling(0.06f);
 	auto matVenus = matTranslation4 * matWorld4;
 	auto matWVP4 = Transpose(matScl4 * matVenus * matView * matProj);
-	mConstantBuffer.Set(&matWVP4);
-	mVenus.Bind();
+	mConstantBuffer.Update(&matWVP4);
+	mVenus.BindPS();
 	mMeshBuffer.Draw();
 
 	auto matWorld5 = Matrix4::RotationY(mRotation.y * 0.79f);
@@ -147,8 +147,8 @@ void GameState::Render()
 	auto matScl5 = Matrix4::Scaling(0.04f);
 	auto matMars = matTranslation5 * matWorld5;
 	auto matWVP5 = Transpose(matScl5 * matMars * matView * matProj);
-	mConstantBuffer.Set(&matWVP5);
-	mMars.Bind();
+	mConstantBuffer.Update(&matWVP5);
+	mMars.BindPS();
 	mMeshBuffer.Draw();
 
 	auto matWorld6 = Matrix4::RotationY(mRotation.y * 0.22f);
@@ -156,8 +156,8 @@ void GameState::Render()
 	auto matScl6 = Matrix4::Scaling(0.2f);
 	auto matJupiter = matTranslation6 * matWorld6;
 	auto matWVP6 = Transpose(matScl6 * matJupiter * matView * matProj);
-	mConstantBuffer.Set(&matWVP6);
-	mJupiter.Bind();
+	mConstantBuffer.Update(&matWVP6);
+	mJupiter.BindPS();
 	mMeshBuffer.Draw();
 
 	auto matWorld7 = Matrix4::RotationY(mRotation.y * 0.31f);
@@ -165,8 +165,8 @@ void GameState::Render()
 	auto matScl7 = Matrix4::Scaling(0.175f);
 	auto matSaturn = matTranslation7*matWorld7;
 	auto matWVP7 = Transpose(matScl7 * matSaturn * matView * matProj);
-	mConstantBuffer.Set(&matWVP7);
-	mSaturn.Bind();
+	mConstantBuffer.Update(&matWVP7);
+	mSaturn.BindPS();
 	mMeshBuffer.Draw();
 
 	auto matWorld8 = Matrix4::RotationY(mRotation.y * 0.4f);
@@ -174,8 +174,8 @@ void GameState::Render()
 	auto matScl8 = Matrix4::Scaling(0.09f);
 	auto matUranos = matTranslation8 * matWorld8;
 	auto matWVP8 = Transpose(matScl8 * matUranos * matView * matProj);
-	mConstantBuffer.Set(&matWVP8);
-	mUranos.Bind();
+	mConstantBuffer.Update(&matWVP8);
+	mUranos.BindPS();
 	mMeshBuffer.Draw();
 
 	auto matWorld9 = Matrix4::RotationY(mRotation.y * 0.54f);
@@ -183,8 +183,8 @@ void GameState::Render()
 	auto matScl9 = Matrix4::Scaling(0.06f);
 	auto matNaptune = matTranslation9 * matWorld9;
 	auto matWVP9 = Transpose(matScl9 * matNaptune * matView * matProj);
-	mConstantBuffer.Set(&matWVP9);
-	mNeptune.Bind();
+	mConstantBuffer.Update(&matWVP9);
+	mNeptune.BindPS();
 	mMeshBuffer.Draw();
 
 	/*context->Draw(mVertices.size(), 0);*/ // This is for when we don't have an index buffer

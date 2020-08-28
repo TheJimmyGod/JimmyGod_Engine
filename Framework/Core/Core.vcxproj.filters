@@ -7,36 +7,123 @@
     <Filter Include="Src">
       <UniqueIdentifier>{9e145295-d2ce-498c-b5ce-e3d4c2d263b4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Inc\Memory">
+      <UniqueIdentifier>{9e4707f6-0750-4ea0-b9bd-e31ee2247664}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inc\Platform">
+      <UniqueIdentifier>{3fcb58f9-7266-49ce-aef1-c743f6df7872}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inc\Util">
+      <UniqueIdentifier>{2eb5b7ab-b46f-4c14-9dc1-ff697990aede}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Memory">
+      <UniqueIdentifier>{95f01a45-d9a9-4003-bed4-11b7a6fb61d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Platform">
+      <UniqueIdentifier>{d2f28534-4d4e-4273-b3b9-4729a155f017}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Pch">
+      <UniqueIdentifier>{26a967de-f4ad-4c12-b1ae-76040966ba65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Util">
+      <UniqueIdentifier>{4492ab9a-79b7-460a-aa6c-6bb48b5f8115}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inc\Event">
+      <UniqueIdentifier>{c295eae6-dbdb-4af0-b311-630e0d26eb99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inc\Meta">
+      <UniqueIdentifier>{bd494609-4ce5-4a04-8190-199adc8d5cb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Meta">
+      <UniqueIdentifier>{c9592aa4-6293-4616-8962-9753609e2b12}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Src\Precompiled.cpp">
-      <Filter>Src</Filter>
+    <ClCompile Include="Src\BlockAllocator.cpp">
+      <Filter>Src\Memory</Filter>
     </ClCompile>
     <ClCompile Include="Src\Window.cpp">
-      <Filter>Src</Filter>
+      <Filter>Src\Platform</Filter>
     </ClCompile>
     <ClCompile Include="Src\WindowMessageHandler.cpp">
-      <Filter>Src</Filter>
+      <Filter>Src\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Precompiled.cpp">
+      <Filter>Src\Pch</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\TimeUtil.cpp">
+      <Filter>Src\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\DebugUtil.cpp">
+      <Filter>Src\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\MetaType.cpp">
+      <Filter>Src\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\MetaRegistration.cpp">
+      <Filter>Src\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\MetaClass.cpp">
+      <Filter>Src\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\MetaField.cpp">
+      <Filter>Src\Meta</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Src\Precompiled.h">
-      <Filter>Src</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Common.h">
       <Filter>Inc</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Core.h">
       <Filter>Inc</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Debug.h">
-      <Filter>Inc</Filter>
+    <ClInclude Include="Inc\BlockAllocator.h">
+      <Filter>Inc\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Window.h">
-      <Filter>Inc</Filter>
+    <ClInclude Include="Inc\TypedAllocator.h">
+      <Filter>Inc\Memory</Filter>
     </ClInclude>
     <ClInclude Include="Inc\WindowMessageHandler.h">
-      <Filter>Inc</Filter>
+      <Filter>Inc\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Window.h">
+      <Filter>Inc\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Precompiled.h">
+      <Filter>Src\Pch</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Handle.h">
+      <Filter>Inc\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\HandlePool.h">
+      <Filter>Inc\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\DebugUtil.h">
+      <Filter>Inc\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\TimeUtil.h">
+      <Filter>Inc\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\EventHandler.h">
+      <Filter>Inc\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Meta.h">
+      <Filter>Inc\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\MetaType.h">
+      <Filter>Inc\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\MetaUtil.h">
+      <Filter>Inc\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\MetaRegistration.h">
+      <Filter>Inc\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\MetaClass.h">
+      <Filter>Inc\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\MetaField.h">
+      <Filter>Inc\Meta</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

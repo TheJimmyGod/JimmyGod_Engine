@@ -5,9 +5,25 @@
 // ============================================
 #pragma once
 #include "Common.h"
+
+// App headers
 #include "App.h"
 #include "AppState.h"
+
+// Terrain headers
 #include "Terrain.h"
+
+// World Headers
+#include "Component.h"
+#include "GameObject.h"
+#include "GameObjectFactory.h"
+#include "GameWorld.h"
+#include "Service.h"
+
+// Component Headers
+#include "ColliderComponent.h"
+#include "TransformComponent.h"
+
 namespace JimmyGod {
 	App& MainApp();
 }

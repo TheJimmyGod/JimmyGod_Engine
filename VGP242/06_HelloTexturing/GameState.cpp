@@ -109,8 +109,8 @@ void GameState::Render()
 	mVertexShader.Bind();
 	mPixelShader.Bind();
 	mConstantBuffer.BindVS(0);
-	mSampler.Bind();
-	mTexture.Bind();
+	mSampler.BindPS();
+	mTexture.BindPS();
 	for (int i = 0; i < 2; i++)
 	{
 		auto matWorld1 = Matrix4::RotationY(mRotation.y);

@@ -160,6 +160,8 @@ namespace JimmyGod::Math
 
 			return mResult;
 		}
+
+		static Matrix4 Transform(const Vector3& translation, const Quaternion& rotation, const Vector3& scale);
 	};
 }
 

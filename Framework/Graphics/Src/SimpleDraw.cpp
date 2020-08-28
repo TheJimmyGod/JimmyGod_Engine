@@ -97,6 +97,33 @@ namespace
 			}
 		}
 
+		void AddAABB(const Math::AABB& aabb, const Color& color)
+		{
+			if (mVertexCount + 24 <= mMaxVertexCount)
+			{
+				float minX = aabb.center.x - aabb.extend.x;
+				float minY = aabb.center.y - aabb.extend.y;
+				float minZ = aabb.center.z - aabb.extend.z;
+				float maxX = aabb.center.x + aabb.extend.x;
+				float maxY = aabb.center.y + aabb.extend.y;
+				float maxZ = aabb.center.z + aabb.extend.z;
+
+
+				AddLine(Math::Vector3(minX, minY, minZ), Math::Vector3(minX, minY, maxZ), color);
+				AddLine(Math::Vector3(minX, minY, maxZ), Math::Vector3(maxX, minY, maxZ), color);
+				AddLine(Math::Vector3(maxX, minY, maxZ), Math::Vector3(maxX, minY, minZ), color);
+				AddLine(Math::Vector3(maxX, minY, minZ), Math::Vector3(minX, minY, minZ), color);
+				AddLine(Math::Vector3(minX, minY, minZ), Math::Vector3(minX, maxY, minZ), color);
+				AddLine(Math::Vector3(minX, minY, maxZ), Math::Vector3(minX, maxY, maxZ), color);
+				AddLine(Math::Vector3(maxX, minY, maxZ), Math::Vector3(maxX, maxY, maxZ), color);
+				AddLine(Math::Vector3(maxX, minY, minZ), Math::Vector3(maxX, maxY, minZ), color);
+				AddLine(Math::Vector3(minX, maxY, minZ), Math::Vector3(minX, maxY, maxZ), color);
+				AddLine(Math::Vector3(minX, maxY, maxZ), Math::Vector3(maxX, maxY, maxZ), color);
+				AddLine(Math::Vector3(maxX, maxY, maxZ), Math::Vector3(maxX, maxY, minZ), color);
+				AddLine(Math::Vector3(maxX, maxY, minZ), Math::Vector3(minX, maxY, minZ), color);
+			}
+		}
+
 		void AddFace(const Math::Vector3& v0, const Math::Vector3& v1, const Math::Vector3& v2, const Color& color)
 		{
 			if (mFillVertexCount + 3 < mMaxVertexCount)
@@ -318,6 +345,10 @@ void SimpleDraw::AddAABB(const Math::Vector3& center, float radius, const Color&
 {
 	sInstance->AddAABB(center,radius,color);
 }
+void SimpleDraw::AddAABB(const Math::AABB & aabb, const Color & color)
+{
+	sInstance->AddAABB(aabb, color);
+}
 void SimpleDraw::AddOBB(const Math::OBB & obb, const Color & color)
 {
 	sInstance->AddOBB(obb, color);
@@ -326,12 +357,11 @@ void SimpleDraw::AddTransform(const Math::Matrix4 & transform)
 {
 	auto r = Math::GetRight(transform);
 	auto u = Math::GetUp(transform);
-	auto l = Math::GetLook(transform);
+	auto l = Math::GetForward(transform);
 	auto p = Math::GetTranslation(transform);
-
-	//sInstance->AddLine(p, p + r, Colors::Red);
-	//sInstance->AddLine(p, p + u, Colors::Green);
-	//sInstance->AddLine(p, p + l, Colors::Blue);
+	sInstance->AddLine(p, p + r, Colors::Red);
+	sInstance->AddLine(p, p + u, Colors::Green);
+	sInstance->AddLine(p, p + l, Colors::Blue);
 }
 void SimpleDraw::AddBone(const Math::Matrix4 & transform)
 {

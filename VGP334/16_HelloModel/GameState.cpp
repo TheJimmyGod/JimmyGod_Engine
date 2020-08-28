@@ -407,7 +407,7 @@ void GameState::DrawDepthMap()
 		mDepthMapConstantBuffer.Update(&wvp);
 		/*mTankMeshBuffer.Draw();*/
 		mModel.Render();
-		DrawSkeleton(mModel.mSkeleton,)
+		//DrawSkeleton(mModel.mSkeleton,)
 	}
 }
 

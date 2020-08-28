@@ -153,16 +153,30 @@
   <ItemGroup>
     <ClInclude Include="Inc\App.h" />
     <ClInclude Include="Inc\AppState.h" />
+    <ClInclude Include="Inc\ColliderComponent.h" />
     <ClInclude Include="Inc\Common.h" />
+    <ClInclude Include="Inc\Component.h" />
+    <ClInclude Include="Inc\GameObject.h" />
+    <ClInclude Include="Inc\GameObjectFactory.h" />
+    <ClInclude Include="Inc\GameWorld.h" />
     <ClInclude Include="Inc\JimmyGodEngine.h" />
+    <ClInclude Include="Inc\Service.h" />
     <ClInclude Include="Inc\Terrain.h" />
+    <ClInclude Include="Inc\TransformComponent.h" />
     <ClInclude Include="Src\Precompiled.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\App.cpp" />
+    <ClCompile Include="Src\ColliderComponent.cpp" />
+    <ClCompile Include="Src\Component.cpp" />
+    <ClCompile Include="Src\GameObject.cpp" />
+    <ClCompile Include="Src\GameObjectFactory.cpp" />
+    <ClCompile Include="Src\GameWorld.cpp" />
     <ClCompile Include="Src\JimmyGodEngine.cpp" />
     <ClCompile Include="Src\Precompiled.cpp" />
+    <ClCompile Include="Src\Service.cpp" />
     <ClCompile Include="Src\Terrain.cpp" />
+    <ClCompile Include="Src\TransformComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Framework\Core\Core.vcxproj">

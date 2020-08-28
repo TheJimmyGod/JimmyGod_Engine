@@ -59,7 +59,7 @@ void GameState::Terminate()
 	mConstant.Terminate();
 	mDomePixelShader.Terminate();
 	mDomeVertexShader.Terminate();
-	mSampler.Bind();
+	mSampler.Terminate();
 }
 
 void GameState::Update(float deltaTime)
@@ -90,7 +90,7 @@ void GameState::Update(float deltaTime)
 
 	//SimpleDraw::AddDisplacement(25.0f);
 	//SimpleDraw::AddBox(15, Colors::Aqua);
-	SimpleDraw::AddSphere(200, 12, 720, Colors::White);
+	//SimpleDraw::AddSphere(200, 12, 720);
 
 	//mRotation += deltaTime;
 }
@@ -106,9 +106,9 @@ void GameState::Render()
 
 	mDomeVertexShader.Bind();
 	mDomePixelShader.Bind();
-	mSampler.Bind();
+	mSampler.BindPS();
 
-	mSpace.Bind();
+	mSpace.BindPS();
 	mConstant.Update(&matWVP);
 	mConstant.BindVS(0);
 	mDomeMeshBuffer.Draw();

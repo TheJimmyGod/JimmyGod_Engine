@@ -10,6 +10,7 @@
 // Standard Headers
 #include <algorithm>
 #include <array>
+#include <atomic>
 #include <chrono>
 #include <cstdio>
 #include <cstdint>
@@ -24,3 +25,8 @@
 #include <variant>
 #include <vector>
 #include "Window.h"
+
+#include <RapidJson/Inc/document.h>
+#include <RapidJson/Inc/filereadstream.h>
+
+#include <RapidJson/Inc/filewritestream.h>
