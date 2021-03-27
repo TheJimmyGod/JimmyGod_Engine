@@ -5,6 +5,13 @@ using namespace JimmyGod;
 using namespace JimmyGod::Math;
 using namespace JimmyGod::Graphics;
 
+META_DERIVED_BEGIN(TransformComponent, Component)
+	META_FIELD_BEGIN
+		META_FIELD(pos, "Position")
+		META_FIELD(rot, "Rotation")
+		META_FIELD(scl, "Scale")
+	META_FIELD_END
+META_CLASS_END
 
 void TransformComponent::Initialize()
 {

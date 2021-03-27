@@ -24,12 +24,27 @@ namespace JimmyGod
 		}
 
 		template <class ServiceType>
+		const ServiceType* GetService() const
+		{
+			for (auto& service : mServices)
+			{
+				if (service->GetMetaClass() == ServiceType::StaticGetMetaClass())
+					return static_cast<const ServiceType*>(service.get());
+			}
+			return nullptr;
+			// HACK - assume the first service is the service we want
+			//auto iter = mServices.begin();
+			//return static_cast<ServiceType*>(iter->get());
+		}
+
+		template <class ServiceType>
 		ServiceType* GetService()
 		{
-			// HACK - assume the first service is the service we want
-			auto iter = mServices.begin();
-			return static_cast<ServiceType*>(iter->get());
+			auto constMe = static_cast<const GameWorld*>(this);
+			return const_cast<ServiceType*>(constMe->GetService<ServiceType>());
 		}
+
+		void LoadLevel(const std::filesystem::path& levelFileName);
 
 		GameObjectHandle Create(const std::filesystem::path& templateFileName, std::string name);
 		GameObjectHandle Find(const std::string& name);

@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="Inc\App.h" />
     <ClInclude Include="Inc\AppState.h" />
+    <ClInclude Include="Inc\CameraService.h" />
     <ClInclude Include="Inc\ColliderComponent.h" />
     <ClInclude Include="Inc\Common.h" />
     <ClInclude Include="Inc\Component.h" />
@@ -163,16 +164,19 @@
     <ClInclude Include="Inc\Service.h" />
     <ClInclude Include="Inc\Terrain.h" />
     <ClInclude Include="Inc\TransformComponent.h" />
+    <ClInclude Include="Src\MetaRegistration.h" />
     <ClInclude Include="Src\Precompiled.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\App.cpp" />
+    <ClCompile Include="Src\CameraService.cpp" />
     <ClCompile Include="Src\ColliderComponent.cpp" />
     <ClCompile Include="Src\Component.cpp" />
     <ClCompile Include="Src\GameObject.cpp" />
     <ClCompile Include="Src\GameObjectFactory.cpp" />
     <ClCompile Include="Src\GameWorld.cpp" />
     <ClCompile Include="Src\JimmyGodEngine.cpp" />
+    <ClCompile Include="Src\MetaRegistration.cpp" />
     <ClCompile Include="Src\Precompiled.cpp" />
     <ClCompile Include="Src\Service.cpp" />
     <ClCompile Include="Src\Terrain.cpp" />
@@ -190,6 +194,9 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Framework\Math\Math.vcxproj">
       <Project>{609f4881-107d-446c-9338-6f5876c09297}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Framework\ML\ML.vcxproj">
+      <Project>{0ebc6718-87e3-4c66-9dec-041ac66a47e6}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\Framework\Physics\Physics.vcxproj">
       <Project>{2b35ebdc-c562-4093-b1ec-fe94727ff81f}</Project>

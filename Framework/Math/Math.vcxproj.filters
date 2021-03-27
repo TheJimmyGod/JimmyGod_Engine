@@ -43,6 +43,9 @@
     <ClInclude Include="Inc\Vector3.h">
       <Filter>Inc\LinearAlgebra</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\MetaRegistration.h">
+      <Filter>Inc\Meta</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\EngineMath.cpp">
@@ -50,6 +53,9 @@
     </ClCompile>
     <ClCompile Include="Src\Precompiled.cpp">
       <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\MetaRegistration.cpp">
+      <Filter>Src\Meta</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -64,6 +70,12 @@
     </Filter>
     <Filter Include="Inc\Geometry">
       <UniqueIdentifier>{3f577944-52a0-4e59-bb72-885b8f699e28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inc\Meta">
+      <UniqueIdentifier>{e87802c7-5ba9-4d79-9bf2-1394372f8928}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Meta">
+      <UniqueIdentifier>{02313184-6eeb-469d-af03-58c423d7de48}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

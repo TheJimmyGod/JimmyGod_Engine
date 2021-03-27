@@ -45,6 +45,32 @@ void GameWorld::Terminate()
 	mInitialized = false;
 }
 
+void GameWorld::LoadLevel(const std::filesystem::path & levelFileName)
+{
+	using namespace rapidjson;
+	FILE* file = nullptr;
+	fopen_s(&file, levelFileName.u8string().c_str(), "r");
+
+	char readBuffer[65536];
+	FileReadStream is(file, readBuffer, sizeof(readBuffer));
+
+	Document document;
+	document.ParseStream(is);
+	if (document.HasMember("GameObjects") && document["GameObjects"].IsArray())
+	{
+		auto gameObjects = document["GameObjects"].GetArray();
+		for (auto& gameObject : gameObjects)
+		{
+			auto jsonObject = gameObject.GetObjectW();
+			auto gameObjectTemplate = jsonObject["Template"].GetString();
+			auto gameObjectName = jsonObject["Name"].GetString();
+			auto handle = Create(gameObjectTemplate, gameObjectName);
+			//handle->Deserialize(jsonObject);
+		}
+	}
+	fclose(file);
+}
+
 GameObjectHandle GameWorld::Create(const std::filesystem::path & templateFileName, std::string name)
 {
 	auto gameObject = GameObjectFactory::Create(*mGameObjectAllocator, templateFileName);

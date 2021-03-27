@@ -97,6 +97,8 @@ private:
 	JimmyGod::Math::Vector3 mTankRotation = 0.0f;
 	float mTankSpacing = 20.0f;
 
+	JimmyGod::Math::Vector3 pos = { 10.0f,0.0f,10.0f };
+
 	SettingsData mSettings;
 
 	// Shadow

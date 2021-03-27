@@ -110,7 +110,7 @@ void GameState::Render()
 
 	auto matView = mCamera.GetViewMatrix();
 	auto matProj = mCamera.GetPerspectiveMatrix();
-
+	// Space
 	auto matTranslation0 = Matrix4::Translation(Vector3(0.0f, 0.0f, 0.0f));
 	auto matSpace = matTranslation0;
 	auto matWVP = Transpose(matSpace* matView * matProj);
@@ -126,6 +126,7 @@ void GameState::Render()
 	mConstant.BindPS(0);
 	mDomeMeshBuffer.Draw();
 
+	// Earth
 	auto matTrans = Matrix4::Translation({ -1.25f,0.0f,0.0f });
 	auto matRot = Matrix4::RotationX(mRotation.x) * Matrix4::RotationY(mRotation.y);
 	auto matWorld = matRot * matTrans;

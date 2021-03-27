@@ -179,7 +179,7 @@ void GameState::DebugUI()
 	if (ImGui::Button("Cloth!"))
 	{
 		particles.clear();
-		float size = 7.0f;
+		float size = 10.0f;
 		mPhysicsWorld.Clear(true);
 		const float OffsetX = (size) * 0.5f;
 		const float OffsetY = (size) * 0.5f + 20.0f;
@@ -201,10 +201,15 @@ void GameState::DebugUI()
 			{
 				if(y == 0 && (x == size -1 || x == 0))
 					mPhysicsWorld.AddConstraint(new Fixed(particles[static_cast<size_t>(y * size + x)]));
-				if(x + 1 < size)
+				if (x + 1 < size)
+				{
 					mPhysicsWorld.AddConstraint(new Spring(particles[static_cast<size_t>(y*size + x)], particles[static_cast<size_t>(y*size + x + 1)]));
+
+				}
 				if (y + 1 < size)
+				{
 					mPhysicsWorld.AddConstraint(new Spring(particles[static_cast<size_t>(y*size + x)], particles[static_cast<size_t>((y + 1)*size + x)]));
+				}
 			}
 		}
 	}
@@ -212,7 +217,7 @@ void GameState::DebugUI()
 	{
 		const float size = 1.05f;
 		mPhysicsWorld.Clear(true);
-		for (int i = 0; i < 20; ++i)
+		for (int i = 0; i < 10; ++i)
 		{
 			auto P1 = new Particle();
 			P1->radius = 0.1f;

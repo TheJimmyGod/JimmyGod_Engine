@@ -16,7 +16,7 @@ private:
 
 	JimmyGod::GameWorld mWorld;
 
-	JimmyGod::Graphics::Camera mCamera;
+	JimmyGod::CameraService* mCamera = nullptr;
 	float mTime = 0.0f;
 	
 };

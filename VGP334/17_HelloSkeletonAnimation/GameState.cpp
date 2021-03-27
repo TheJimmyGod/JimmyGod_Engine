@@ -46,7 +46,7 @@ void GameState::Initialize()
 
 	mModel.Initialize("../../Assets/Models/Mutant_Walking.model");
 	
-	mGroundMesh = MeshBuilder::CreatePlane(300.0f, 16, 16, false);
+	mGroundMesh = MeshBuilder::CreatePlane(1500.0f, 16, 16, false);
 	mGroundMeshBuffer.Initialize(mGroundMesh);
 
 	mTransformBuffer.Initialize();
@@ -106,7 +106,7 @@ void GameState::Initialize()
 
 	mTerrain.Initialize(10, 10, 1.0f);
 	mTerrain.SetHeightScale(1.0f);
-	mTerrain.LoadHeightMap("../../Assets/HeightMaps/heightmap_200x200.raw");
+	//mTerrain.LoadHeightMap("../../Assets/HeightMaps/heightmap_200x200.raw");
 
 	mBoneTransformBuffer.Initialize();
 	mAnimator.Initialize(mModel);
@@ -272,9 +272,6 @@ void GameState::Update(float deltaTime)
 
 	SimpleDrawCamera(mLightCamera);
 
-	mAnimationTimer += deltaTime;
-
-
 	mAnimator.Update(deltaTime);
 }
 
@@ -391,12 +388,9 @@ void GameState::DrawDepthMap()
 	for (auto& position : mTankPositions)
 	{
 		auto matWorld = Matrix4::Scaling(0.01f);
-		//auto matWorld = matRot * matTrans;
 		auto wvp = Transpose(matWorld * matViewLight * matProjLight);
 		mDepthMapConstantBuffer.Update(&wvp);
-		/*mTankMeshBuffer.Draw();*/
 		mModel.Render();
-		//DrawSkeleton(mModel.mSkeleton, mBoneMatrix);
 	}
 }
 
@@ -437,32 +431,32 @@ void GameState::DrawScene()
 	mBoneTransformBuffer.BindVS(5);
 
 	auto matWorld = Matrix4::Scaling(0.01f);
-
 	TransformData transformData;
 	transformData.world = Transpose(matWorld);
 	transformData.wvp = Transpose(matWorld * matView * matProj);
 	transformData.viewPosition = mActiveCamera->GetPosition();
 	mTransformBuffer.Update(&transformData);
-
-	if(!showSkeleton)
-		mModel.Render();
-	auto wvpLight = Transpose(matWorld * matViewLight * matProjLight);
-	mShadowConstantBuffer.Update(&wvpLight);
-	
 	BoneTransformData boneTransformData{};
 
 	for (size_t i = 0; i < mAnimator.GetBoneMatrices().size(); ++i)
 	{
-		
-		boneTransformData.BoneTransforms[i] = Transpose(mModel.mSkeleton.bones[i]->offsetTransform * mAnimator.GetBoneMatrices()[i]);
-
+		boneTransformData.BoneTransforms[i] = Transpose(mModel.mSkeleton.bones[i]->offsetTransform * mAnimator.GetBoneMatrices()[i] /** Matrix4::Translation(pos)*/);
 	}
-
-	for (auto& b : mModel.mSkeleton.bones)
+	if(!showSkeleton)
+		mModel.Render();
+	else
 	{
-		DrawSkeleton(b.get(), mAnimator.GetBoneMatrices());
+		for (auto& b : mModel.mSkeleton.bones)
+		{
+			DrawSkeleton(b.get(), mAnimator.GetBoneMatrices());
+		}
+
 	}
+	auto wvpLight = Transpose(matWorld * matViewLight * matProjLight);
+	mShadowConstantBuffer.Update(&wvpLight);
+
 	mBoneTransformBuffer.Update(&boneTransformData);
+
 	auto matWorld2 = Matrix4::Identity;
 	TransformData transformData2;
 	transformData2.world = Transpose(matWorld2);

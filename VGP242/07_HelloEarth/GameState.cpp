@@ -93,7 +93,7 @@ void GameState::Render()
 	auto matSpace = matTranslation0 * matWorld0;
 	auto matWVP0 = Transpose(matSpace* matView * matProj);
 	mConstantBuffer.Update(&matWVP0);
-	mSpace.BindPS();
+	mSpace.BindPS(0);
 	mMeshDomeBuffer.Draw();
 
 	auto matWorld = Matrix4::RotationY(mRotation.y);
@@ -102,7 +102,7 @@ void GameState::Render()
 	auto matSun = matTranslation * matWorld;
 	auto matWVP = Transpose(matScl*matSun* matView * matProj);
 	mConstantBuffer.Update(&matWVP);
-	mSun.BindPS();
+	mSun.BindPS(0);
 	mMeshBuffer.Draw();
 
 	auto matWorld1 = Matrix4::RotationY(mRotation.y*1.3f);
@@ -111,7 +111,7 @@ void GameState::Render()
 	auto matEarth = matTranslation1 * matWorld1;
 	auto matWVP1 = Transpose(matScl1 * matEarth * matView * matProj);
 	mConstantBuffer.Update(&matWVP1);
-	mEarth.BindPS();
+	mEarth.BindPS(0);
 	mMeshBuffer.Draw();
 
 	auto matWorld2 = Matrix4::RotationY(mRotation.y * 2.0f);
@@ -121,7 +121,7 @@ void GameState::Render()
 	auto matMoon = matWorld2 * matTranslation2 * moonSpin;
 	auto matWVP2 = Transpose(matScl2 * matMoon * matEarth * matView * matProj);
 	mConstantBuffer.Update(&matWVP2);
-	mMoon.BindPS();
+	mMoon.BindPS(0);
 	mMeshBuffer.Draw();
 
 	auto matWorld3 = Matrix4::RotationY(mRotation.y * 1.2f);
@@ -139,7 +139,7 @@ void GameState::Render()
 	auto matVenus = matTranslation4 * matWorld4;
 	auto matWVP4 = Transpose(matScl4 * matVenus * matView * matProj);
 	mConstantBuffer.Update(&matWVP4);
-	mVenus.BindPS();
+	mVenus.BindPS(0);
 	mMeshBuffer.Draw();
 
 	auto matWorld5 = Matrix4::RotationY(mRotation.y * 0.79f);
@@ -148,7 +148,7 @@ void GameState::Render()
 	auto matMars = matTranslation5 * matWorld5;
 	auto matWVP5 = Transpose(matScl5 * matMars * matView * matProj);
 	mConstantBuffer.Update(&matWVP5);
-	mMars.BindPS();
+	mMars.BindPS(0);
 	mMeshBuffer.Draw();
 
 	auto matWorld6 = Matrix4::RotationY(mRotation.y * 0.22f);
@@ -157,7 +157,7 @@ void GameState::Render()
 	auto matJupiter = matTranslation6 * matWorld6;
 	auto matWVP6 = Transpose(matScl6 * matJupiter * matView * matProj);
 	mConstantBuffer.Update(&matWVP6);
-	mJupiter.BindPS();
+	mJupiter.BindPS(0);
 	mMeshBuffer.Draw();
 
 	auto matWorld7 = Matrix4::RotationY(mRotation.y * 0.31f);
@@ -166,7 +166,7 @@ void GameState::Render()
 	auto matSaturn = matTranslation7*matWorld7;
 	auto matWVP7 = Transpose(matScl7 * matSaturn * matView * matProj);
 	mConstantBuffer.Update(&matWVP7);
-	mSaturn.BindPS();
+	mSaturn.BindPS(0);
 	mMeshBuffer.Draw();
 
 	auto matWorld8 = Matrix4::RotationY(mRotation.y * 0.4f);
@@ -175,7 +175,7 @@ void GameState::Render()
 	auto matUranos = matTranslation8 * matWorld8;
 	auto matWVP8 = Transpose(matScl8 * matUranos * matView * matProj);
 	mConstantBuffer.Update(&matWVP8);
-	mUranos.BindPS();
+	mUranos.BindPS(0);
 	mMeshBuffer.Draw();
 
 	auto matWorld9 = Matrix4::RotationY(mRotation.y * 0.54f);
@@ -184,7 +184,7 @@ void GameState::Render()
 	auto matNaptune = matTranslation9 * matWorld9;
 	auto matWVP9 = Transpose(matScl9 * matNaptune * matView * matProj);
 	mConstantBuffer.Update(&matWVP9);
-	mNeptune.BindPS();
+	mNeptune.BindPS(0);
 	mMeshBuffer.Draw();
 
 	/*context->Draw(mVertices.size(), 0);*/ // This is for when we don't have an index buffer

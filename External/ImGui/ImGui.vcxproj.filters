@@ -7,6 +7,15 @@
     <Filter Include="Src">
       <UniqueIdentifier>{cfa952fc-cb55-4f7b-9ce2-3ce02220c39f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Inc\Applog">
+      <UniqueIdentifier>{6280faa0-06c5-4623-96f3-6591ba9aabee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inc\ImPlot">
+      <UniqueIdentifier>{10e56b28-934f-4de6-b855-f0c29223054d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\ImPlot">
+      <UniqueIdentifier>{43dad310-d767-4758-917a-d1b5cddae132}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\imconfig.h">
@@ -33,6 +42,12 @@
     <ClInclude Include="Src\imgui_internal.h">
       <Filter>Src</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Applog.h">
+      <Filter>Inc\Applog</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\ImPlot.h">
+      <Filter>Inc\ImPlot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\imgui.cpp">
@@ -52,6 +67,9 @@
     </ClCompile>
     <ClCompile Include="Src\imgui_widgets.cpp">
       <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ImPlot.cpp">
+      <Filter>Src\ImPlot</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

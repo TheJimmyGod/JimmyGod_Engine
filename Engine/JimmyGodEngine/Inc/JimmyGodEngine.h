@@ -10,6 +10,9 @@
 #include "App.h"
 #include "AppState.h"
 
+// Service headers
+#include "CameraService.h"
+
 // Terrain headers
 #include "Terrain.h"
 

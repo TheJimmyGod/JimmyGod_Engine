@@ -87,7 +87,7 @@ void PhysicsWorld::AccumulateForces()
 
 void PhysicsWorld::Integrate()
 {
-	const float timeStepSqr = Spr(mSettings.timeStep);
+	const float timeStepSqr = Sqr(mSettings.timeStep);
 	for (auto p : mParticles)
 	{
 		Math::Vector3 displacement = (p->position - p->lastPosition)

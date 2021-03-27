@@ -2,6 +2,7 @@
 
 namespace JimmyGod
 {
+
 	class Component;
 	class GameObject;
 	class GameWorld;
@@ -13,6 +14,8 @@ namespace JimmyGod
 	class GameObject final
 	{
 	public:
+		META_CLASS_DECLARE
+
 		GameObject() = default;
 		GameObject(const GameObject&) = delete;
 		GameObject& operator= (const GameObject&) = delete;
@@ -23,6 +26,8 @@ namespace JimmyGod
 		void Update(float deltaTime);
 		void Render();
 		void DebugUI();
+
+		Component* AddComponent(const Core::Meta::MetaClass* metaClass);
 
 		template<class ComponentType>
 		ComponentType* AddComponent()
@@ -36,13 +41,30 @@ namespace JimmyGod
 		}
 
 		template <class ComponentType>
+		const ComponentType* GetComponent() const
+		{
+			for (auto& component : mComponent)
+			{
+				if (component->GetMetaClass() == ComponentType::StaticGetMetaClass())
+					return static_cast<const ComponentType*>(component.get());
+			}
+			return nullptr;
+		}
+
+		template <class ComponentType>
 		ComponentType* GetComponent()
 		{
-			for(aut)
-
+			const GameObject* constMe = static_cast<const GameObject*>(this);
+			return const_cast<ComponentType*>(constMe->GetComponent<ComponentType>());
+			//for (auto& component : mComponent)
+			//{
+			//	if (component->GetMetaClass() == ComponentType::StaticGetMetaClass())
+			//		return static_cast<T*>(component.get());
+			//}
+			//return nullptr;
 			// HACK - assume the first component is the component we want
-			auto iter = mComponent.begin();
-			return static_cast<ComponentType*>(iter->get());
+			//auto iter = mComponent.begin();
+			//return static_cast<ComponentType*>(iter->get());
 		}
 
 		GameWorld& GetWorld() { return *mWorld; }

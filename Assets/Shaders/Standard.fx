@@ -1,4 +1,4 @@
-// Description: Standard shader for OmegaEngine.
+// Description: Standard shader for JimmyGod Engine.
 
 cbuffer TransformBuffer : register(b0)
 {

@@ -8,6 +8,13 @@ using namespace JimmyGod;
 using namespace JimmyGod::Math;
 using namespace JimmyGod::Graphics;
 
+META_DERIVED_BEGIN(ColliderComponent, Component)
+	META_FIELD_BEGIN
+		META_FIELD(center, "Center")
+		META_FIELD(extend, "Extend")
+	META_FIELD_END
+META_CLASS_END
+
 void ColliderComponent::Initialize() // simliar Start() as Monobehavior in Unity
 {
 	mTransformComponent = GetOwner().GetComponent<TransformComponent>();

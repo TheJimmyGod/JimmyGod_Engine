@@ -55,7 +55,7 @@ void GameState::Initialize()
 	mNDCMesh = MeshBuilder::CreateNDCQuad();
 	mScreenQuadBuffer.Initialize(mNDCMesh);
 	mPostProcessingVertexShader.Initialize("../../Assets/Shaders/PostProcess.fx", VertexPX::Format);
-	mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSGaussian");
+	mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSNoProcessing");
 }
 
 void GameState::Terminate()

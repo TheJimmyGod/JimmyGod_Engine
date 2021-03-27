@@ -1,0 +1,12 @@
+{
+  "GameObjects": [
+    {
+      "Template": "longBox.json",
+      "Name": "longBox"
+    },
+    {
+      "Template": "fatBox.json",
+      "Name": "fatBox"
+    }
+  ]
+}

@@ -15,6 +15,9 @@ public:
 
 	void BindVS(uint32_t slot = 0) const;
 	void BindPS(uint32_t slot = 0) const;
+
+	void* GetRawData() { return mShaderResourceView; }
+
 private:
 	ID3D11ShaderResourceView* mShaderResourceView = nullptr;
 };

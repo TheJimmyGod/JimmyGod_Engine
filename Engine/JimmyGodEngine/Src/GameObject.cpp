@@ -5,6 +5,10 @@
 
 using namespace JimmyGod;
 
+META_CLASS_BEGIN(GameObject)
+	META_NO_FIELD
+META_CLASS_END
+
 void GameObject::Initialize()
 {
 	ASSERT(!mInitialized, "GameObject -- Game object alread initialized!");
@@ -32,4 +36,12 @@ void GameObject::DebugUI()
 {
 	for (auto& component : mComponent)
 		component->DebugUI();
+}
+
+Component * GameObject::AddComponent(const Core::Meta::MetaClass * metaClass)
+{
+	Component* newComponent = static_cast<Component*>(metaClass->Create());
+	newComponent->mOwner = this;
+	mComponent.emplace_back(std::unique_ptr<Component>(newComponent));
+	return newComponent;
 }

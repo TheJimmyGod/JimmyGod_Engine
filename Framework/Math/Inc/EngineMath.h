@@ -11,8 +11,17 @@
 #include "Ray.h"
 #include "Sphere.h"
 #include "OBB.h"
+
+#include "MetaRegistration.h"
+
 namespace JimmyGod::Math
 {
+	namespace
+	{
+		std::random_device sRandomDevice{};
+		std::mt19937 sRandomEngine{ sRandomDevice() };
+	}
+
 	template<class T>
 	constexpr T Min(T a, T b)
 	{
@@ -42,7 +51,7 @@ namespace JimmyGod::Math
 		return value >= 0.0f ? value : -value;
 	}
 
-	constexpr float Spr(float value)
+	constexpr float Sqr(float value)
 	{
 		return value * value;
 	}
@@ -51,6 +60,17 @@ namespace JimmyGod::Math
 	{
 		return (a.x*b.x) + (a.y*+b.y) + (a.z*+b.z);
 	}
+
+	inline float MagnitudeSqr(const Vector2& v)
+	{
+		return (v.x * v.x) + (v.y * v.y);
+	}
+
+	inline float Distance(const Vector2& a, const Vector2& b)
+	{
+		return sqrtf(MagnitudeSqr(a-b));
+	}
+
 
 	constexpr Vector3 Cross(const Vector3& a, const Vector3& b)
 	{
@@ -195,6 +215,22 @@ namespace JimmyGod::Math
 		}
 		return Vector3(v.x / magnitude, v.y / magnitude, v.z / magnitude);
 	}
+
+	inline float RandomNormal(float mean, float stdev)
+	{
+		return std::normal_distribution<float>{mean, stdev}(sRandomEngine);
+	}
+
+	inline float RandomFloat(float min =0.0f, float max=1.0f)
+	{
+		return std::uniform_real_distribution<float>{min, max}(sRandomEngine);
+	}
+
+	inline int RandomInt(int min = 0, int max = std::numeric_limits<int>::max())
+	{
+		return std::uniform_int_distribution<>{ min, max }(sRandomEngine);
+	}
+
 #pragma region Quaternion Helper Functions
 
 	constexpr float Dot(const Quaternion& from, const Quaternion& to)

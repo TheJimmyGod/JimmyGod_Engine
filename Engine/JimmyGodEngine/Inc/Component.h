@@ -7,6 +7,8 @@ namespace JimmyGod
 	class Component
 	{
 	public:
+		META_CLASS_DECLARE
+
 		Component() = default;
 
 		Component(const Component&) = delete;

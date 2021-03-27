@@ -34,6 +34,15 @@
     <Filter Include="Src\Component">
       <UniqueIdentifier>{a0911d07-162b-41ce-933e-4f497f7013e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Meta">
+      <UniqueIdentifier>{9887e4ff-9515-40b9-947c-be8f3ff36e8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inc\Services">
+      <UniqueIdentifier>{84a814a4-aa73-4224-b262-b438ec1b0a4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Services">
+      <UniqueIdentifier>{e0f94671-b664-4098-bed5-2a0a56bbc2c6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\Common.h">
@@ -75,6 +84,12 @@
     <ClInclude Include="Inc\Service.h">
       <Filter>Inc\World</Filter>
     </ClInclude>
+    <ClInclude Include="Src\MetaRegistration.h">
+      <Filter>Src\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\CameraService.h">
+      <Filter>Inc\Services</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\JimmyGodEngine.cpp">
@@ -109,6 +124,12 @@
     </ClCompile>
     <ClCompile Include="Src\Service.cpp">
       <Filter>Src\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\MetaRegistration.cpp">
+      <Filter>Src\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\CameraService.cpp">
+      <Filter>Src\Services</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

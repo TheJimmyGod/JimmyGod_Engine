@@ -8,6 +8,8 @@ namespace JimmyGod
 	class ColliderComponent final : public Component
 	{
 	public:
+		META_CLASS_DECLARE
+
 		void EnableDebug() { if (!isDebugUI) isDebugUI = true; else isDebugUI = false; }
 
 		void Initialize() override;
