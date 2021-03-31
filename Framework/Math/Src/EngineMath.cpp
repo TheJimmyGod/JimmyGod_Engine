@@ -20,6 +20,13 @@ const Vector4 Vector4::XAxis{ Vector4{ 1.0f,0.0f,0.0f,0.0f } };
 const Vector4 Vector4::YAxis{ Vector4{ 0.0f,1.0f,0.0f,0.0f } };
 const Vector4 Vector4::ZAxis{ Vector4{ 0.0f,0.0f,1.0f,0.0f } };
 
+Matrix3 Matrix3::Inverse(const Matrix3& m)
+{
+	const float determinant = Determinant(m);
+	const float invDet = 1.0f / determinant;
+	return Adjoint(m) * invDet;
+}
+
 const Matrix4 Matrix4::Identity
 {
 	Matrix4{1.0f, 0.0f, 0.0f, 0.0f,
@@ -340,6 +347,77 @@ bool JimmyGod::Math::Intersect(const Ray & ray, const Plane & plane, float & dis
 	return true;
 }
 
+bool JimmyGod::Math::Intersect(const LineSegment& a, const LineSegment& b)
+{
+	// http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline2d/
+
+	float ua = ((a.to.x - a.from.x) * (b.from.y - a.from.y)) - ((a.to.y - a.from.y) * (b.from.x - a.from.x));
+	float ub = ((b.to.x - b.from.x) * (b.from.y - a.from.y)) - ((b.to.y - b.from.y) * (b.from.x - a.from.x));
+	float denom = ((a.to.y - a.from.y) * (b.to.x - b.from.x)) - ((a.to.x - a.from.x) * (b.to.y - b.from.y));
+
+	// First check for special cases
+	if (denom == 0.0f)
+	{
+		if (ua == 0.0f && ub == 0.0f)
+		{
+			// The line segments are the same
+			return true;
+		}
+		else
+		{
+			// The line segments are parallel
+			return false;
+		}
+	}
+
+	ua /= denom;
+	ub /= denom;
+
+	if (ua < 0.0f || ua > 1.0f || ub < 0.0f || ub > 1.0f)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool JimmyGod::Math::Intersect(const Circle& c, const LineSegment& l, Vector2* closestPoint)
+{
+	Vector2 startToCenter = c.center - l.from;
+	Vector2 startToEnd = l.to - l.from;
+	float len = Magnitude(startToEnd);
+	Vector2 dir = startToEnd / len;
+
+	// Find the closest point to the line segment
+	float projection = Dot(startToCenter, dir);
+	Vector2 point;
+	if (projection > len)
+	{
+		point = l.to;
+	}
+	else if (projection < 0.0f)
+	{
+		point = l.from;
+	}
+	else
+	{
+		point = l.from + (dir * projection);
+	}
+
+	// Check if the closest point is within the circle
+	if (!PointInCircle(point, c))
+		return false;
+
+	if (closestPoint)
+		*closestPoint = point;
+
+	return true;
+}
+
+bool JimmyGod::Math::Intersect(const LineSegment& l, const Circle& c)
+{
+	return Intersect(c, l);
+}
 
 Matrix4 JimmyGod::Math::Matrix4::Transform(const Vector3& translation, const Quaternion& rotation, const Vector3& scale)
 {

@@ -156,6 +156,7 @@
     <ClInclude Include="Inc\Common.h" />
     <ClInclude Include="Inc\ConstantBuffer.h" />
     <ClInclude Include="Inc\DebugUI.h" />
+    <ClInclude Include="Inc\Font.h" />
     <ClInclude Include="Inc\Graphics.h" />
     <ClInclude Include="Inc\GraphicsSystem.h" />
     <ClInclude Include="Inc\KeyFrame.h" />
@@ -173,7 +174,9 @@
     <ClInclude Include="Inc\SimpleDraw.h" />
     <ClInclude Include="Inc\Skeleton.h" />
     <ClInclude Include="Inc\SkeletonIO.h" />
+    <ClInclude Include="Inc\SpriteRenderer.h" />
     <ClInclude Include="Inc\Texture.h" />
+    <ClInclude Include="Inc\TextureManager.h" />
     <ClInclude Include="Inc\VertexTypes.h" />
     <ClInclude Include="Inc\VertexShader.h" />
     <ClInclude Include="Src\D3DUtil.h" />
@@ -208,7 +211,9 @@
     <ClCompile Include="Src\SimpleDraw.cpp" />
     <ClCompile Include="Src\Skeleton.cpp" />
     <ClCompile Include="Src\SkeletonIO.cpp" />
+    <ClCompile Include="Src\SpriteRenderer.cpp" />
     <ClCompile Include="Src\Texture.cpp" />
+    <ClCompile Include="Src\TextureManager.cpp" />
     <ClCompile Include="Src\VertexShader.cpp" />
   </ItemGroup>
   <ItemGroup>

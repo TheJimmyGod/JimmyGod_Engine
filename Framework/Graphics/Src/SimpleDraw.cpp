@@ -216,6 +216,46 @@ namespace
 			}
 		}
 
+		void AddScreenCircle(const Math::Circle& circle, const Color& color)
+		{
+			// Check if we have enough space
+			if (m2DVertexCount + 32 <= mMaxVertexCount)
+			{
+				float x = circle.center.x;
+				float y = circle.center.y;
+				float r = circle.radius;
+
+				// Add line
+				const float kAngle = Math::Constants::Pi / 8.0f;
+				for (uint32_t i = 0; i < 16; ++i)
+				{
+					const float alpha = i * kAngle;
+					const float beta = alpha + kAngle;
+					const float x0 = x + (r * sin(alpha));
+					const float y0 = y + (r * cos(alpha));
+					const float x1 = x + (r * sin(beta));
+					const float y1 = y + (r * cos(beta));
+					m2DLineVertices[m2DVertexCount++] = { Math::Vector3(x0, y0, 0.0f), color };
+					m2DLineVertices[m2DVertexCount++] = { Math::Vector3(x1, y1, 0.0f), color };
+				}
+			}
+
+			ASSERT(m2DVertexCount < mMaxVertexCount, "[SimpleDraw] Too many vertices!");
+		}
+
+		void AddScreenLine(const Math::Vector2& v0, const Math::Vector2& v1, const Color& color)
+		{
+			// Check if we have enough space
+			if (m2DVertexCount + 2 <= mMaxVertexCount)
+			{
+				// Add line
+				m2DLineVertices[m2DVertexCount++] = { Math::Vector3(v0.x, v0.y, 0.0f), color };
+				m2DLineVertices[m2DVertexCount++] = { Math::Vector3(v1.x, v1.y, 0.0f), color };
+			}
+
+			ASSERT(m2DVertexCount < mMaxVertexCount, "[SimpleDraw] Too many vertices!");
+		}
+
 		void AddOBB(const Math::OBB& obb, const Color& color)
 		{
 			Math::Matrix4 matTrans = Math::Matrix4::Translation(obb.center);
@@ -303,6 +343,7 @@ namespace
 		uint32_t mVertexCount = 0;
 		uint32_t mMaxVertexCount = 0;
 		uint32_t mFillVertexCount = 0;
+		uint32_t m2DVertexCount = 0;
 	};
 
 	unique_ptr<SimpleDrawImpl> sInstance;
@@ -383,6 +424,17 @@ void SimpleDraw::AddGroundPlane(float size, const Color & color)
 		sInstance->AddLine({-halfSize,0.0f,i}, {halfSize,0.0f,i}, color);
 	}
 }
+
+void SimpleDraw::AddScreenCircle(const Math::Circle& circle, const Color& color)
+{
+	sInstance->AddScreenCircle(circle, color);
+}
+
+void SimpleDraw::AddScreenLine(const Math::Vector2& v0, const Math::Vector2& v1, const Color& color)
+{
+	sInstance->AddScreenLine(v0, v1, color);
+}
+
 void SimpleDraw::Render(const Camera& camera)
 {
 	sInstance->Render(camera);

@@ -46,6 +46,21 @@
     <ClInclude Include="Inc\MetaRegistration.h">
       <Filter>Inc\Meta</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Matrix3.h">
+      <Filter>Inc\LinearAlgebra</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\LineSegment.h">
+      <Filter>Inc\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Rect.h">
+      <Filter>Inc\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Circle.h">
+      <Filter>Inc\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Timer.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\EngineMath.cpp">
@@ -56,6 +71,9 @@
     </ClCompile>
     <ClCompile Include="Src\MetaRegistration.cpp">
       <Filter>Src\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Timer.cpp">
+      <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

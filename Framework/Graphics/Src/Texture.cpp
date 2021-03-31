@@ -10,10 +10,21 @@ JimmyGod::Graphics::Texture::~Texture()
 {
 }
 
-void Texture::Initialize(const std::filesystem::path& fileName)
+bool Texture::Initialize(const std::filesystem::path& fileName)
 {
 	HRESULT hr = DirectX::CreateWICTextureFromFile(GetDevice(), GetContext(), fileName.c_str(), nullptr, &mShaderResourceView);
 	ASSERT(SUCCEEDED(hr), "Failed to load texture %ls.", fileName.c_str());
+
+	ID3D11Resource* resource = nullptr;
+	mShaderResourceView->GetResource(&resource);
+
+	ID3D11Texture2D* texture = static_cast<ID3D11Texture2D*>(resource);
+	D3D11_TEXTURE2D_DESC desc = {};
+	texture->GetDesc(&desc);
+
+	mWidth = desc.Width;
+	mHeight = desc.Height;
+	return true;
 }
 
 void Texture::Terminate()

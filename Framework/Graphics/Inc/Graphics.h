@@ -18,6 +18,8 @@
 #include "RenderTarget.h"
 #include "Sampler.h"
 #include "SimpleDraw.h"
+#include "SpriteRenderer.h"
+#include "TextureManager.h"
 #include "Texture.h"
 #include "VertexShader.h"
 #include "VertexTypes.h"

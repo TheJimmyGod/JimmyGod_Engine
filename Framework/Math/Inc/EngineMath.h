@@ -4,14 +4,19 @@
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
+#include "Matrix3.h"
 #include "Matrix4.h"
 #include "Quaternion.h"
 #include "Plane.h"
+#include "LineSegment.h"
 #include "AABB.h"
+#include "Circle.h"
+#include "Rect.h"
 #include "Ray.h"
 #include "Sphere.h"
 #include "OBB.h"
 
+#include "Timer.h"
 #include "MetaRegistration.h"
 
 namespace JimmyGod::Math
@@ -51,9 +56,24 @@ namespace JimmyGod::Math
 		return value >= 0.0f ? value : -value;
 	}
 
+	inline float Sin(float angle)
+	{
+		return sinf(angle);
+	}
+
+	inline float Cos(float angle)
+	{
+		return cosf(angle);
+	}
+
 	constexpr float Sqr(float value)
 	{
 		return value * value;
+	}
+
+	inline float Sqrt(float value)
+	{
+		return sqrtf(value);
 	}
 
 	constexpr float Dot(const Vector3& a, const Vector3& b)
@@ -61,14 +81,35 @@ namespace JimmyGod::Math
 		return (a.x*b.x) + (a.y*+b.y) + (a.z*+b.z);
 	}
 
-	inline float MagnitudeSqr(const Vector2& v)
+	constexpr float Dot(const Vector2& a, const Vector2& b) 
+	{ 
+		return (a.x * b.x) + (a.y * b.y); 
+	}
+
+	constexpr float MagnitudeSqr(const Vector2& v)
 	{
 		return (v.x * v.x) + (v.y * v.y);
 	}
+	constexpr float MagnitudeSqr(const Vector3& v)
+	{
+		return (v.x * v.x) + (v.y * v.y) + (v.z * v.z);
+	}
 
+	inline float DistanceSqr(const Vector2& a, const Vector2& b)
+	{
+		return MagnitudeSqr(a - b);
+	}
+	inline float DistanceSqr(const Vector3& a, const Vector3& b)
+	{
+		return MagnitudeSqr(a - b);
+	}
 	inline float Distance(const Vector2& a, const Vector2& b)
 	{
-		return sqrtf(MagnitudeSqr(a-b));
+		return Sqrt(MagnitudeSqr(a-b));
+	}
+	inline float Distance(const Vector3& a, const Vector3& b)
+	{
+		return Sqrt(DistanceSqr(a, b));
 	}
 
 
@@ -149,6 +190,24 @@ namespace JimmyGod::Math
 		return mResult;
 	}
 
+	constexpr Vector2 TransformNormal(const Vector2& v, const Matrix3& m)
+	{
+		return Vector2
+		(
+			v.x * m._11 + v.y * m._21,
+			v.x * m._12 + v.y * m._22
+		);
+	}
+
+	constexpr Vector2 TransformCoord(const Vector2& v, const Matrix3& m)
+	{
+		return Vector2
+		(
+			v.x * m._11 + v.y * m._21 + m._31,
+			v.x * m._12 + v.y * m._22 + m._32
+		);
+	}
+
 	constexpr Vector3 TransformCoord(const Vector3& v, const Matrix4& m)
 	{
 		Vector3 mVecResult;
@@ -171,9 +230,69 @@ namespace JimmyGod::Math
 		return mVecResult;
 	}
 
-	constexpr float MagnitudeSqr(const Vector3& v)
+	constexpr float MagnitudeXZSqr(const Vector3& v) 
+	{ 
+		return (v.x * v.x) + (v.z * v.z); 
+	}
+
+	inline float MagnitudeXZ(const Vector3& v) 
+	{ 
+		return Sqrt(MagnitudeXZSqr(v)); 
+	}
+
+	inline bool Compare(float a, float b, float epsilon = FLT_MIN) 
+	{ 
+		return Abs(a - b) <= epsilon; 
+	}
+
+	inline bool IsZero(float value) 
+	{ 
+		return Compare(value, 0.0f); 
+	}
+	inline bool IsZero(const Vector2& v) 
+	{ 
+		return IsZero(v.x) && IsZero(v.y); 
+	}
+	inline bool IsZero(const Vector3& v) 
+	{ 
+		return IsZero(v.x) && IsZero(v.y) && IsZero(v.z); 
+	}
+
+	inline Vector2 PerpendicularLH(const Vector2& v) 
+	{ 
+		return Vector2(-v.y, v.x); 
+	}
+	inline Vector2 PerpendicularRH(const Vector2& v) 
+	{ 
+		return Vector2(v.y, -v.x); 
+	}
+
+	inline Vector2 Rotate(const Vector2& v, float rad)
 	{
-		return (v.x * v.x) + (v.y * v.y) + (v.z * v.z);
+		const float kCosAngle = cos(rad);
+		const float kSinAngle = sin(rad);
+		return Vector2
+		(
+			v.x * kCosAngle - v.y * kSinAngle,
+			v.y * kCosAngle + v.x * kSinAngle
+		);
+	}
+
+	inline Vector2 Project(const Vector2& v, const Vector2& n) 
+	{ 
+		return n * (Dot(v, n) / Dot(n, n)); 
+	}
+	inline Vector3 Project(const Vector3& v, const Vector3& n) 
+	{
+		return n * (Dot(v, n) / Dot(n, n)); 
+	}
+	inline Vector2 Reflect(const Vector2& v, const Vector2& normal) 
+	{ 
+		return v - (normal * Dot(v, normal) * 2.0f); 
+	}
+	inline Vector3 Reflect(const Vector3& v, const Vector3& normal) 
+	{ 
+		return v - (normal * Dot(v, normal) * 2.0f); 
 	}
 
 	inline Vector3 GetRight(const Matrix4& m)
@@ -201,9 +320,22 @@ namespace JimmyGod::Math
 		return Vector3{ m._14,m._24, m._34 };
 	}
 
+	inline float Magnitude(const Vector2& v)
+	{
+		return sqrtf(MagnitudeSqr(v));
+	}
+
 	inline float Magnitude(const Vector3& v)
 	{
 		return sqrtf(MagnitudeSqr(v));
+	}
+
+	inline Vector2 Normalize(const Vector2& v) 
+	{ 
+		float magnitude = Magnitude(v);
+		if (magnitude == 0)
+			return Vector2();
+		return v / magnitude; 
 	}
 
 	inline Vector3 Normalize(const Vector3& v) // Shunk a vector to make the vector's length 1
@@ -214,6 +346,46 @@ namespace JimmyGod::Math
 			return Vector3();
 		}
 		return Vector3(v.x / magnitude, v.y / magnitude, v.z / magnitude);
+	}
+
+	inline Matrix3 Adjoint(const Matrix3& m)
+	{
+		return Matrix3
+		(
+			(m._22 * m._33 - m._23 * m._32),
+			-(m._12 * m._33 - m._13 * m._32),
+			(m._12 * m._23 - m._13 * m._22),
+
+			-(m._21 * m._33 - m._23 * m._31),
+			(m._11 * m._33 - m._13 * m._31),
+			-(m._11 * m._23 - m._13 * m._21),
+
+			(m._21 * m._32 - m._22 * m._31),
+			-(m._11 * m._32 - m._12 * m._31),
+			(m._11 * m._22 - m._12 * m._21)
+		);
+	}
+
+	inline float Determinant(const Matrix3& m)
+	{
+		float det = 0.0f;
+		det = (m._11 * (m._22 * m._33 - m._23 * m._32));
+		det -= (m._12 * (m._21 * m._33 - m._23 * m._31));
+		det += (m._13 * (m._21 * m._32 - m._22 * m._31));
+		return det;
+	}
+
+	inline bool PointInCircle(const Vector2& point, const Circle& circle)
+	{
+		const Vector2 centerToPoint = point - circle.center;
+		const float distSqr = Dot(centerToPoint, centerToPoint);
+		const float radiusSqr = circle.radius * circle.radius;
+		return distSqr < radiusSqr;
+	}
+
+	inline bool IsEmpty(const Rect& rect) 
+	{ 
+		return rect.right <= rect.left || rect.bottom <= rect.top; 
 	}
 
 	inline float RandomNormal(float mean, float stdev)
@@ -265,6 +437,9 @@ namespace JimmyGod::Math
 	bool IsContained(const Vector3& point, const OBB& obb);
 	bool GetContactPoint(const Ray& ray, const OBB& obb, Vector3& point, Vector3& normal);
 	bool Intersect(const Ray& ray, const Plane& plane, float& distance);
+	bool Intersect(const LineSegment& a, const LineSegment& b);
+	bool Intersect(const Circle& c, const LineSegment& l, Vector2* closestPoint = nullptr);
+	bool Intersect(const LineSegment& l, const Circle& c);
 
 	//Linear Interpolations
 	constexpr Quaternion Lerp(const Quaternion& from, const Quaternion& to, float time)
