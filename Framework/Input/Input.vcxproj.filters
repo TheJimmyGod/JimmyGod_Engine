@@ -18,11 +18,11 @@
     <ClInclude Include="Inc\InputSystem.h">
       <Filter>Inc</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\InputTypes.h">
-      <Filter>Inc</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Precompiled.h">
       <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\InputTypes.h">
+      <Filter>Inc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -40,4 +40,34 @@ namespace JimmyGod::Physics
 		Particle* mParticleB;
 		float mRestLength;
 	};
+
+	//class Cloth : public Constraint
+	//{
+	//public:
+	//	Cloth();
+
+	//	void Initialize(const std::filesystem::path& path,
+	//		uint32_t width, uint32_t height);
+	//	void Terminate();
+	//	void Update(float deltaTime);
+	//	void Render(const JimmyGod::Graphics::Camera& camera);
+
+	//protected:
+	//	std::vector<Particle*> mParticles;
+	//	float mRestLength;
+	//private:
+	//	bool IsDisplay = false;
+
+	//	JimmyGod::Physics::PhysicsWorld mPhysicsWorld;
+	//	uint32_t mWidth;
+	//	uint32_t mHeight;
+	//	JimmyGod::Graphics::MeshPX mMesh;
+	//	JimmyGod::Graphics::MeshBuffer mMeshBuffer;
+	//	JimmyGod::Graphics::Sampler mSampler;
+	//	JimmyGod::Graphics::Texture mTexture;
+	//	JimmyGod::Graphics::ConstantBuffer mConstantBuffer;
+
+	//	JimmyGod::Graphics::PixelShader mPixelShader;
+	//	JimmyGod::Graphics::VertexShader mVertexShader;
+	//};
 }

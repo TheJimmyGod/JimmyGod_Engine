@@ -1,40 +1,10 @@
-#include "TileMap.h"
-#include <XEngine.h>
-#include "Cat.h"
+#include <JimmyGodEngine/Inc/JimmyGodEngine.h>
+#include "GameState.h"
 
-using namespace FSM;
-
-TileMap tilemap;
-
-void GameInit()
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
-
-	tilemap.Load();
-}
-
-void GameCleanup()
-{
-	tilemap.Unload();
-}
-
-bool GameLoop(float deltaTime)
-{
-
-	tilemap.Update(deltaTime);
-	tilemap.Render();
-
-	return X::IsKeyPressed(X::Keys::ESCAPE);
-}
-
-int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
-{
-	X::Start();
-	GameInit();
-
-	X::Run(GameLoop);
-
-	GameCleanup();
-	X::Stop();
+	JimmyGod::MainApp().AddState<GameState>("GameState");
+	JimmyGod::MainApp().Run({ "Hello PathFinding, JimmyGod",1280,720 });
 	return 0;
 }
 

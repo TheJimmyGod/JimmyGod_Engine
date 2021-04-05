@@ -12,7 +12,6 @@ namespace JimmyGod::Graphics
 		Math::Vector3 GetScale(float time) const;
 		//std::tuple<Math::Vector3, Math::Quaternion, Math::Vector3> GetTransform(float time) const;
 
-		float GetWrappedTime(float time) const;
 		float GetDuration() const
 		{
 			return mTime;
@@ -23,8 +22,6 @@ namespace JimmyGod::Graphics
 
 		Math::Matrix4 GetTransform(float time) const;
 		std::vector<float> mTimes;
-
-
 
 	private:
 		friend class AnimationBulider;

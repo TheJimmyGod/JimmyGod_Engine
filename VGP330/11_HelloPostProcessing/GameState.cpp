@@ -48,7 +48,6 @@ void GameState::Initialize()
 
 	mNormalMap.Initialize("../../Assets/Textures/earth_normal.jpg");
 
-
 	auto graphicsSystem = GraphicsSystem::Get();
 	mRenderTarget.Initialize(graphicsSystem->GetBackBufferWidth(),
 		graphicsSystem->GetBackBufferHeight(),RenderTarget::Format::RGBA_U8);
@@ -56,6 +55,15 @@ void GameState::Initialize()
 	mScreenQuadBuffer.Initialize(mNDCMesh);
 	mPostProcessingVertexShader.Initialize("../../Assets/Shaders/PostProcess.fx", VertexPX::Format);
 	mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSNoProcessing");
+
+	// Space
+	mConstant.Initialize(sizeof(Matrix4));
+	mSpace.Initialize("../../Assets/Textures/Space.jpg");
+	mMeshSpace = MeshBuilder::CreateSpherePX(1000, 12, 360, true);
+	mDomeMeshBuffer.Initialize(mMeshSpace);
+
+	mDomeVertexShader.Initialize("../../Assets/Shaders/DoTexturing.fx", VertexPX::Format);
+	mDomePixelShader.Initialize("../../Assets/Shaders/DoTexturing.fx");
 }
 
 void GameState::Terminate()
@@ -81,6 +89,12 @@ void GameState::Terminate()
 	mNightMap.Terminate();
 	mBlendState.Terminate();
 	mEarthCould.Terminate();
+
+	mDomeMeshBuffer.Terminate();
+	mConstant.Terminate();
+	mDomePixelShader.Terminate();
+	mDomeVertexShader.Terminate();
+	mSpace.Terminate();
 }
 
 void GameState::Update(float deltaTime)
@@ -175,6 +189,21 @@ void GameState::DrawScene()
 	auto matRot = Matrix4::RotationX(mRotation.x) * Matrix4::RotationY(mRotation.y);
 	auto matWorld = matRot * matTrans;
 
+	// Space
+	auto matTranslation0 = Matrix4::Translation(Vector3(0.0f, 0.0f, 0.0f));
+	auto matSpace = matTranslation0;
+	auto matWVP = Transpose(matSpace* matView * matProj);
+
+	mDomeVertexShader.Bind();
+	mDomePixelShader.Bind();
+
+
+	mSpace.BindVS(0);
+	mSpace.BindPS(0);
+	mConstant.Update(&matWVP);
+	mConstant.BindVS(0);
+	mConstant.BindPS(0);
+	mDomeMeshBuffer.Draw();
 
 	TransformData transformData;
 	transformData.world = Transpose(matWorld);

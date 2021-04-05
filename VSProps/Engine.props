@@ -10,6 +10,9 @@
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)Engine;$(SolutionDir)Framework;$(SolutionDir)External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+<PostBuildEvent>
+      <Command>copy /y "$(SolutionDir)External\FW1FontWrapper_1_1\$(PlatformTarget)\*.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup />
 </Project>

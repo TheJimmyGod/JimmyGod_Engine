@@ -183,6 +183,9 @@
     <ClCompile Include="Src\TransformComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Framework\AI\AI.vcxproj">
+      <Project>{8a6baec5-cdcf-4393-9cc7-fc0af2a814b7}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\Framework\Core\Core.vcxproj">
       <Project>{3774c3ec-c77a-4ac9-b472-5ab91bc33e3c}</Project>
     </ProjectReference>

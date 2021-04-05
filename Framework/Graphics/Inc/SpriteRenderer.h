@@ -44,8 +44,8 @@ namespace JimmyGod::Graphics
 	private:
 		friend class Font;
 
-		DirectX::CommonStates* mCommonStates;
-		DirectX::SpriteBatch* mSpriteBatch;
+		std::unique_ptr<DirectX::CommonStates> mCommonStates;
+		std::unique_ptr<DirectX::SpriteBatch> mSpriteBatch;
 
 		Math::Matrix4 mTransform;
 	};

@@ -12,6 +12,11 @@ enum class AStarTypes
 	Chebyshev
 };
 
+enum class PathFind
+{
+	BFS,DFS,Dijkstra,AStar
+};
+
 class TileMap
 {
 public:
@@ -21,28 +26,35 @@ public:
 	void Render();
 	void DebugUI();
 
+	bool funcBlokced(Coord coord);
+	float funcGetCost(Coord from, Coord to);
+
 	void SetAStarTypes(AStarTypes type) { mAStarType = type; }
 	AStarTypes GetAStarTypes() const { return mAStarType; }
-private:
-	int GetIndex(int x, int y) const;
 
+	void Clear();
+
+	std::vector<int> GetTiles() const
+	{
+		return mTiles;
+	}
+
+	int GetIndex(int x, int y) const;
+private:
+	friend class GameState;
+
+	std::vector<int> mTiles;
 	Graph mGraph;
 
 	BFS mBFS;
+	DFS mDFS;
+	Dijkstras mDijkstra;
+	AStar mAStar;
 	Path mPath;
 
-	DFS mDFS;
-	Path mPathDFS;
-
-	Dijkstras mDijkstra;
-	Path mPathDijkstra;
-
-	AStar mAStar;
-	Path mPathAStar;
-
 	std::array<JimmyGod::Input::TextureId, 6> mTextureIds;
-	std::vector<int> mTiles;
-	std::vector<Graph::Node> mNode;
+
+	std::vector<Node> mNode;
 
 	AStarTypes mAStarType;
 	int mAStarNum{ 0 };
@@ -54,16 +66,20 @@ private:
 	int mCurrentTile{ 0 };
 
 	bool isChosenTile{ false };
-	bool isDisplayed{ false };
-	bool isDisplayedDFS{ false };
-	bool isDisplayedDijkstar{ false };
-	bool isDisplayedAStar{ false };
+
+	PathFind mPathFind = PathFind::BFS;
+
 	float fps = 0.0f;
 
-	int startX{0};
-	int startY{0};
-	int endX{0};
-	int endY{0};
+	struct Dimention
+	{
+		int startX{ 0 };
+		int startY{ 0 };
+		int endX{ 0 };
+		int endY{ 0 };
+	};
+
+	Dimention mDimention;
 
 	bool placeStart = false;
 	bool placeEnd = false;

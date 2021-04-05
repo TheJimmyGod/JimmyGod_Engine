@@ -16,7 +16,7 @@ namespace
 }
 
 
-void JimmyGod::Graphics::DrawSkeleton(Bone* bone, std::vector<Math::Matrix4>& boneMatrices)
+void JimmyGod::Graphics::DrawSkeleton(Bone* bone, std::vector<Math::Matrix4>& boneMatrices,const Math::Vector3& modelPos, float scale)
 {
 	if (bone == nullptr)
 		return;
@@ -40,10 +40,10 @@ void JimmyGod::Graphics::DrawSkeleton(Bone* bone, std::vector<Math::Matrix4>& bo
 		auto myPos = GetTranslation(myMatrix);
 		auto parentPos = GetTranslation(parentMatrix);
 
-		SimpleDraw::AddLine(myPos * 0.01f, parentPos * 0.01f, Colors::Green);
-		SimpleDraw::AddBone(myMatrix * 0.01f);
+		SimpleDraw::AddLine((modelPos) + myPos * scale, (modelPos) + parentPos * scale, Colors::Aqua);
+		SimpleDraw::AddSphere((modelPos)+myPos * scale, scale, Colors::Gold , 2, 2);
 		for (auto& child : bone->children)
-			DrawSkeleton(child, boneMatrices);
+			DrawSkeleton(child, boneMatrices, modelPos, scale);
 	}
 }
 

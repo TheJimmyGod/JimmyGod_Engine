@@ -32,8 +32,8 @@ private:
 	VertexShader mDomeVertexShader;
 	PixelShader mDomePixelShader;
 	MeshBuffer mDomeMeshBuffer;
-	MeshPX mMeshX;
 	Texture mSpace;
+	MeshPX mMeshX;
 
 	struct TransformData
 	{

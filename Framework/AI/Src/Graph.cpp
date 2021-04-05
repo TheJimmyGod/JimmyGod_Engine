@@ -1,6 +1,8 @@
 #include "Precompiled.h"
 #include "Graph.h"
+#include "PathFindTypes.h"
 
+using namespace JimmyGod;
 using namespace JimmyGod::AI;
 
 void Graph::Resize(int columns, int rows)
@@ -13,7 +15,7 @@ void Graph::Resize(int columns, int rows)
 	{
 		for (int x = 0; x < columns; x++)
 		{
-			Coord present_Coord = { x, y };
+			JimmyGod::AI::Coord present_Coord = { x, y };
 			int rowDirection[8] = { -1, -1, -1, 0, 0, 1, 1, 1 };
 			int colDirection[8] = { -1, 0, 1, -1, 1, -1, 0, 1 };
 			int index = GetIndex(present_Coord);
@@ -30,24 +32,6 @@ void Graph::Resize(int columns, int rows)
 	}
 }
 
-Graph::Node* Graph::GetNode(Coord coord)
-{
-	// Graph* me = this; (this) is a const pointer
-	return const_cast<Node*>(static_cast<const Graph*>(this)->GetNode(coord));
-}
-
-const Graph::Node* Graph::GetNode(const Coord& coord) const
-{
-	if (coord.x < 0 || coord.y < 0 || coord.x >= mColumns || coord.y >= mRows)
-	{
-		return nullptr;
-	}
-	int index = GetIndex(coord);
-
-	return &mNodes[index];
-
-}
-
 int Graph::GetColumns() const
 {
 	return mColumns;
@@ -57,10 +41,4 @@ int Graph::GetRows() const
 {
 	return mRows;
 }
-
-int Graph::GetIndex(Coord coord) const
-{
-	return coord.x + (coord.y * mColumns);
-}
-
 // Const_cast means remove const

@@ -1,5 +1,9 @@
 #pragma once
 #include "AppState.h"
+#include "Graphics/Inc/TextureManager.h"
+
+using namespace JimmyGod;
+using namespace JimmyGod::Graphics;
 
 namespace JimmyGod
 {
@@ -9,53 +13,6 @@ namespace JimmyGod
 		std::string appName = "JimmyGod";
 		uint32_t windowWidth = 1280;
 		uint32_t windowHeight = 720;
-	};
-	struct SpriteCommand
-	{
-		SpriteCommand(TextureId inTextureId, const Math::Vector2& inPosiiton, float inRotation)
-			: textureId(inTextureId)
-			, sourceRect({ 0.0f, 0.0f, 0.0f, 0.0f })
-			, position(inPosiiton)
-			, rotation(inRotation)
-		{}
-
-		SpriteCommand(TextureId inTextureId, const Math::Vector2& inPosiiton, float inRotation, Pivot pivot, Flip flip)
-			: textureId(inTextureId)
-			, sourceRect({ 0.0f, 0.0f, 0.0f, 0.0f })
-			, position(inPosiiton)
-			, rotation(inRotation)
-			, pivot(pivot)
-			, flip(flip)
-		{}
-
-		SpriteCommand(TextureId inTextureId, const Math::Rect& inSourceRect, const Math::Vector2& inPosiiton, float inRotation)
-			: textureId(inTextureId)
-			, sourceRect(inSourceRect)
-			, position(inPosiiton)
-			, rotation(inRotation)
-		{}
-
-		TextureId textureId = 0;
-		Math::Rect sourceRect{};
-		Math::Vector2 position{ 0.0f };
-		float rotation{ 0.0f };
-		Pivot pivot = Pivot::Center;
-		Flip flip = Flip::None;
-	};
-
-	struct TextCommand
-	{
-		TextCommand(std::wstring inStr, float inSize, float inX, float inY, uint32_t inColor)
-			: str(std::move(inStr))
-			, size(inSize)
-			, x(inX)
-			, y(inY)
-			, color(inColor)
-		{}
-
-		std::wstring str;
-		float size, x, y;
-		uint32_t color;
 	};
 
 	class App
@@ -75,16 +32,6 @@ namespace JimmyGod
 		void Run(AppConfig appConfig);
 		void Quit() { mRunning = false; };
 
-		TextureId LoadTexture(const std::filesystem::path& fileName)
-		{
-			return TextureManager::Get()->Load(fileName, false);
-		}
-
-		void ClearAllTextures()
-		{
-			return TextureManager::Get()->Clear();
-		}
-
 	private:
 		AppConfig mAppConfig;
 		Core::Window mWindow;
@@ -93,11 +40,6 @@ namespace JimmyGod
 		std::map<std::string, std::unique_ptr<AppState>> mAppStates;
 		AppState* mCurrentState = nullptr;
 		AppState* mNextState = nullptr;
-
-		std::vector<SpriteCommand> mySpriteCommands;
-		std::vector<TextCommand> myTextCommands;
-
-		//Font myFont;
 	};
 } // namespace JimmyGod
 

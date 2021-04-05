@@ -1,11 +1,12 @@
 #include "Precompiled.h"
 #include "TextureManager.h"
 
+using namespace JimmyGod;
 using namespace JimmyGod::Graphics;
 
 namespace { std::unique_ptr<TextureManager> sTextureManager = nullptr; }
 
-void TextureManager::StaticInitialize(const std::filesystem::path& root)
+void TextureManager::StaticInitialize(const char* root)
 {
 	ASSERT(sTextureManager == nullptr, "[TextureManager] Manager already initialized!");
 	sTextureManager = std::make_unique<TextureManager>();
@@ -32,19 +33,17 @@ TextureManager::~TextureManager()
 	ASSERT(mInventory.empty(), "[TextureManager] Clear() must be called to clean up.");
 }
 
-void TextureManager::SetRootPath(const std::filesystem::path& path)
+void TextureManager::SetRootPath(const char* path)
 {
 	mRoot = path;
 }
 
-TextureId TextureManager::Load(const std::filesystem::path& fileName, bool isRootPath)
+TextureId TextureManager::Load(const char* fileName)
 {
-	std::filesystem::path fullName = mRoot;
-
-	fullName = (isRootPath) ? fullName / fileName : fileName;
+	std::string fullName = mRoot + "/" + fileName;
 
 	std::hash<std::string> hasher;
-	TextureId hash = hasher(fullName.u8string());
+	TextureId hash = hasher(fullName);
 
 	auto result = mInventory.insert({ hash, nullptr });
 	if (result.second)

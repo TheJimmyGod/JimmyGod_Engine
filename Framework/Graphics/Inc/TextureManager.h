@@ -9,7 +9,7 @@ namespace JimmyGod::Graphics
 	class TextureManager
 	{
 	public:
-		static void StaticInitialize(const std::filesystem::path& root);
+		static void StaticInitialize(const char* root);
 		static void StaticTerminate();
 		static TextureManager* Get();
 	public:
@@ -19,9 +19,9 @@ namespace JimmyGod::Graphics
 		TextureManager(const TextureManager&) = delete;
 		TextureManager& operator=(const TextureManager&) = delete;
 
-		void SetRootPath(const std::filesystem::path& path);
+		void SetRootPath(const char* path);
 
-		TextureId Load(const std::filesystem::path& fileName, bool isRootPath);
+		TextureId Load(const char* fileName);
 		void Clear();
 
 		void BindVS(TextureId id, uint32_t slot = 0);
@@ -29,7 +29,7 @@ namespace JimmyGod::Graphics
 
 		Texture* GetTexture(TextureId id);
 	private:
-		std::filesystem::path mRoot;
+		std::string mRoot;
 		std::unordered_map<std::size_t, Texture*> mInventory;
 	};
 }

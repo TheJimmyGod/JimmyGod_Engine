@@ -20,7 +20,7 @@ private:
 private:
 
 	JimmyGod::Graphics::AnimationBulider mAnimationBuilder;
-	JimmyGod::Graphics::Animation mAnimaion;
+	JimmyGod::Graphics::Animation mAnimation;
 	float mAnimationTimer = 0.0f;
 
 	JimmyGod::Graphics::Camera mDefaultCamera;
@@ -30,10 +30,6 @@ private:
 
 	JimmyGod::Math::Matrix4 mLightProjectMatrix;
 	std::vector<JimmyGod::Math::Vector3> mViewFrustumVertices;
-
-	JimmyGod::Graphics::Mesh mTankMesh;
-	JimmyGod::Graphics::MeshBuffer mTankMeshBuffer;
-
 	JimmyGod::Graphics::Mesh mGroundMesh;
 	JimmyGod::Graphics::MeshBuffer mGroundMeshBuffer;
 
@@ -85,18 +81,8 @@ private:
 	JimmyGod::Graphics::PixelShader mPixelShader;
 
 	JimmyGod::Graphics::Sampler mSampler;
-	JimmyGod::Graphics::Texture mDiffuseMap;
-	JimmyGod::Graphics::Texture mSpecularMap;
-	JimmyGod::Graphics::Texture mDisplacementMap;
-	JimmyGod::Graphics::Texture mNormalMap;
-	JimmyGod::Graphics::Texture mAOMap;
 
 	JimmyGod::Graphics::Texture mGroundDiffuseMap;
-
-	std::vector<JimmyGod::Math::Vector3> mTankPositions;
-	JimmyGod::Math::Vector3 mTankRotation = 0.0f;
-	float mTankSpacing = 20.0f;
-
 	JimmyGod::Math::Vector3 pos = { 10.0f,0.0f,10.0f };
 
 	SettingsData mSettings;
@@ -131,4 +117,11 @@ private:
 
 	JimmyGod::Graphics::Animator mAnimator;
 	bool showSkeleton = false;
+	bool stopAnimation = false;
+	float fps = 0.0f;
+	Vector3 startingPos = { 12.0f, 0.25f, 12.0f };
+
+	Vector3 startingPos2 = { 8.0f, 0.25f, 12.0f };
+
+	Vector3 startingPos3 = { 14.0f, 0.25f, 12.0f };
 };

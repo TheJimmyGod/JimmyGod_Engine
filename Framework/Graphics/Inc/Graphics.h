@@ -19,8 +19,8 @@
 #include "Sampler.h"
 #include "SimpleDraw.h"
 #include "SpriteRenderer.h"
-#include "TextureManager.h"
 #include "Texture.h"
+#include "TextureManager.h"
 #include "VertexShader.h"
 #include "VertexTypes.h"
 
@@ -37,3 +37,6 @@
 #include "Bone.h"
 #include "Skeleton.h"
 #include "SkeletonIO.h"
+
+#include "Font.h"
+#include "SpriteRenderManager.h"

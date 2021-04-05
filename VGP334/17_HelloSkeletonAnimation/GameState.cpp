@@ -77,10 +77,6 @@ void GameState::Initialize()
 	mPixelShader.Initialize("../../Assets/Shaders/Standard.fx");
 
 	mSampler.Initialize(Sampler::Filter::Anisotropic, Sampler::AddressMode::Wrap);
-	//mDiffuseMap.Initialize("../../Assets/Models/Mutant_Walking_diffuse.png");
-	//mSpecularMap.Initialize("../../Assets/Models/Tank/tank_specular.jpg");
-	//mNormalMap.Initialize("../../Assets/Models/Tank/tank_normal.jpg");
-	//mAOMap.Initialize("../../Assets/Models/Tank/tank_ao.jpg");
 
 	mGroundDiffuseMap.Initialize("../../Assets/Textures/grass_2048.jpg");
 
@@ -104,7 +100,7 @@ void GameState::Initialize()
 	mPostProcessingVertexShader.Initialize("../../Assets/Shaders/PostProcess.fx", VertexPX::Format);
 	mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSNoProcessing");
 
-	mTerrain.Initialize(10, 10, 1.0f);
+	mTerrain.Initialize(20, 20, 1.0f);
 	mTerrain.SetHeightScale(1.0f);
 	//mTerrain.LoadHeightMap("../../Assets/HeightMaps/heightmap_200x200.raw");
 
@@ -130,11 +126,6 @@ void GameState::Terminate()
 	mDepthMapVertexShader.Terminate();
 	mDepthMapRenderTarget.Terminate();
 	mGroundDiffuseMap.Terminate();
-	mAOMap.Terminate();
-	mNormalMap.Terminate();
-	mDisplacementMap.Terminate();
-	mSpecularMap.Terminate();
-	mDiffuseMap.Terminate();
 	mSampler.Terminate();
 	mPixelShader.Terminate();
 	mVertexShader.Terminate();
@@ -144,7 +135,6 @@ void GameState::Terminate()
 	mLightBuffer.Terminate();
 	mTransformBuffer.Terminate();
 	mGroundMeshBuffer.Terminate();
-	mTankMeshBuffer.Terminate();
 }
 
 void GameState::Update(float deltaTime)
@@ -168,34 +158,10 @@ void GameState::Update(float deltaTime)
 		mActiveCamera->Pitch(inputSystem->GetMouseMoveY() * kTurnSpeed * deltaTime);
 	}
 
-	if (inputSystem->IsKeyDown(KeyCode::UP))
-		mTankRotation.x += deltaTime;
-	if (inputSystem->IsKeyDown(KeyCode::DOWN))
-		mTankRotation.x -= deltaTime;
-	if (inputSystem->IsKeyDown(KeyCode::LEFT))
-		mTankRotation.y += deltaTime;
-	if (inputSystem->IsKeyDown(KeyCode::RIGHT))
-		mTankRotation.y -= deltaTime;
-
 	mPostProcessSettings.time += deltaTime;
 
 	mLightCamera.SetDirection(mDirectionalLight.direction);
 	//mLightCamera.SetPosition(mLightCamera.GetDirection() * -50.0f);
-
-	mTankPositions.clear();
-
-	const int count = 2;
-	const float offsetX = (count - 1) * mTankSpacing * -0.5f;
-	const float offsetZ = (count - 1) * mTankSpacing * -0.5f;
-	for (int z = 0; z < count; ++z)
-	{
-		for (int x = 0; x < count; ++x)
-		{
-			float posX = (x * mTankSpacing) + offsetX;
-			float posZ = (z * mTankSpacing) + offsetZ;
-			mTankPositions.push_back({ posX, 3.5f, posZ });
-		}
-	}
 
 	mViewFrustumVertices =
 	{
@@ -271,8 +237,9 @@ void GameState::Update(float deltaTime)
 	SimpleDraw::AddLine(v7, v4, Colors::Red);
 
 	SimpleDrawCamera(mLightCamera);
-
-	mAnimator.Update(deltaTime);
+	fps = 1 / deltaTime;
+	if(!stopAnimation)
+		mAnimator.Update(deltaTime);
 }
 
 void GameState::Render()
@@ -293,84 +260,28 @@ void GameState::Render()
 void GameState::DebugUI()
 {
 	ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-	if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		bool lightCamera = mActiveCamera == &mLightCamera;
-		if (ImGui::Checkbox("Use Light Camera", &lightCamera))
-		{
-			mActiveCamera = lightCamera ? &mLightCamera : &mDefaultCamera;
-		}
-		bool debugCamera = mActiveCamera == &mDebugCamera;
-		if (ImGui::Checkbox("Use Debug Camera", &debugCamera))
-		{
-			mActiveCamera = debugCamera ? &mDebugCamera : &mDefaultCamera;
-		}
-
-		ImGui::Image(
-			mDepthMapRenderTarget.GetShaderResourceView(),
-			{ 150.0f, 150.0f },
-			{ 0.0f, 0.0f },
-			{ 1.0f, 1.0f },
-			{ 1.0f, 1.0f, 1.0f, 1.0f },
-			{ 1.0f, 1.0f, 1.0f, 1.0f }
-		);
-	}
-	if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		bool directionChanged = false;
-		directionChanged |= ImGui::DragFloat("Direction X##Light", &mDirectionalLight.direction.x, 0.01f, -1.0f, 1.0f);
-		directionChanged |= ImGui::DragFloat("Direction Y##Light", &mDirectionalLight.direction.y, 0.01f, -1.0f, 1.0f);
-		directionChanged |= ImGui::DragFloat("Direction Z##Light", &mDirectionalLight.direction.z, 0.01f, -1.0f, 1.0f);
-		if (directionChanged)
-		{
-			mDirectionalLight.direction = Normalize(mDirectionalLight.direction);
-		}
-		ImGui::ColorEdit4("Ambient##Light", &mDirectionalLight.ambient.x);
-		ImGui::ColorEdit4("Diffuse##Light", &mDirectionalLight.diffuse.x);
-		ImGui::ColorEdit4("Specular##Light", &mDirectionalLight.specular.x);
-	}
-	if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		ImGui::ColorEdit4("Ambient##Material", &mMaterial.ambient.x);
-		ImGui::ColorEdit4("Diffuse##Material", &mMaterial.diffuse.x);
-		ImGui::ColorEdit4("Specular##Material", &mMaterial.specular.x);
-		ImGui::DragFloat("Power##Material", &mMaterial.power, 1.0f, 1.0f, 100.0f);
-	}
 	if (ImGui::CollapsingHeader("Settings", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		static bool specularMap = mSettings.specularMapWeight > 0.0f;
-		static bool normalMap = mSettings.normalMapWeight > 0.0f;
-		static bool aoMap = mSettings.aoMapWeight > 0.0f;
-		static bool useShadow = mSettings.useShadow == 1;
-		ImGui::SliderFloat("Displacement", &mSettings.bumpMapWeight, 0.0f, 1.0f);
-		if (ImGui::Checkbox("Specular Map", &specularMap))
+		ImGui::Text("fps: %.2f", fps);
+		static float mTime = 0.0f;
+		static float mCurrentTime = mAnimator.GetTime();
+		ImGui::SliderFloat("Duration", &mTime, 0.0f, mModel.mAnimationSet.clips[0].get()->duration);
+		if (mTime > 0.1f && !stopAnimation)
 		{
-			mSettings.specularMapWeight = specularMap ? 1.0f : 0.0f;
+			mAnimator.StopAnimation(true);
+			mAnimator.SetTime(mTime);
 		}
-		if (ImGui::Checkbox("Normal Map", &normalMap))
+		else if(mTime < 0.1f && stopAnimation)
 		{
-			mSettings.normalMapWeight = normalMap ? 1.0f : 0.0f;
+			mAnimator.StopAnimation(false);
 		}
-		if (ImGui::Checkbox("Ambient Occlusion Map", &aoMap))
-		{
-			mSettings.aoMapWeight = aoMap ? 1.0f : 0.0f;
-		}
-		if (ImGui::Checkbox("Use Shadow", &useShadow))
-		{
-			mSettings.useShadow = useShadow ? 1 : 0;
-		}
-		if (ImGui::Checkbox("Set Skeleton", &showSkeleton))
-		{
 
+		if (ImGui::Checkbox("Set Skeleton", &showSkeleton))
+		{}
+		if (ImGui::Checkbox("Stop Animation", &stopAnimation))
+		{
+			mAnimator.StopAnimation(stopAnimation);
 		}
-		ImGui::SliderFloat("Depth Bias", &mSettings.depthBias, 0.0f, 0.01f, "%.4f");
-		ImGui::SliderFloat("Brightness", &mSettings.brightness, 1.0f, 10.0f);
-	}
-	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		//ImGui::DragFloat3("Translation##Transform", &mTankPosition.x, 0.01f);
-		ImGui::DragFloat3("Rotation##Transform", &mTankRotation.x, 0.01f);
-		ImGui::DragFloat("Spacing", &mTankSpacing);
 	}
 	ImGui::End();
 }
@@ -385,13 +296,10 @@ void GameState::DrawDepthMap()
 
 	mDepthMapConstantBuffer.BindVS(0);
 
-	for (auto& position : mTankPositions)
-	{
-		auto matWorld = Matrix4::Scaling(0.01f);
-		auto wvp = Transpose(matWorld * matViewLight * matProjLight);
-		mDepthMapConstantBuffer.Update(&wvp);
-		mModel.Render();
-	}
+	auto matWorld = Matrix4::Scaling(0.01f);
+	auto wvp = Transpose(matWorld * matViewLight * matProjLight);
+	mDepthMapConstantBuffer.Update(&wvp);
+	mModel.Render();
 }
 
 void GameState::DrawScene()
@@ -416,13 +324,6 @@ void GameState::DrawScene()
 	mSampler.BindVS();
 	mSampler.BindPS();
 
-	//mDiffuseMap.BindPS(0);
-	//mSpecularMap.BindPS(1);
-	//mDisplacementMap.BindVS(2);
-	//mNormalMap.BindPS(3);
-	//mAOMap.BindPS(4);
-	//mDepthMapRenderTarget.BindPS(5);
-
 	mVertexShader.Bind();
 	mPixelShader.Bind();
 
@@ -430,7 +331,7 @@ void GameState::DrawScene()
 	mShadowConstantBuffer.BindVS(4);
 	mBoneTransformBuffer.BindVS(5);
 
-	auto matWorld = Matrix4::Scaling(0.01f);
+	auto matWorld = Matrix4::Scaling(0.01f) * Matrix4::Translation(startingPos);
 	TransformData transformData;
 	transformData.world = Transpose(matWorld);
 	transformData.wvp = Transpose(matWorld * matView * matProj);
@@ -448,7 +349,7 @@ void GameState::DrawScene()
 	{
 		for (auto& b : mModel.mSkeleton.bones)
 		{
-			DrawSkeleton(b.get(), mAnimator.GetBoneMatrices());
+			DrawSkeleton(b.get(), mAnimator.GetBoneMatrices(),startingPos, 0.01f);
 		}
 
 	}
@@ -457,10 +358,11 @@ void GameState::DrawScene()
 
 	mBoneTransformBuffer.Update(&boneTransformData);
 
-	auto matWorld2 = Matrix4::Identity;
+	auto matWorld2 = Matrix4::Scaling(100.0f) * Matrix4::Translation(Vector3{0.0f,0.0f,0.0f});
 	TransformData transformData2;
 	transformData2.world = Transpose(matWorld2);
 	transformData2.wvp = Transpose(matWorld2 * matView * matProj);
+	transformData2.viewPosition = mActiveCamera->GetPosition();
 	mTransformBuffer.Update(&transformData2);
 
 	auto wvpLight2 = Transpose(matWorld2 * matViewLight * matProjLight);

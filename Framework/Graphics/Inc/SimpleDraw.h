@@ -6,7 +6,7 @@ namespace JimmyGod::Graphics { class Camera; }
 
 namespace JimmyGod::Graphics::SimpleDraw
 {
-	void StaticInitialize(uint32_t maxVertexCount = 1000000);
+	void StaticInitialize(uint32_t maxVertexCount = 1024 * 1024);
 	void StaticTerminate();
 
 	void AddAABB(const Math::Vector3& center, float radius, const Color& color);

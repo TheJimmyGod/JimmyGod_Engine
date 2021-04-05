@@ -162,10 +162,10 @@ void GameState::DebugUI()
 			{
 				genome.chromosomes.reserve(target.size());
 				std::vector<int> cities;
-				for (int i = 1; i < target.size(); ++i)
+				for (size_t i = 1; i < target.size(); ++i)
 					cities.push_back(target[i]);
 				genome.chromosomes.push_back(0);
-				for (int i = 0; i < target.size() - 1; ++i)
+				for (size_t i = 0; i < target.size() - 1; ++i)
 				{
 					const size_t size = cities.size();
 					int randomIndex = RandomInt(0, size - 1);
@@ -180,7 +180,7 @@ void GameState::DebugUI()
 			float fitness = 0.0f;
 			
 			// One point per matching character
-			for (int i = 0; i < genome.chromosomes.size() - 1; ++i)
+			for (size_t i = 0; i < genome.chromosomes.size() - 1; ++i)
 				fitness += Distance(kTargetCities[genome.chromosomes[i]], kTargetCities[genome.chromosomes[i + 1]]);
 
 			return bestFitness - fitness; // 10000(Best_path) - Your part's length

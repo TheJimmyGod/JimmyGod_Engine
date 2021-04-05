@@ -42,3 +42,5 @@
 #include "GoalComposite.h"
 #include "Strategy.h"
 #include "DecisionModule.h"
+
+#include "PathFindTypes.h"

@@ -1,71 +1,44 @@
 #pragma once
 
 #include "Common.h"
-// namespace JimmyGod::AI
-// {
-// }
+#include "PathFindTypes.h"
 
 // Generally
 namespace JimmyGod::AI
 {
-	struct Coord
-	{
-		int x = -1;
-		int y = -1;
-
-		bool IsValid() const
-		{
-			return x != -1 && y != -1;
-		}
-
-		constexpr bool operator== (const Coord& rhs) const
-		{
-			return x == rhs.x && y == rhs.y;
-		}
-
-		constexpr Coord operator- (const Coord& rhs) const
-		{
-			return { x - rhs.x, y - rhs.y };
-		}
-	};
-
-	using Path = std::vector<Coord>;
+	using Path = std::vector<JimmyGod::AI::Coord>;
 
 	class Graph
 	{
 	public:
-		using NodeID = size_t;
-		struct Node
-		{
-			NodeID id;
-			std::vector<Coord> neighbors;
-
-			constexpr bool operator== (const Node* other)
-			{
-				return id == other->id;
-			}
-
-			constexpr bool operator!= (const Node* other)
-			{
-				return id != other->id;
-			}
-
-		};
-
-
-
 		void Resize(int columns, int rows);
 
-		Node* GetNode(Coord coord);
-		const Node* GetNode(const Coord& coord) const;
+		inline Node* GetNode(Coord coord)
+		{
+			// Graph* me = this; (this) is a const pointer
+			return const_cast<Node*>(static_cast<const Graph*>(this)->GetNode(coord));
+		}
+		inline const Node* GetNode(const Coord& coord) const
+		{
+			if (coord.x < 0 || coord.y < 0 || coord.x >= mColumns || coord.y >= mRows)
+			{
+				return nullptr;
+			}
+			int index = GetIndex(coord);
+
+			return &mNodes[index];
+		}
 		int GetColumns() const;
 		int GetRows() const;
-		int GetIndex(Coord coord) const;
+		inline int GetIndex(Coord coord) const
+		{
+			return coord.x + (coord.y * mColumns);
+		}
 		std::vector<Node> GetNodes() const { return mNodes; }
 		// Node* ->
 		// Node& == Node* const
 	private:
-		std::vector<Node> mNodes;
+		std::vector<JimmyGod::AI::Node> mNodes;
 		int mColumns;
 		int mRows;
 	};

@@ -43,7 +43,7 @@ namespace
 			
 			// Run backward pass
 			points.front() = origin;
-			for (int i = 0; i + 1 < points.size(); ++i)
+			for (int i = 0; i + 1 < (int)points.size(); ++i)
 			{
 				Vector3 direction = Normalize(points[i+1] - points[i]);
 				points[i+1] = (direction * lengths[i]) + points[i];

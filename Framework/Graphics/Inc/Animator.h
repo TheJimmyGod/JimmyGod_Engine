@@ -15,11 +15,35 @@ namespace JimmyGod::Graphics
 
 		void Update(float deltaTime);
 
+		float GetTime() const
+		{
+			return mTimer;
+		}
+
+		float GetCurrentAniTime() const
+		{
+			return mCurrentTimer;
+		}
+
+		void SetTime(float time)
+		{
+			mTimer = time;
+		}
+
+		void StopAnimation(bool s)
+		{
+			if (s)
+			{
+				mCurrentTimer = mTimer;
+			}
+		}
+
 		auto& GetBoneMatrices() { return mBoneMatrices; }
 
 	private:
 		const Model* mModel;
 		float mTimer = 0.0f;
+		float mCurrentTimer = 0.0f;
 		int mClipIndex = 0;
 
 		float mBlendTimer = 0.0f;

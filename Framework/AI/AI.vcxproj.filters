@@ -150,25 +150,13 @@
     <ClInclude Include="Inc\Strategy.h">
       <Filter>Inc\Decision</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\PathFindTypes.h">
+      <Filter>Inc\Pathing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Precompiled.cpp">
       <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Graph.cpp">
-      <Filter>Src\Pathing</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\AStar.cpp">
-      <Filter>Src\Pathing</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\BFS.cpp">
-      <Filter>Src\Pathing</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\DFS.cpp">
-      <Filter>Src\Pathing</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Dijkstra.cpp">
-      <Filter>Src\Pathing</Filter>
     </ClCompile>
     <ClCompile Include="Src\Entity.cpp">
       <Filter>Src\World</Filter>
@@ -226,6 +214,21 @@
     </ClCompile>
     <ClCompile Include="Src\MemoryRecord.cpp">
       <Filter>Src\Perception</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\AStar.cpp">
+      <Filter>Src\Pathing</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\BFS.cpp">
+      <Filter>Src\Pathing</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\DFS.cpp">
+      <Filter>Src\Pathing</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Dijkstra.cpp">
+      <Filter>Src\Pathing</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Graph.cpp">
+      <Filter>Src\Pathing</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

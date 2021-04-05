@@ -48,7 +48,7 @@ Path AStar::Search(
 		}
 		else // else expand node
 		{
-			const Graph::Node* currentNode = graph.GetNode(current);
+			const Node* currentNode = graph.GetNode(current);
 			for (auto neighbor : currentNode->neighbors)
 			{
 				int index = graph.GetIndex(neighbor);

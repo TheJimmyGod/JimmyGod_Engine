@@ -1,7 +1,5 @@
 #pragma once
 
-#include <XEngine.h>
-
 namespace Steering
 {
 	class TileMap
@@ -17,7 +15,7 @@ namespace Steering
 			return x + (y* mColumns);
 		}
 
-		std::array<X::TextureId, 1> mTextureIds;
+		std::array<JimmyGod::Input::TextureId, 1> mTextureIds;
 		std::vector<int> mTiles;
 		int mColumns = 0;
 		int mRows = 0;

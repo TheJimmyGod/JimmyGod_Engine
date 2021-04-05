@@ -82,4 +82,13 @@ private:
 	Texture mEarthCould;
 	Sampler mSampler;
 	Vector3 mRotation = 0.0f;
+
+	// Space
+	ConstantBuffer mConstant;
+	VertexShader mDomeVertexShader;
+	PixelShader mDomePixelShader;
+	MeshBuffer mDomeMeshBuffer;
+	Texture mSpace;
+	MeshPX mMeshSpace;
+
 };

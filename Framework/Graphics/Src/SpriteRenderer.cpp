@@ -8,6 +8,7 @@ using namespace JimmyGod::Input;
 
 #include "GraphicsSystem.h"
 #include "Texture.h"
+#include "D3DUtil.h"
 #include <DirectXTK/Inc/CommonStates.h>
 #include <DirectXTK/Inc/SpriteBatch.h>
 
@@ -52,7 +53,7 @@ namespace
 		return { v.x, v.y };
 	}
 
-	std::unique_ptr<SpriteRenderer> sSpriteRenderer = nullptr;
+	std::unique_ptr<SpriteRenderer> sSpriteRenderer;
 }
 
 void SpriteRenderer::StaticInitialize()
@@ -71,6 +72,12 @@ void SpriteRenderer::StaticTerminate()
 	}
 }
 
+SpriteRenderer * SpriteRenderer::Get()
+{
+	return sSpriteRenderer.get();
+}
+
+
 SpriteRenderer::SpriteRenderer()
 	: mCommonStates(nullptr)
 	, mSpriteBatch(nullptr)
@@ -86,18 +93,16 @@ void SpriteRenderer::Initialize()
 {
 	ASSERT(mSpriteBatch == nullptr, "[SpriteRenderer] Already initialized");
 	GraphicsSystem* gs = GraphicsSystem::Get();
-	mCommonStates = new DirectX::CommonStates(gs->GetDevice());
-	mSpriteBatch = new DirectX::SpriteBatch(gs->GetContext());
+	mCommonStates = std::make_unique<DirectX::CommonStates>(gs->GetDevice());
+	mSpriteBatch = std::make_unique<DirectX::SpriteBatch>(gs->GetContext());
 }
 
 void SpriteRenderer::Terminate()
 {
 	ASSERT(mSpriteBatch != nullptr, "[SpriteRenderer] Already terminated");
-	delete mSpriteBatch;
-	mSpriteBatch = nullptr;
+	mSpriteBatch.reset();
 
-	delete mCommonStates;
-	mCommonStates = nullptr;
+	mCommonStates.reset();
 }
 
 void SpriteRenderer::SetTransform(const Math::Matrix4& transform)
@@ -108,9 +113,9 @@ void SpriteRenderer::SetTransform(const Math::Matrix4& transform)
 void SpriteRenderer::BeginRender()
 {
 	ASSERT(mSpriteBatch != nullptr, "[SpriteRenderer] Not initialized.");
-	mSpriteBatch->Begin(
+	mSpriteBatch.get()->Begin(
 		DirectX::SpriteSortMode_Deferred,
-		mCommonStates->NonPremultiplied(),
+		mCommonStates.get()->NonPremultiplied(),
 		nullptr,
 		nullptr,
 		nullptr,
@@ -126,12 +131,12 @@ void SpriteRenderer::BeginRender()
 void SpriteRenderer::EndRender()
 {
 	ASSERT(mSpriteBatch != nullptr, "[SpriteRenderer] Not initialized.");
-	mSpriteBatch->End();
+	mSpriteBatch.get()->End();
 
 	// Restore state objects
-	auto blendState = mCommonStates->Opaque();
-	auto depthStencilState = mCommonStates->DepthDefault();
-	auto rasterizerState = mCommonStates->CullCounterClockwise();
+	auto blendState = mCommonStates.get()->Opaque();
+	auto depthStencilState = mCommonStates.get()->DepthDefault();
+	auto rasterizerState = mCommonStates.get()->CullCounterClockwise();
 
 	ID3D11DeviceContext* context = GraphicsSystem::Get()->GetContext();
 	context->OMSetBlendState(blendState, nullptr, 0xFFFFFFFF);
@@ -145,7 +150,7 @@ void SpriteRenderer::Draw(const Texture& texture, const Math::Vector2& pos,
 	ASSERT(mSpriteBatch != nullptr, "[SpriteRenderer] Not initialized.");
 	DirectX::XMFLOAT2 origin = GetOrigin(texture.GetWidth(), texture.GetHeight(), pivot);
 	DirectX::SpriteEffects effects = GetSpriteEffects(flip);
-	mSpriteBatch->Draw(texture.mShaderResourceView, ToXMFLOAT2(pos), nullptr, DirectX::Colors::White, rotation, origin, 1.0f, effects);
+	mSpriteBatch.get()->Draw(texture.mShaderResourceView, ToXMFLOAT2(pos), nullptr, DirectX::Colors::White, rotation, origin, 1.0f, effects);
 }
 
 void SpriteRenderer::Draw(const Texture& texture, const Rect& sourceRect, const Vector2& pos, float rotation, Pivot pivot, Flip flip)
@@ -159,5 +164,5 @@ void SpriteRenderer::Draw(const Texture& texture, const Rect& sourceRect, const 
 	rect.bottom = static_cast<LONG>(sourceRect.bottom);
 	DirectX::XMFLOAT2 origin = GetOrigin(rect.right - rect.left, rect.bottom - rect.top, pivot);
 	DirectX::SpriteEffects effects = GetSpriteEffects(flip);
-	mSpriteBatch->Draw(texture.mShaderResourceView, ToXMFLOAT2(pos), &rect, DirectX::Colors::White, rotation, origin, 1.0f, effects);
+	mSpriteBatch.get()->Draw(texture.mShaderResourceView, ToXMFLOAT2(pos), &rect, DirectX::Colors::White, rotation, origin, 1.0f, effects);
 }

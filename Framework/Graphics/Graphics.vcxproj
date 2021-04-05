@@ -175,6 +175,7 @@
     <ClInclude Include="Inc\Skeleton.h" />
     <ClInclude Include="Inc\SkeletonIO.h" />
     <ClInclude Include="Inc\SpriteRenderer.h" />
+    <ClInclude Include="Inc\SpriteRenderManager.h" />
     <ClInclude Include="Inc\Texture.h" />
     <ClInclude Include="Inc\TextureManager.h" />
     <ClInclude Include="Inc\VertexTypes.h" />
@@ -193,6 +194,7 @@
     <ClCompile Include="Src\ConstantBuffer.cpp" />
     <ClCompile Include="Src\D3DUtil.cpp" />
     <ClCompile Include="Src\DebugUI.cpp" />
+    <ClCompile Include="Src\Font.cpp" />
     <ClCompile Include="Src\GraphicsSystem.cpp" />
     <ClCompile Include="Src\MeshBuffer.cpp" />
     <ClCompile Include="Src\MeshBuilder.cpp" />
@@ -212,6 +214,7 @@
     <ClCompile Include="Src\Skeleton.cpp" />
     <ClCompile Include="Src\SkeletonIO.cpp" />
     <ClCompile Include="Src\SpriteRenderer.cpp" />
+    <ClCompile Include="Src\SpriteRenderManager.cpp" />
     <ClCompile Include="Src\Texture.cpp" />
     <ClCompile Include="Src\TextureManager.cpp" />
     <ClCompile Include="Src\VertexShader.cpp" />
