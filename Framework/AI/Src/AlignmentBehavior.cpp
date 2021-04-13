@@ -11,7 +11,15 @@ JimmyGod::Math::Vector2 JimmyGod::AI::AlignmentBehavior::Calculate(Agent & agent
 	{
 		averageHeading += neighbor->Heading;
 	}
-	averageHeading /= (agent.neighbors.size() + 1.0f);
+	if (agent.neighbors.size() == 0)
+	{
+		averageHeading /= 1.0f;
+	}
+	else
+	{
+		averageHeading /= (agent.neighbors.size());
+	}
+	
 	averageHeading -= agent.Heading;
 	//averageHeading = X::Math::Normalize(averageHeading);
 	return averageHeading;

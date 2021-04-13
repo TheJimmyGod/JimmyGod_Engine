@@ -17,15 +17,17 @@ void TileMap::Load()
 	mColumns = 25;
 	mRows = 20;
 
-	mTiles.resize(static_cast<size_t>(mColumns * mRows), 0);
+	mTiles.resize(mColumns * mRows, 0);
 
 	mGraph.Resize(mColumns,mRows);
 	mNode = mGraph.GetNodes();
+
+	mCat.Load();
 }
 
 void TileMap::Unload()
 {
-
+	mCat.Unload();
 	mNode.clear();
 }
 
@@ -37,7 +39,6 @@ void TileMap::Update(float deltaTime)
 	// Check bound and make sure we are within the map
 	// Check if mouse is clicked
 	// Index into mTiles and change value
-
 	if (InputSystem::Get()->IsMousePressed(JimmyGod::Input::MouseButton::LBUTTON))
 	{
 		const int index = mGraph.GetIndex(Coord{ column, row });
@@ -49,17 +50,17 @@ void TileMap::Update(float deltaTime)
 		if (placeStart)
 		{
 			mCurrentTile = 0;
-			mDimention.startX = JimmyGod::Input::InputSystem::Get()->GetMouseScreenX() / mTileSize; 
-			mDimention.startY = JimmyGod::Input::InputSystem::Get()->GetMouseScreenY() / mTileSize;
+			mDimention.startX = column;
+			mDimention.startY = row;
 			placeStart = !placeStart;
-
-			mCat.SetPosition(Vector2(static_cast<float>(mDimention.startX * mTileSize), static_cast<float>(mDimention.startY * mTileSize)));
+			
+			mCat.SetPosition(Vector2(static_cast<float>(mDimention.startX * mTileSize + mHalfSize), static_cast<float>(mDimention.startY * mTileSize + mHalfSize)));
 		}
 		if (placeEnd)
 		{
 			mCurrentTile = 0;
-			mDimention.endX = JimmyGod::Input::InputSystem::Get()->GetMouseScreenX() / mTileSize;
-			mDimention.endY = JimmyGod::Input::InputSystem::Get()->GetMouseScreenY() / mTileSize;
+			mDimention.endX = column;
+			mDimention.endY = row;
 			placeEnd = !placeEnd;
 		}
 
@@ -72,7 +73,8 @@ void TileMap::Update(float deltaTime)
 	Vector2 current = Vector2::Zero;
 	maximumWayPoint = mPath.size() - 1;
 	if(mPath.size() > 0)
-		current = { static_cast<float>(mPath[wayPoint].x* mTileSize), static_cast<float>(mPath[wayPoint].y* mTileSize) };
+		current = { static_cast<float>(mPath[wayPoint].x* mTileSize + mHalfSize), 
+		static_cast<float>(mPath[wayPoint].y* mTileSize + mHalfSize) };
 
 	if (maximumWayPoint > 0)
 	{
@@ -99,12 +101,11 @@ void TileMap::Update(float deltaTime)
 			}
 		}
 	}
-
+	mCat.Update(deltaTime);
 }
 
 void TileMap::Render()
 {
-	float halfSize = mTileSize * 0.5f;
 	for (int y = 0; y < mRows; y++)
 	{
 		for (int x = 0; x < mColumns; x++)
@@ -116,14 +117,14 @@ void TileMap::Render()
 				static_cast<float>(y) * mTileSize
 			};
 			SpriteRenderManager::Get()->DrawSprite(mTextureIds[mTiles[index]], pos , Pivot::TopLeft, Flip::None);
-			SpriteRenderManager::Get()->DrawScreenText("T", pos.x, pos.y, 20, JimmyGod::Graphics::Colors::Aqua);
+
 			if (mGraph.GetNode({ x,y }))
 			{
 				for (size_t i = 0; i < mNode[index].neighbors.size(); i++)
 				{
-					JimmyGod::Graphics::SimpleDraw::AddScreenLine(Vector2(pos.x + halfSize,pos.y + halfSize), Vector2(
-						static_cast<float>(mNode[index].neighbors[i].x * mTileSize + halfSize),
-						static_cast<float>(mNode[index].neighbors[i].y * mTileSize + halfSize)), JimmyGod::Graphics::Colors::Gray);
+					JimmyGod::Graphics::SimpleDraw::AddScreenLine(Vector2(pos.x + mHalfSize,pos.y + mHalfSize), Vector2(
+						static_cast<float>(mNode[index].neighbors[i].x * mTileSize + mHalfSize),
+						static_cast<float>(mNode[index].neighbors[i].y * mTileSize + mHalfSize)), JimmyGod::Graphics::Colors::DimGray);
 				}
 			}
 
@@ -151,19 +152,18 @@ void TileMap::Render()
 				if (parent[mGraph.GetIndex(node)].IsValid())
 				{
 					JimmyGod::Graphics::SimpleDraw::AddScreenLine(Vector2(
-						static_cast<float>(node.x)* mTileSize + halfSize, 
-						static_cast<float>(node.y)* mTileSize + halfSize),
+						static_cast<float>(node.x)* mTileSize + mHalfSize, 
+						static_cast<float>(node.y)* mTileSize + mHalfSize),
 						Vector2(
-						static_cast<float>(parent[mGraph.GetIndex(node)].x) * mTileSize + halfSize,
-						static_cast<float>(parent[mGraph.GetIndex(node)].y)* mTileSize + halfSize),
-						JimmyGod::Graphics::Colors::DarkGreen);
+						static_cast<float>(parent[mGraph.GetIndex(node)].x) * mTileSize + mHalfSize,
+						static_cast<float>(parent[mGraph.GetIndex(node)].y)* mTileSize + mHalfSize),
+						JimmyGod::Graphics::Colors::White);
 
 				}
 			}
 		}
 	}
-
-	if (mPathFind == PathFind::DFS)
+	else if (mPathFind == PathFind::DFS)
 	{
 		if (closedListDFS.size())
 		{
@@ -171,14 +171,13 @@ void TileMap::Render()
 			{
 				if (parentDFS[mGraph.GetIndex(node)].IsValid())
 				{
-					JimmyGod::Graphics::SimpleDraw::AddScreenLine(Vector2(static_cast<float>(node.x)* mTileSize + halfSize, static_cast<float>(node.y)* mTileSize + halfSize),
-						Vector2(static_cast<float>(parentDFS[mGraph.GetIndex(node)].x)* mTileSize + halfSize, static_cast<float>(parentDFS[mGraph.GetIndex(node)].y)* mTileSize + halfSize), JimmyGod::Graphics::Colors::DarkGreen);
+					JimmyGod::Graphics::SimpleDraw::AddScreenLine(Vector2(static_cast<float>(node.x)* mTileSize + mHalfSize, static_cast<float>(node.y)* mTileSize + mHalfSize),
+						Vector2(static_cast<float>(parentDFS[mGraph.GetIndex(node)].x)* mTileSize + mHalfSize, static_cast<float>(parentDFS[mGraph.GetIndex(node)].y)* mTileSize + mHalfSize), JimmyGod::Graphics::Colors::White);
 				}
 			}
 		}
 	}
-
-	if (mPathFind == PathFind::Dijkstra)
+	else if (mPathFind == PathFind::Dijkstra)
 	{
 		if (closedListDij.size())
 		{
@@ -186,14 +185,13 @@ void TileMap::Render()
 			{
 				if (parentDij[mGraph.GetIndex(node)].IsValid())
 				{
-					JimmyGod::Graphics::SimpleDraw::AddScreenLine(Vector2(static_cast<float>(node.x)* mTileSize + halfSize, static_cast<float>(node.y)* mTileSize + halfSize),
-						Vector2(static_cast<float>(parentDFS[mGraph.GetIndex(node)].x)* mTileSize + halfSize, static_cast<float>(parentDFS[mGraph.GetIndex(node)].y)* mTileSize + halfSize), JimmyGod::Graphics::Colors::DarkGreen);
+					JimmyGod::Graphics::SimpleDraw::AddScreenLine(Vector2(static_cast<float>(node.x)* mTileSize + mHalfSize, static_cast<float>(node.y)* mTileSize + mHalfSize),
+						Vector2(static_cast<float>(parentDij[mGraph.GetIndex(node)].x)* mTileSize + mHalfSize, static_cast<float>(parentDij[mGraph.GetIndex(node)].y)* mTileSize + mHalfSize), JimmyGod::Graphics::Colors::White);
 				}
 			}
 		}
 	}
-
-	if (mPathFind == PathFind::AStar)
+	else if (mPathFind == PathFind::AStar)
 	{
 		if (closedListAStar.size())
 		{
@@ -201,8 +199,8 @@ void TileMap::Render()
 			{
 				if (parentAStar[mGraph.GetIndex(node)].IsValid())
 				{
-					JimmyGod::Graphics::SimpleDraw::AddScreenLine(Vector2(static_cast<float>(node.x)* mTileSize + halfSize, static_cast<float>(node.y)* mTileSize + halfSize),
-						Vector2(static_cast<float>(parentDFS[mGraph.GetIndex(node)].x)* mTileSize + halfSize, static_cast<float>(parentDFS[mGraph.GetIndex(node)].y)* mTileSize + halfSize), JimmyGod::Graphics::Colors::DarkGreen);
+					JimmyGod::Graphics::SimpleDraw::AddScreenLine(Vector2(static_cast<float>(node.x)* mTileSize + mHalfSize, static_cast<float>(node.y)* mTileSize + mHalfSize),
+						Vector2(static_cast<float>(parentAStar[mGraph.GetIndex(node)].x)* mTileSize + mHalfSize, static_cast<float>(parentAStar[mGraph.GetIndex(node)].y)* mTileSize + mHalfSize), JimmyGod::Graphics::Colors::White);
 				}
 			}
 		}
@@ -214,10 +212,10 @@ void TileMap::Render()
 		{
 			auto from = mPath[i];
 			auto to = mPath[i + 1];
-			JimmyGod::Graphics::SimpleDraw::AddScreenLine(Vector2(static_cast<float>(from.x)* mTileSize + halfSize, static_cast<float>(from.y)* mTileSize + halfSize),
-				Vector2(static_cast<float>(to.x)* mTileSize + halfSize, static_cast<float>(to.y)* mTileSize + halfSize), JimmyGod::Graphics::Colors::Crimson);
-			JimmyGod::Graphics::SimpleDraw::AddScreenCircle(Circle(Vector2(from.x * mTileSize + halfSize, from.y*mTileSize + halfSize), 3.0f), JimmyGod::Graphics::Colors::LightGray);
-			JimmyGod::Graphics::SimpleDraw::AddScreenCircle(Circle(Vector2(to.x * mTileSize + halfSize, to.y*mTileSize + halfSize), 3.0f), JimmyGod::Graphics::Colors::LightGray);
+			JimmyGod::Graphics::SimpleDraw::AddScreenLine(Vector2(static_cast<float>(from.x)* mTileSize + mHalfSize, static_cast<float>(from.y)* mTileSize + mHalfSize),
+				Vector2(static_cast<float>(to.x)* mTileSize + mHalfSize, static_cast<float>(to.y)* mTileSize + mHalfSize), JimmyGod::Graphics::Colors::Crimson);
+			JimmyGod::Graphics::SimpleDraw::AddScreenCircle(Circle(Vector2(from.x * mTileSize + mHalfSize, from.y*mTileSize + mHalfSize), 3.0f), JimmyGod::Graphics::Colors::LightGray);
+			JimmyGod::Graphics::SimpleDraw::AddScreenCircle(Circle(Vector2(to.x * mTileSize + mHalfSize, to.y*mTileSize + mHalfSize), 3.0f), JimmyGod::Graphics::Colors::LightGray);
 		}
 	}
 

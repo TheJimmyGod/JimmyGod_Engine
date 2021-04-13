@@ -2,14 +2,15 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="WinMain.cpp" />
-    <ClCompile Include="Fish.cpp" />
-    <ClCompile Include="Mario.cpp" />
     <ClCompile Include="TileMap.cpp" />
+    <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="Soldier.cpp" />
+    <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Fish.h" />
-    <ClInclude Include="Mario.h" />
     <ClInclude Include="TileMap.h" />
-    <ClInclude Include="UnitType.h" />
+    <ClInclude Include="GameState.h" />
+    <ClInclude Include="Soldier.h" />
+    <ClInclude Include="Player.h" />
   </ItemGroup>
 </Project>

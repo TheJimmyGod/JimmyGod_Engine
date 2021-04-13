@@ -17,7 +17,7 @@ public:
 private:
 	AppLog mAppLog;
 
-	float sampleCount = 100.0f;
+	int sampleCount = 100;
 	float b0Val = 0.0f;
 	float b1Val = 0.5f;
 	float b2Val = 1.0f;

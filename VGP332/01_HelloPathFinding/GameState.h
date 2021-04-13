@@ -4,8 +4,6 @@
 #include <JimmyGodEngine/Inc/JimmyGodEngine.h>
 
 using namespace JimmyGod;
-using namespace std;
-using namespace Math;
 
 class GameState : public JimmyGod::AppState
 {

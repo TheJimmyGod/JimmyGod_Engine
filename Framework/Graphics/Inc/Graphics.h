@@ -40,3 +40,4 @@
 
 #include "Font.h"
 #include "SpriteRenderManager.h"
+#include "TextureType.h"

@@ -16,6 +16,11 @@
 // Terrain headers
 #include "Terrain.h"
 
+// Object headers
+#include "Cloth.h"
+#include "Planet.h"
+#include "SkyDome.h"
+
 // World Headers
 #include "Component.h"
 #include "GameObject.h"

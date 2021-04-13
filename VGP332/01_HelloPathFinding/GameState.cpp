@@ -28,34 +28,15 @@ void GameState::Update(float deltaTime)
 void GameState::Render()
 {
 	tilemap.Render();
-	SimpleDraw::Render(mCamera);
 	SpriteRenderManager::Get()->DrawScreenText("JimmyGod", 100.0f, 100.0f, 20.0f, JimmyGod::Graphics::Colors::Red);
 }
 
 
 void GameState::DebugUI()
 {
+	SimpleDraw::Render(mCamera);
 	ImGui::Begin("AI Setting", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 	ImGui::Text("fps: %.2f", tilemap.fps);
-
-	//const ImVec2 unitSize = ImVec2{ 32.f, 32.f };
-
-	//for (int y = 0; y < tilemap.mRows; y++)
-	//{
-	//	for (int x = 0; x < tilemap.mColumns; x++)
-	//	{
-	//		const int index = tilemap.GetIndex(x, y);
-	//		Vector2 pos
-	//		{
-	//			static_cast<float>(x) * tilemap.mTileSize,
-	//			static_cast<float>(y) * tilemap.mTileSize
-	//		};
-	//		const ImVec2 vec = ImVec2{ pos.x,pos.y };
-	//		ImGui::SetCursorPos(vec);
-	//		JimmyGod::Graphics::Texture *tex = TextureManager::Get()->GetTexture(tilemap.mTextureIds[tilemap.mTiles[index]]);
-	//		ImGui::Image(tex->GetShaderResourceView(), { static_cast<float>(tilemap.mTileSize),static_cast<float>(tilemap.mTileSize) });
-	//	}
-	//}
 
 	ImGui::Separator();
 
@@ -100,6 +81,8 @@ void GameState::DebugUI()
 		{
 			tilemap.Clear();
 			tilemap.mPathFind = PathFind::BFS;
+			Coord start = { tilemap.mDimention.startX,tilemap.mDimention.startY };
+			Coord end = { tilemap.mDimention.endX,tilemap.mDimention.endY };
 			tilemap.mPath = tilemap.mBFS.Search(tilemap.mGraph, start, end, [this](AI::Coord coord)
 			{
 				int tile = tilemap.mTiles[tilemap.GetIndex(coord.x, coord.y)];
@@ -119,6 +102,8 @@ void GameState::DebugUI()
 		{
 			tilemap.Clear();
 			tilemap.mPathFind = PathFind::DFS;
+			Coord start = { tilemap.mDimention.startX,tilemap.mDimention.startY };
+			Coord end = { tilemap.mDimention.endX,tilemap.mDimention.endY };
 			tilemap.mPath = tilemap.mDFS.Search(tilemap.mGraph, start, end, [this](AI::Coord coord)
 			{
 				int tile = tilemap.mTiles[tilemap.GetIndex(coord.x, coord.y)];
@@ -188,7 +173,8 @@ void GameState::DebugUI()
 		{
 			tilemap.Clear();
 			tilemap.mPathFind = PathFind::AStar;
-
+			Coord start = { tilemap.mDimention.startX,tilemap.mDimention.startY };
+			Coord end = { tilemap.mDimention.endX,tilemap.mDimention.endY };
 			auto funcBlocked = [this](AI::Coord coord)
 			{
 				int tile = tilemap.mTiles[tilemap.GetIndex(coord.x, coord.y)];

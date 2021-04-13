@@ -108,6 +108,8 @@ void GameState::Initialize()
 	mAnimator.Initialize(mModel);
 	mAnimator.ComputeBindPose();
 	mAnimator.PlayAnimation(0);
+
+	mSkyDome.Intialize("../../Assets/Textures/Space.jpg", 3000, 12, 360, mActiveCamera->GetPosition());
 }
 
 void GameState::Terminate()
@@ -135,6 +137,7 @@ void GameState::Terminate()
 	mLightBuffer.Terminate();
 	mTransformBuffer.Terminate();
 	mGroundMeshBuffer.Terminate();
+	mSkyDome.Terminate();
 }
 
 void GameState::Update(float deltaTime)
@@ -240,10 +243,13 @@ void GameState::Update(float deltaTime)
 	fps = 1 / deltaTime;
 	if(!stopAnimation)
 		mAnimator.Update(deltaTime);
+
+	mSkyDome.Update(*mActiveCamera);
 }
 
 void GameState::Render()
 {
+	mSkyDome.Render(*mActiveCamera);
 	mDepthMapRenderTarget.BeginRender();
 	DrawDepthMap();
 	mDepthMapRenderTarget.EndRender();
@@ -260,7 +266,7 @@ void GameState::Render()
 void GameState::DebugUI()
 {
 	ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-	if (ImGui::CollapsingHeader("Settings", ImGuiTreeNodeFlags_DefaultOpen))
+	if (ImGui::CollapsingHeader("Animation", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ImGui::Text("fps: %.2f", fps);
 		static float mTime = 0.0f;

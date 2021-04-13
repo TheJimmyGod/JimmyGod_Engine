@@ -89,18 +89,23 @@ MeshPX MeshBuilder::CreatePlanePX(float height, float width)
 	MeshPX mMesh;
 	const float OffsetX = (width) * 0.5f;
 	const float OffsetY = (height) * 0.5f;
-	for (int y = 0; y <= height; y++)
+	for (int y = 0; y < height; y++)
 	{
-		for (int x = 0; x <= width; x++)
+		for (int x = 0; x < width; x++)
 		{
-			mMesh.vertices.emplace_back(VertexPX{ Vector3{ -OffsetX + (static_cast<float>(x)), OffsetY - (static_cast<float>(y)),0.0f },
-				static_cast<float>((x) /width ), static_cast<float>((y) /height) });
+			mMesh.vertices.emplace_back(VertexPX
+				{ Vector3{
+				-OffsetX + (static_cast<float>(x)),
+				OffsetY - (static_cast<float>(y)),
+				0.0f },
+				static_cast<float>((x) / (width - 1.0f)),
+				static_cast<float>((y) / (height - 1.0f)) });
 		}
 	}
 
-	for (int y = 0; y <= height; y++)
+	for (int y = 0; y < height - 1; y++)
 	{
-		for (int x = 0; x < width; x++)
+		for (int x = 0; x < width - 1; x++)
 		{
 			mMesh.indices.push_back(y*width + x);
 			mMesh.indices.push_back((y + 1) * width + x + 1);

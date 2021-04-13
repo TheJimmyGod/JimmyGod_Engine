@@ -3,6 +3,7 @@
 #include <JimmyGodEngine/Inc/JimmyGodEngine.h>
 #include "Cat.h"
 
+using namespace JimmyGod;
 using namespace JimmyGod::AI;
 
 enum class AStarTypes
@@ -52,7 +53,7 @@ private:
 	AStar mAStar;
 	Path mPath;
 
-	std::array<JimmyGod::Input::TextureId, 6> mTextureIds;
+	std::array<JimmyGod::Graphics::TextureId, 6> mTextureIds;
 
 	std::vector<Node> mNode;
 
@@ -63,6 +64,7 @@ private:
 	int mRows{ 0 };
 
 	int mTileSize{ 32 };
+	int mHalfSize = mTileSize / 2;
 	int mCurrentTile{ 0 };
 
 	bool isChosenTile{ false };

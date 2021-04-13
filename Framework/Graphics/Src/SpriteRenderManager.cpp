@@ -4,26 +4,25 @@
 #include "Font.h"
 #include "TextureManager.h"
 #include "Texture.h"
-
+#include "TextureType.h"
 #pragma comment(lib,"FW1FontWrapper.lib")
 
 using namespace JimmyGod;
 using namespace JimmyGod::Graphics;
 using namespace JimmyGod::Math;
-using namespace JimmyGod::Input;
 
 namespace
 {
 	struct SpriteCommand
 	{
-		SpriteCommand(JimmyGod::Input::TextureId inTextureId, const Vector2& inPosiiton, float inRotation)
+		SpriteCommand(TextureId inTextureId, const Vector2& inPosiiton, float inRotation)
 			: textureId(inTextureId)
 			, sourceRect({ 0.0f, 0.0f, 0.0f, 0.0f })
 			, position(inPosiiton)
 			, rotation(inRotation)
 		{}
 
-		SpriteCommand(JimmyGod::Input::TextureId inTextureId, const Vector2& inPosiiton, float inRotation, JimmyGod::Input::Pivot pivot, JimmyGod::Input::Flip flip)
+		SpriteCommand(TextureId inTextureId, const Vector2& inPosiiton, float inRotation, Pivot pivot, Flip flip)
 			: textureId(inTextureId)
 			, sourceRect({ 0.0f, 0.0f, 0.0f, 0.0f })
 			, position(inPosiiton)
@@ -32,14 +31,14 @@ namespace
 			, flip(flip)
 		{}
 
-		SpriteCommand(JimmyGod::Input::TextureId inTextureId, const Rect& inSourceRect, const Vector2& inPosiiton, float inRotation)
+		SpriteCommand(TextureId inTextureId, const Rect& inSourceRect, const Vector2& inPosiiton, float inRotation)
 			: textureId(inTextureId)
 			, sourceRect(inSourceRect)
 			, position(inPosiiton)
 			, rotation(inRotation)
 		{}
 
-		JimmyGod::Input::TextureId textureId = 0;
+		TextureId textureId = 0;
 		Rect sourceRect{};
 		Vector2 position{ 0.0f };
 		float rotation{ 0.0f };
@@ -102,8 +101,8 @@ void SpriteRenderManager::Render()
 {
 	//Sprite
 
-	JimmyGod::Input::TextureId id = 0;
-	JimmyGod::Graphics::Texture* texture = nullptr;
+	TextureId id = 0;
+	Texture* texture = nullptr;
 
 	SpriteRenderer::Get()->BeginRender();
 	for (const auto& command : mySpriteCommands)
@@ -136,7 +135,7 @@ void SpriteRenderManager::Render()
 	myTextCommands.clear();
 }
 
-JimmyGod::Input::TextureId JimmyGod::Graphics::SpriteRenderManager::LoadTexture(const char* fileName)
+TextureId SpriteRenderManager::LoadTexture(const char* fileName)
 {
 	return TextureManager::Get()->Load(fileName);
 }
@@ -146,13 +145,13 @@ void SpriteRenderManager::ClearAllTextures()
 	TextureManager::Get()->Clear();
 }
 
-void SpriteRenderManager::DrawSprite(JimmyGod::Input::TextureId textureId, const Math::Vector2 & position, JimmyGod::Input::Pivot pivot, JimmyGod::Input::Flip flip)
+void SpriteRenderManager::DrawSprite(TextureId textureId, const Math::Vector2 & position, Pivot pivot, Flip flip)
 {
 	mySpriteCommands.emplace_back(textureId, position, 0.0f, pivot, flip);
 }
 
-void SpriteRenderManager::DrawSprite(JimmyGod::Input::TextureId textureId, const Math::Vector2 & position, 
-	float rotation, JimmyGod::Input::Pivot pivot, JimmyGod::Input::Flip flip)
+void SpriteRenderManager::DrawSprite(TextureId textureId, const Math::Vector2 & position, 
+	float rotation, Pivot pivot, Flip flip)
 {
 	mySpriteCommands.emplace_back(textureId, position, rotation, pivot, flip);
 }
@@ -162,9 +161,9 @@ void SpriteRenderManager::DrawSprite(TextureId textureId, const Math::Rect & sou
 	mySpriteCommands.emplace_back(textureId, sourceRect, position, 0.0f);
 }
 
-void * SpriteRenderManager::GetSprite(JimmyGod::Input::TextureId textureId)
+void * SpriteRenderManager::GetSprite(TextureId textureId)
 {
-	JimmyGod::Graphics::Texture* texture = JimmyGod::Graphics::TextureManager::Get()->GetTexture(textureId);
+	Texture* texture = TextureManager::Get()->GetTexture(textureId);
 	return texture ? texture->GetShaderResourceView() : nullptr;
 }
 

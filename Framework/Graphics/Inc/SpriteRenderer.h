@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Input/Inc/InputTypes.h"
+#include "TextureType.h"
 #include "Math/Inc/EngineMath.h"
 
 namespace DirectX
@@ -35,11 +35,11 @@ namespace JimmyGod::Graphics
 		void EndRender();
 
 		void Draw(const Texture& texture, const Math::Vector2& pos, float rotation = 0.0f, 
-			JimmyGod::Input::Pivot pivot = JimmyGod::Input::Pivot::Center, 
-			JimmyGod::Input::Flip flip = JimmyGod::Input::Flip::None);
+			Pivot pivot = Pivot::Center, 
+			Flip flip = Flip::None);
 		void Draw(const Texture& texture, const Math::Rect& sourceRect, const Math::Vector2& pos, float rotation = 0.0f, 
-			JimmyGod::Input::Pivot pivot = JimmyGod::Input::Pivot::Center, 
-			JimmyGod::Input::Flip flip = JimmyGod::Input::Flip::None);
+			Pivot pivot = Pivot::Center,
+			Flip flip = Flip::None);
 
 	private:
 		friend class Font;
@@ -47,6 +47,6 @@ namespace JimmyGod::Graphics
 		std::unique_ptr<DirectX::CommonStates> mCommonStates;
 		std::unique_ptr<DirectX::SpriteBatch> mSpriteBatch;
 
-		Math::Matrix4 mTransform;
+		Math::Matrix4 mTransform = Math::Matrix4::Identity;
 	};
 }

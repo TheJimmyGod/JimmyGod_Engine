@@ -18,7 +18,7 @@ public:
 	void SetMeow(bool meow) { isMeow = meow; }
 private:
 	bool isMeow = false;
-	JimmyGod::Input::TextureId mCatSprite;
+	JimmyGod::Graphics::TextureId mCatSprite;
 	JimmyGod::Math::Vector2 mPostion;
 	std::unique_ptr<JimmyGod::AI::StateMachine<Cat>> mStateMachine;
 };

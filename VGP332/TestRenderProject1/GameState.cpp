@@ -31,20 +31,22 @@ void GameState::Update(float deltaTime)
 
 void GameState::Render()
 {
-	for (int y = 0; y < mRows; ++y)
-	{
-		for (int x = 0; x < mColumns; x++)
-		{
-			const int index = x + (y * mColumns);
-			Vector2 pos
-			{
-				static_cast<float>(x) * mTileSize,
-				static_cast<float>(y) * mTileSize
-			};
-			SpriteRenderManager::Get()->DrawSprite(mTexture, pos, Pivot::TopLeft);
-			SpriteRenderManager::Get()->DrawScreenText("T", pos.x,pos.y,20,JimmyGod::Graphics::Colors::Aqua);
-		}
-	}
+	//for (int y = 0; y < mRows; ++y)
+	//{
+	//	for (int x = 0; x < mColumns; x++)
+	//	{
+	//		const int index = x + (y * mColumns);
+	//		Vector2 pos
+	//		{
+	//			static_cast<float>(x) * mTileSize,
+	//			static_cast<float>(y) * mTileSize
+	//		};
+	//		SpriteRenderManager::Get()->DrawSprite(mTexture, pos, Pivot::TopLeft);
+	//		SpriteRenderManager::Get()->DrawScreenText("T", pos.x,pos.y,20,JimmyGod::Graphics::Colors::Aqua);
+	//	}
+	//}
+
+	SpriteRenderManager::Get()->DrawSprite(mTexture, Vector2{100.0f,100.0f}, Pivot::TopLeft);
 }
 
 void GameState::DebugUI()

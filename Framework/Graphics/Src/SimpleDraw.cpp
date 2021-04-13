@@ -25,20 +25,10 @@ namespace
 			mConstantBuffer.Initialize(sizeof(Math::Matrix4));
 			mMeshBuffer.Initialize<VertexPC>(nullptr,maxVertexCount,true);
 
-			D3D11_BUFFER_DESC bd;
-			ZeroMemory(&bd, sizeof(bd));
-			bd.Usage = D3D11_USAGE_DYNAMIC;
-			bd.ByteWidth = maxVertexCount * sizeof(VertexPC);
-			bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-			bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-			bd.MiscFlags = 0;
-
-			ID3D11Device* device = GraphicsSystem::Get()->GetDevice();
-			device->CreateBuffer(&bd, nullptr, &mVertexBuffer2D);
-
 			mLineVertices = make_unique<VertexPC[]>(maxVertexCount);
 			m2DLineVertices = make_unique<VertexPC[]>(maxVertexCount);
 			mFillVertices = make_unique<VertexPC[]>(maxVertexCount * 3);
+
 			mVertexCount = 0;
 			m2DVertexCount = 0;
 			mFillVertexCount = 0;
@@ -50,8 +40,6 @@ namespace
 			mPixelShader.Terminate();
 			mConstantBuffer.Terminate();
 			mMeshBuffer.Terminate();
-			
-			SafeRelease(mVertexBuffer2D);
 		}
 		void AddLine(const Math::Vector3& v0, const Math::Vector3& v1, const Color& color)
 		{
@@ -333,27 +321,24 @@ namespace
 			mMeshBuffer.SetTopology(MeshBuffer::Topology::Triangles);
 			mMeshBuffer.Draw();
 
+			//Draw 2D Lines
 			auto system = GraphicsSystem::Get();
-			Math::Matrix4 screenToNDC;
-			const uint32_t screenW = system->GetBackBufferWidth();
-			const uint32_t screenH = system->GetBackBufferHeight();
-			screenToNDC._11 = 2.0f / screenW;
-			screenToNDC._22 = 2.0f / screenH;
-			mConstantBuffer.Update(&Math::Transpose(screenToNDC));
+			const uint32_t w = system->GetBackBufferWidth();
+			const uint32_t h = system->GetBackBufferHeight();
+			Math::Matrix4 screenToNDC
+			{
+				2.0f / w, 0.0f,0.0f,0.0f,
+				0.0f, -2.0f / h, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0f,0.0f,
+				-1.0f, 1.0f, 0.0f,1.0f
+			};
+			auto transposeNDC = Math::Transpose(screenToNDC); // moved to local variable
+			mConstantBuffer.Update(&transposeNDC);
+			mConstantBuffer.BindVS(0);
 
-			GraphicsSystem* gs = GraphicsSystem::Get();
-			ID3D11DeviceContext* context = gs->GetContext();
-			D3D11_MAPPED_SUBRESOURCE resource;
-			UINT stride = sizeof(VertexPC);
-			UINT offset = 0;
-			// Draw 2D lines
-			context->Map(mVertexBuffer2D, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
-			memcpy(resource.pData, m2DLineVertices.get(), m2DVertexCount* stride);
-			context->Unmap(mVertexBuffer2D, 0);
-
-			context->IASetVertexBuffers(0, 1, &mVertexBuffer2D, &stride, &offset);
-			context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-			context->Draw(m2DVertexCount, 0);
+			mMeshBuffer.Update(m2DLineVertices.get(), m2DVertexCount);
+			mMeshBuffer.SetTopology(MeshBuffer::Topology::Lines);
+			mMeshBuffer.Draw();
 
 			mFillVertexCount = 0;
 			mVertexCount = 0;
@@ -364,7 +349,7 @@ namespace
 		PixelShader mPixelShader;
 		ConstantBuffer mConstantBuffer;
 		MeshBuffer mMeshBuffer;
-		ID3D11Buffer* mVertexBuffer2D;
+
 		unique_ptr<VertexPC[]> mLineVertices;
 		unique_ptr<VertexPC[]> mFillVertices;
 		unique_ptr<VertexPC[]> m2DLineVertices;

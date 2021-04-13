@@ -91,8 +91,8 @@ void App::Run(AppConfig appConfig)
 		graphicSystem->BeginRender();
 
 		mCurrentState->Render();
-		DebugUI::BeginRender();
 		SpriteRenderManager::Get()->Render();
+		DebugUI::BeginRender();
 		mCurrentState->DebugUI();
 		DebugUI::EndRender();
 

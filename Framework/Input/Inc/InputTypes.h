@@ -1,31 +1,6 @@
 #pragma once
 namespace JimmyGod::Input {
 
-	enum class Pivot
-	{
-		TopLeft,
-		Top,
-		TopRight,
-		Left,
-		Center,
-		Right,
-		BottomLeft,
-		Bottom,
-		BottomRight
-	};
-
-	enum class Flip
-	{
-		None,
-		Horizontal,
-		Vertical,
-		Both
-	};
-
-
-	using AudioId = size_t;
-	using TextureId = size_t;
-
 enum class KeyCode : uint32_t
 {
 	// Keyboard roll 1

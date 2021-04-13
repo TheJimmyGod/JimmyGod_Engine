@@ -12,7 +12,7 @@ namespace JimmyGod::AI
 	{
 	public:
 		// & == *const
-		Entity(AIWorld& world, uint16_t typeId);
+		Entity(JimmyGod::AI::AIWorld& world, uint16_t typeId);
 		virtual ~Entity();
 
 		Entity(const Entity&) = delete;

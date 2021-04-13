@@ -56,14 +56,14 @@ private:
 		float padding;
 	};
 
-	using TransformBuffer = JimmyGod::Graphics::TypedConstantBuffer<TransformData>;
 	using LightBuffer = JimmyGod::Graphics::TypedConstantBuffer<JimmyGod::Graphics::DirectionalLight>;
 	using MaterialBuffer = JimmyGod::Graphics::TypedConstantBuffer<JimmyGod::Graphics::Material>;
-	using SettingsBuffer = JimmyGod::Graphics::TypedConstantBuffer<SettingsData>;
 
+	using TransformBuffer = JimmyGod::Graphics::TypedConstantBuffer<TransformData>;
 	TransformBuffer mTransformBuffer; 
 	LightBuffer mLightBuffer; 
 	MaterialBuffer mMaterialBuffer;
+	using SettingsBuffer = JimmyGod::Graphics::TypedConstantBuffer<SettingsData>;
 	SettingsBuffer mSettingsBuffer;
 
 	SettingsData mSettings;
@@ -84,11 +84,9 @@ private:
 	Vector3 mRotation = 0.0f;
 
 	// Space
-	ConstantBuffer mConstant;
-	VertexShader mDomeVertexShader;
-	PixelShader mDomePixelShader;
-	MeshBuffer mDomeMeshBuffer;
-	Texture mSpace;
-	MeshPX mMeshSpace;
+	JimmyGod::SkyDome mSkyDome;
+
+	// Moon
+	JimmyGod::Planet mMoon;
 
 };

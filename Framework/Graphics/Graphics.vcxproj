@@ -178,6 +178,7 @@
     <ClInclude Include="Inc\SpriteRenderManager.h" />
     <ClInclude Include="Inc\Texture.h" />
     <ClInclude Include="Inc\TextureManager.h" />
+    <ClInclude Include="Inc\TextureType.h" />
     <ClInclude Include="Inc\VertexTypes.h" />
     <ClInclude Include="Inc\VertexShader.h" />
     <ClInclude Include="Src\D3DUtil.h" />

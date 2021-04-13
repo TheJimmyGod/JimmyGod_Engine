@@ -1,10 +1,12 @@
 #include "TileMap.h"
 
-using namespace Steering;
+using namespace JimmyGod;
+using namespace JimmyGod::Math;
+using namespace JimmyGod::Graphics;
 
 void TileMap::Load()
 {
-	mTextureIds[0] = X::LoadTexture("grass.png");
+	mTextureIds[0] = TextureManager::Get()->Load("grass.png");
 	mColumns = 50;
 	mRows = 40;
 	mTiles.resize(static_cast<size_t>(mColumns * mRows), 0);
@@ -23,12 +25,12 @@ void TileMap::Render()
 		for (int x = 0; x < mColumns; x++)
 		{
 			const int index = GetIndex(x, y);
-			X::Math::Vector2 pos
+			Vector2 pos
 			{
 				static_cast<float>(x) * mTileSize,
 				static_cast<float>(y) * mTileSize
 			};
-			X::DrawSprite(mTextureIds[mTiles[index]], pos, X::Pivot::TopLeft);
+			SpriteRenderManager::Get()->DrawSprite(mTextureIds[mTiles[index]], pos, Pivot::TopLeft);
 		}
 	}
 }

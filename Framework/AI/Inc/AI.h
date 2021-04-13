@@ -44,3 +44,5 @@
 #include "DecisionModule.h"
 
 #include "PathFindTypes.h"
+#include "Entity.h"
+#include "Agent.h"

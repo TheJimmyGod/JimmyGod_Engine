@@ -17,18 +17,17 @@ void GameState::Initialize()
 	mMaterialBuffer.Initialize();
 
 	mDirectionalLight.direction = Normalize({ 1.0f, -1.0f, 1.0f });
-	mDirectionalLight.ambient = { 0.5f };
-	mDirectionalLight.diffuse = { 0.5f };
-	mDirectionalLight.specular = { 0.5f };
+	mDirectionalLight.ambient = { 0.2f, 0.2f, 0.2f, 1.0f };
+	mDirectionalLight.diffuse = { 0.75f,0.75f,0.75f,1.0f };
+	mDirectionalLight.specular = { 0.5f,0.5f,0.5f,1.0f };
 
-	mMaterial.ambient = { 0.5f };
-	mMaterial.diffuse = { 0.5f };
-	mMaterial.specular = { 0.5f };
-	mMaterial.power = { 60.0f };
-	mSettings.bumpMapWeight = { 10.0f };
+	mMaterial.ambient = { 1.0f };
+	mMaterial.diffuse = { 1.0f };
+	mMaterial.specular = { 1.0f };
+	mMaterial.power = { 10.0f };
+	mSettings.bumpMapWeight = { 0.2f };
 	mSettingsBuffer.Initialize();
 	mSampler.Initialize(Sampler::Filter::Anisotropic, Sampler::AddressMode::Clamp);
-	mMeshX = MeshBuilder::CreateSpherePX(1000, 12, 360, true);
 
 	std::filesystem::path assets = "../../Assets/Shaders/Earth.fx";
 	mBlendState.Initialize(BlendState::Mode::AlphaPremultiplied);
@@ -57,13 +56,10 @@ void GameState::Initialize()
 	mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSNoProcessing");
 
 	// Space
-	mConstant.Initialize(sizeof(Matrix4));
-	mSpace.Initialize("../../Assets/Textures/Space.jpg");
-	mMeshSpace = MeshBuilder::CreateSpherePX(1000, 12, 360, true);
-	mDomeMeshBuffer.Initialize(mMeshSpace);
+	mSkyDome.Intialize("../../Assets/Textures/Space.jpg", 1000, 12, 360, {0.0f,0.0f,0.0f});
 
-	mDomeVertexShader.Initialize("../../Assets/Shaders/DoTexturing.fx", VertexPX::Format);
-	mDomePixelShader.Initialize("../../Assets/Shaders/DoTexturing.fx");
+	// Moon
+	mMoon.Initialize("../../Assets/Textures/Moon.jpg", Vector3{ 95.5f,0.0f,0.0f }, 20.0f, 64.0f, 64.0f);
 }
 
 void GameState::Terminate()
@@ -89,12 +85,8 @@ void GameState::Terminate()
 	mNightMap.Terminate();
 	mBlendState.Terminate();
 	mEarthCould.Terminate();
-
-	mDomeMeshBuffer.Terminate();
-	mConstant.Terminate();
-	mDomePixelShader.Terminate();
-	mDomeVertexShader.Terminate();
-	mSpace.Terminate();
+	mSkyDome.Terminate();
+	mMoon.Terminate();
 }
 
 void GameState::Update(float deltaTime)
@@ -120,6 +112,9 @@ void GameState::Update(float deltaTime)
 		mCamera.Strafe(kMoveSpeed * deltaTime);
 	}
 	mCloudRotation += 0.0001f;
+
+	mSkyDome.Update(mCamera);
+	mMoon.Update(deltaTime);
 }
 
 void GameState::Render()
@@ -173,6 +168,20 @@ void GameState::DebugUI()
 		{
 			mSettings.specularWeight = specularMap ? 1.0f : 0.0f;
 		}
+
+		if (ImGui::Button("No Post-Processing"))
+		{
+			mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSNoProcessing");
+		}
+		if (ImGui::Button("Radial Blur"))
+		{
+			mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSRadialBlur");
+		}
+		if (ImGui::Button("Gaussian"))
+		{
+			mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSGaussian");
+		}
+		//TODO: Make new checkboxs for post-processing
 	}
 	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
@@ -189,21 +198,7 @@ void GameState::DrawScene()
 	auto matRot = Matrix4::RotationX(mRotation.x) * Matrix4::RotationY(mRotation.y);
 	auto matWorld = matRot * matTrans;
 
-	// Space
-	auto matTranslation0 = Matrix4::Translation(Vector3(0.0f, 0.0f, 0.0f));
-	auto matSpace = matTranslation0;
-	auto matWVP = Transpose(matSpace* matView * matProj);
-
-	mDomeVertexShader.Bind();
-	mDomePixelShader.Bind();
-
-
-	mSpace.BindVS(0);
-	mSpace.BindPS(0);
-	mConstant.Update(&matWVP);
-	mConstant.BindVS(0);
-	mConstant.BindPS(0);
-	mDomeMeshBuffer.Draw();
+	mSkyDome.Render(mCamera);
 
 	TransformData transformData;
 	transformData.world = Transpose(matWorld);
@@ -258,6 +253,8 @@ void GameState::DrawScene()
 	mEarthCould.BindVS(5);
 	mBlendState.Set();
 	mMeshBuffer.Draw();
+
+	mMoon.Render(mCamera, matWorld);
 
 	SimpleDraw::Render(mCamera);
 }

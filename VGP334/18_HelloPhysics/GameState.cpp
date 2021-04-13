@@ -38,11 +38,15 @@ void GameState::Initialize()
 	mPhysicsWorld.AddOBB({ { 0.0f,2.0f,0.0f }, { 4.0f,0.5f,5.0f }, Quaternion::RotationAxis(Vector3::ZAxis, 10.0f * Constants::DegToRad) });
 	mPhysicsWorld.AddStaticOBB({ { 0.0f,2.0f,0.0f }, { 4.0f,0.5f,5.0f }, Quaternion::RotationAxis(Vector3::ZAxis, 10.0f * Constants::DegToRad) });
 	
+	mCloth.Initialize("../../Assets/Textures/flag.png",10,10);
+	//mCloth2.Initialize("../../Assets/Textures/SimYoung.jpg", 10, 10);
 }
 
 void GameState::Terminate()
 {
 	mPhysicsWorld.Clear();
+	mCloth.Terminate();
+	//mCloth2.Terminate();
 }
 
 void GameState::Update(float deltaTime)
@@ -67,12 +71,16 @@ void GameState::Update(float deltaTime)
 	}
 	mPhysicsWorld.Update(deltaTime);
 	mTime += deltaTime;
+	
+	mCloth.Update(deltaTime);
+	mCloth2.Update(deltaTime);
 }
 
 void GameState::Render()
-{
-	
+{	
 	mPhysicsWorld.DebugDraw();
+	mCloth.Render(mCamera);
+	//mCloth2.Render(mCamera);
 	SimpleDraw::AddGroundPlane(30.0f,Colors::Aqua);
 	SimpleDraw::Render(mCamera);
 }
@@ -82,6 +90,8 @@ void GameState::DebugUI()
 	ImGui::Begin("Physics", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 	if (ImGui::Button("Particles!"))
 	{
+		mCloth.Active(false);
+		//mCloth2.Active(false);
 		mPhysicsWorld.Clear(true);
 		for (int i = 0; i < 100; ++i)
 		{
@@ -95,6 +105,8 @@ void GameState::DebugUI()
 	}
 	if (ImGui::Button("Sticks!"))
 	{
+		mCloth.Active(false);
+		mCloth2.Active(false);
 		mPhysicsWorld.Clear(true);
 		for (int i = 0; i < 50; ++i)
 		{
@@ -118,6 +130,8 @@ void GameState::DebugUI()
 	}
 	if (ImGui::Button("Fixed!"))
 	{
+		mCloth.Active(false);
+		//mCloth2.Active(false);
 		mPhysicsWorld.Clear(true);
 		for (int i = 0; i < 10; ++i)
 		{
@@ -133,6 +147,8 @@ void GameState::DebugUI()
 	}
 	if (ImGui::Button("Tetrahedron!"))
 	{
+		mCloth.Active(false);
+		//mCloth2.Active(false);
 		mPhysicsWorld.Clear(true);
 		float size = 20.0f;
 		for (int i = 0; i < 20; ++i)
@@ -178,6 +194,8 @@ void GameState::DebugUI()
 	}
 	if (ImGui::Button("Cloth!"))
 	{
+		mCloth.Active(false);
+		//mCloth2.Active(false);
 		particles.clear();
 		float size = 10.0f;
 		mPhysicsWorld.Clear(true);
@@ -215,6 +233,8 @@ void GameState::DebugUI()
 	}
 	if (ImGui::Button("Cube!"))
 	{
+		mCloth.Active(false);
+		//mCloth2.Active(false);
 		const float size = 1.05f;
 		mPhysicsWorld.Clear(true);
 		for (int i = 0; i < 10; ++i)
@@ -303,6 +323,8 @@ void GameState::DebugUI()
 	}
 	if (ImGui::Button("Chain and ball!"))
 	{
+		mCloth.Active(false);
+		//mCloth2.Active(false);
 		mPhysicsWorld.Clear(true);
 		particles.clear();
 		size_t size = 20;
@@ -349,6 +371,14 @@ void GameState::DebugUI()
 		p3->bounce = 0.3f;
 		mPhysicsWorld.AddParticle(p3);
 		mPhysicsWorld.AddConstraint(new Spring(particles[particles.size() - 1], p3));
+	}
+	if (ImGui::Button("Flag!"))
+	{
+		mPhysicsWorld.Clear(true);
+		mCloth.Active(true);
+		//mCloth2.Active(true);
+		mCloth.ShowCloth(Vector3{ 0.0f,10.0f,0.0f });
+		//mCloth2.ShowCloth(Vector3{ 20.0f,20.0f,0.0f });
 	}
 	ImGui::End();
 }

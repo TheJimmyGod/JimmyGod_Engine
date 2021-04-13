@@ -4,8 +4,8 @@
 using namespace JimmyGod;
 using namespace JimmyGod::Math;
 using namespace JimmyGod::Graphics;
-using namespace JimmyGod::Input;
 
+#include "TextureType.h"
 #include "GraphicsSystem.h"
 #include "Texture.h"
 #include "D3DUtil.h"
@@ -92,9 +92,9 @@ SpriteRenderer::~SpriteRenderer()
 void SpriteRenderer::Initialize()
 {
 	ASSERT(mSpriteBatch == nullptr, "[SpriteRenderer] Already initialized");
-	GraphicsSystem* gs = GraphicsSystem::Get();
-	mCommonStates = std::make_unique<DirectX::CommonStates>(gs->GetDevice());
-	mSpriteBatch = std::make_unique<DirectX::SpriteBatch>(gs->GetContext());
+	
+	mCommonStates = std::make_unique<DirectX::CommonStates>(GetDevice());
+	mSpriteBatch = std::make_unique<DirectX::SpriteBatch>(GetContext());
 }
 
 void SpriteRenderer::Terminate()

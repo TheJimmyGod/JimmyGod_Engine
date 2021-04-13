@@ -43,6 +43,24 @@
     <Filter Include="Src\Services">
       <UniqueIdentifier>{e0f94671-b664-4098-bed5-2a0a56bbc2c6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Inc\Cloth">
+      <UniqueIdentifier>{910185ce-d341-4939-90d2-c926e1f82cee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Cloth">
+      <UniqueIdentifier>{db9fb139-6fcc-4330-883e-242ee6b0b18a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\SkyDome">
+      <UniqueIdentifier>{0e16cf00-07de-4960-a8c8-2db91abfc082}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inc\SkyDome">
+      <UniqueIdentifier>{dc74ce40-6ae9-4112-aada-6bcf522123d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inc\Planet">
+      <UniqueIdentifier>{150c83ef-b72b-4882-803a-80a0b3dc1229}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Planet">
+      <UniqueIdentifier>{47c4ae24-78d2-4bf2-88e3-4ca30efa5161}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\Common.h">
@@ -90,6 +108,15 @@
     <ClInclude Include="Inc\CameraService.h">
       <Filter>Inc\Services</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Cloth.h">
+      <Filter>Inc\Cloth</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\SkyDome.h">
+      <Filter>Inc\SkyDome</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Planet.h">
+      <Filter>Inc\Planet</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\JimmyGodEngine.cpp">
@@ -130,6 +157,15 @@
     </ClCompile>
     <ClCompile Include="Src\CameraService.cpp">
       <Filter>Src\Services</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Cloth.cpp">
+      <Filter>Src\Cloth</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SkyDome.cpp">
+      <Filter>Src\SkyDome</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Planet.cpp">
+      <Filter>Src\Planet</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -124,4 +124,6 @@ private:
 	Vector3 startingPos2 = { 8.0f, 0.25f, 12.0f };
 
 	Vector3 startingPos3 = { 14.0f, 0.25f, 12.0f };
+
+	JimmyGod::SkyDome mSkyDome;
 };
