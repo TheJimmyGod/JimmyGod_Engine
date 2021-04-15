@@ -21,7 +21,7 @@ namespace FighterGround
 		void CollisionByProjectile();
 	public:
 		const JimmyGod::Math::Vector2& GetPosition() const { return mPos; }
-		JimmyGod::Math::Circle GetBoundary() const { return JimmyGod::Math::Circle{ mPos,20.0f }; }
+		JimmyGod::Math::Circle GetBoundary() const { return JimmyGod::Math::Circle{ mPos,10.0f }; }
 		
 		void TakeDamage(size_t dmg)
 		{
@@ -32,7 +32,7 @@ namespace FighterGround
 				mTimer = 3.0f;
 				mHealth -= dmg;
 			}
-			else
+			if (mHealth <= 0)
 				isDead = true;
 		}
 
@@ -47,7 +47,7 @@ namespace FighterGround
 		bool isFinished() { return isDead; }
 
 	private:
-		JimmyGod::Graphics::TextureId mTextures[28];
+		JimmyGod::Graphics::TextureId mTextures[24];
 
 		AnimationState mState = AnimationState::LeftStand;
 		bool isJump = false;
@@ -61,9 +61,13 @@ namespace FighterGround
 		float mHitFrame{2.2f};
 		float mSpeed{ 0.0f };
 		float mDamage{ 0.0f };
-		size_t mHealth{ 0 };
-		size_t mEnergy{ 0 };
 		float mTimer{ 0.0f };
 		const float mGravity{ -40.0f };
+		size_t mHealth{ 0 };
+		size_t mEnergy{ 0 };
+		size_t mDeath{ 0 };
+
+		float timer = 0.0f;
+		size_t frame = 0;
 	};
 }

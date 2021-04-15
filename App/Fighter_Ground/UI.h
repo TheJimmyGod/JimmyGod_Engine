@@ -1,6 +1,7 @@
 #pragma once
 
 #include <JimmyGodEngine/Inc/JimmyGodEngine.h>
+#include "RoundManager.h"
 
 namespace FighterGround
 {
@@ -24,6 +25,7 @@ namespace FighterGround
 		void Render();
 	private:
 		size_t mTotalScore = 0;
+		std::string mRoundText;
 		JimmyGod::Graphics::TextureId mBackGround;
 		JimmyGod::Graphics::TextureId mGameOver;
 		std::vector<LeaderBoardItem> mLeader;

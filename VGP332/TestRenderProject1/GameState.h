@@ -13,7 +13,7 @@ public:
 
 private:
 	Camera mCamera;
-	JimmyGod::Input::TextureId mTexture;
+	JimmyGod::Graphics::TextureId mTexture;
 
 	JimmyGod::AI::Graph mGraph;
 	std::vector<int> mTiles;

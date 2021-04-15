@@ -63,6 +63,18 @@ void UI::Render()
 	float yPos = 0.0f;
 	float textSize = 13.0f;
 	// print the header
+
+	if (RoundManager::Get()->isRoundStart == false && RoundManager::Get()->mRound != 4)
+	{
+		std::string time = std::to_string(static_cast<int>(RoundManager::Get()->mTimer));
+		SpriteRenderManager::Get()->DrawScreenText(time.c_str(), (450.0f/2.0f) - 20.0f, 258.0f/2.0f - 20.0f, 50.0f, JimmyGod::Graphics::Colors::White);
+	}
+
+	if (RoundManager::Get()->mRound == 4)
+	{
+		SpriteRenderManager::Get()->DrawScreenText("You win!", (450.0f / 2.0f) - 125.0f, (258.0f / 2.0f) - 50.0f, 50.0f, JimmyGod::Graphics::Colors::White);
+	}
+
 	SpriteRenderManager::Get()->DrawScreenText("Score", 350.0f, 0.0f, textSize, JimmyGod::Graphics::Colors::AntiqueWhite); // Vector4(R,G,B,A)
 	std::string str = std::to_string(mTotalScore);
 	SpriteRenderManager::Get()->DrawScreenText(str.c_str(), 410.0f, 15.0f, 10.0f, JimmyGod::Graphics::Colors::White);
@@ -71,5 +83,8 @@ void UI::Render()
 	SpriteRenderManager::Get()->DrawScreenText(name, xPos, yPos, textSize, JimmyGod::Graphics::Colors::Aqua);
 
 	if (Player::Get()->isFinished())
+	{
 		SpriteRenderManager::Get()->DrawSprite(mGameOver, Player::Get()->GetPosition());
+		SpriteRenderManager::Get()->DrawScreenText("You lose!", (450.0f / 2.0f) - 125.0f, (258.0f / 2.0f) - 50.0f, 50.0f, JimmyGod::Graphics::Colors::White);
+	}
 }

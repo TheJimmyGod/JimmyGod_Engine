@@ -1,5 +1,5 @@
 #include "Projectile.h"
-
+#include "Player.h"
 using namespace FighterGround;
 using namespace JimmyGod;
 using namespace JimmyGod::Graphics;
@@ -30,10 +30,11 @@ void FighterGround::Projectile::Render()
 {
 	if (IsActive())
 	{
+
 		if (mType == FighterGround::EnemyType::Air)
-			SpriteRenderManager::Get()->DrawSprite(mTexture[1], mPos);
+			SpriteRenderManager::Get()->DrawSprite(mTexture[1], mPos, mAngle);
 		else if (mType == FighterGround::EnemyType::Melee)
-			SpriteRenderManager::Get()->DrawSprite(mTexture[0], mPos);
+			SpriteRenderManager::Get()->DrawSprite(mTexture[0], mPos, mAngle);
 	}
 }
 
@@ -41,5 +42,7 @@ void FighterGround::Projectile::Fire(const JimmyGod::Math::Vector2 & pos, const 
 {
 	mPos = pos;
 	mVel = vel;
+	Vector2 direction = Normalize(mPos - Player::Get()->GetPosition());
+	mAngle = atan2(direction.y, direction.x);
 	mActive = true;
 }

@@ -69,14 +69,16 @@ void HUD::Render()
 
 	switch (mHealthRate)
 	{
-	case 0:
+		case 0:
+			break;
+	case 1:
 		SpriteRenderManager::Get()->DrawSprite(mHealth[0], Vector2(50.0f, 30.0f));
 		break;
-	case 1:
+	case 2:
 		SpriteRenderManager::Get()->DrawSprite(mHealth[0], Vector2(50.0f, 30.0f));
 		SpriteRenderManager::Get()->DrawSprite(mHealth[1], Vector2(95.0f, 30.0f));
 		break;
-	case 2:
+	case 3:
 		SpriteRenderManager::Get()->DrawSprite(mHealth[0], Vector2(50.0f, 30.0f));
 		SpriteRenderManager::Get()->DrawSprite(mHealth[1], Vector2(95.0f, 30.0f));
 		SpriteRenderManager::Get()->DrawSprite(mHealth[2], Vector2(140.0f, 30.0f));

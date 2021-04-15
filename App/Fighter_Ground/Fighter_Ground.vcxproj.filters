@@ -11,6 +11,7 @@
     <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="HUD.cpp" />
     <ClCompile Include="UI.cpp" />
+    <ClCompile Include="RoundManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameState.h" />
@@ -24,5 +25,6 @@
     <ClInclude Include="BulletManager.h" />
     <ClInclude Include="Energy.h" />
     <ClInclude Include="EnemyManager.h" />
+    <ClInclude Include="RoundManager.h" />
   </ItemGroup>
 </Project>

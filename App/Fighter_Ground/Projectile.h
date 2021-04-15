@@ -27,6 +27,7 @@ namespace FighterGround
 		JimmyGod::Graphics::TextureId mTexture[2];
 		bool mActive = false;
 		float mRadius = 10.0f;
+		float mAngle = 0.0f;
 		FighterGround::EnemyType mType = FighterGround::EnemyType::Melee;
 	};
 }

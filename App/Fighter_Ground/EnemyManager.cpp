@@ -1,4 +1,6 @@
 #include "EnemyManager.h"
+#include "EnemyType.h"
+
 
 using namespace FighterGround;
 using namespace JimmyGod;
@@ -90,4 +92,19 @@ void EnemyManager::Spawn(const JimmyGod::Math::Vector2 & position, const JimmyGo
 		break;
 	}
 
+}
+
+Enemy & FighterGround::EnemyManager::GetMeleeEnemy(size_t index)
+{
+	return mMeleeEnemy[index];
+}
+
+Enemy & FighterGround::EnemyManager::GetAirEnemy(size_t index)
+{
+	return mAirEnemy[index];
+}
+
+Enemy & FighterGround::EnemyManager::GetBossEnemy(size_t index)
+{
+	return mBossEnemy[index];
 }

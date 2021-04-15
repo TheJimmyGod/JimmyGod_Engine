@@ -7,8 +7,7 @@ using namespace JimmyGod::Input;
 using namespace JimmyGod::Graphics;
 using namespace FighterGround;
 
-static float timer = 0.0f;
-static size_t frame = 0;
+
 
 namespace
 {
@@ -48,7 +47,7 @@ void FighterGround::Player::Load()
 {
 	mPos = Vector2{ 200.0f,150.0f };
 	mSpeed = 90.0f;
-	mHealth = 2;
+	mHealth = 3;
 
 	mTextures[0] = TextureManager::Get()->Load("BasicRight.png");
 	mTextures[1] = TextureManager::Get()->Load("BasicLeft.png");
@@ -73,9 +72,7 @@ void FighterGround::Player::Load()
 	mTextures[20] = TextureManager::Get()->Load("Attack5left.png");
 	mTextures[21] = TextureManager::Get()->Load("Attack6left.png");
 	mTextures[22] = TextureManager::Get()->Load("Death1Right.png");
-	mTextures[23] = TextureManager::Get()->Load("Death2Right.png");
-	mTextures[24] = TextureManager::Get()->Load("Death1Left.png");
-	mTextures[25] = TextureManager::Get()->Load("Death2Left.png");
+	mTextures[23] = TextureManager::Get()->Load("Death1Left.png");
 
 }
 void FighterGround::Player::Unload()
@@ -89,7 +86,7 @@ void FighterGround::Player::Update(float deltaTime)
 	if (mPos.y < 180.0f)
 		mPos.y -= mGravity * deltaTime;
 	else if (mPos.y > 450.0f)
-		mPos.y = 180.0f;
+		mPos.y = 140.0f;
 	
 	if (mPos.y < 0.5f)
 		mPos.y = 0.5f;
@@ -100,7 +97,7 @@ void FighterGround::Player::Update(float deltaTime)
 			isJump = true;
 		else
 			isJump = false;
-		timer -= deltaTime;
+
 		if (inputSystem->IsKeyDown(KeyCode::A))
 		{
 			mState = AnimationState::Left;
@@ -115,11 +112,11 @@ void FighterGround::Player::Update(float deltaTime)
 		}
 		if (inputSystem->IsKeyDown(KeyCode::W))
 		{
-			if (mState == AnimationState::Right)
+			if (mState == AnimationState::Right || mState == AnimationState::RightAttack)
 			{
 				mState = AnimationState::RightJump;
 			}
-			else if (mState == AnimationState::Left)
+			else if (mState == AnimationState::Left || mState == AnimationState::LeftAttack)
 			{
 				mState = AnimationState::LeftJump;
 			}
@@ -152,7 +149,6 @@ void FighterGround::Player::Update(float deltaTime)
 			}
 		}
 		CollisionByProjectile();
-		invincibilityTrigger(deltaTime);
 
 	}
 	else
@@ -165,6 +161,9 @@ void FighterGround::Player::Update(float deltaTime)
 			mState = AnimationState::RightDeath;
 	}
 	HUD::Get()->Update(mEnergy, mHealth);
+	invincibilityTrigger(deltaTime);
+	if (timer > 0.0f)
+		timer -= deltaTime;
 }
 void FighterGround::Player::Render()
 {
@@ -179,59 +178,57 @@ void FighterGround::Player::Render()
 	case FighterGround::AnimationState::Right:
 		if (!isJump)
 		{
-			frame = ProcessingFrame(2,4.0f,2);
+			ProcessingFrame(2,0.25f,2);
 			SpriteRenderManager::Get()->DrawSprite(mTextures[frame], mPos);
 		}
 		else
 		{
-			frame = ProcessingFrame(2, 1.0f, 6);
+			ProcessingFrame(2, 0.25f, 6);
 			SpriteRenderManager::Get()->DrawSprite(mTextures[frame], mPos);
 		}
 		break;
 	case FighterGround::AnimationState::Left:
 		if (!isJump)
 		{
-			frame = ProcessingFrame(2, 4.0f, 4);
+			ProcessingFrame(2, 0.25f, 4);
 			SpriteRenderManager::Get()->DrawSprite(mTextures[frame], mPos);
 		}
 		else
 		{
-			frame = ProcessingFrame(2, 1.0f, 8);
+			ProcessingFrame(2, 0.25f, 8);
 			SpriteRenderManager::Get()->DrawSprite(mTextures[frame], mPos);
 		}
 		break;
 	case FighterGround::AnimationState::RightJump:
-		frame = ProcessingFrame(2, 1.0f, 6);
+		ProcessingFrame(2, 0.25f, 6);
 		SpriteRenderManager::Get()->DrawSprite(mTextures[frame], mPos);
 		break;
 	case FighterGround::AnimationState::LeftJump:
-		frame = ProcessingFrame(2, 1.0f, 8);
+		ProcessingFrame(2, 0.25f, 8);
 		SpriteRenderManager::Get()->DrawSprite(mTextures[frame], mPos);
 		break;
 	case FighterGround::AnimationState::RightAttack:
 		if (!isJump)
 		{
-			frame = ProcessingFrame(6, 5.0f, 10);
+			ProcessingFrame(6, 0.15f, 10);
 			SpriteRenderManager::Get()->DrawSprite(mTextures[frame], mPos);
 		}
 		break;
 	case FighterGround::AnimationState::LeftAttack:
 		if (!isJump)
 		{
-			frame = ProcessingFrame(6, 5.0f, 16);
+			ProcessingFrame(6, 0.15f, 16);
 			SpriteRenderManager::Get()->DrawSprite(mTextures[frame], mPos);
 		}
 		break;
 	case FighterGround::AnimationState::RightDeath:
 	{
-		frame = ProcessingFrame(3, 3.0f, 22);
-		SpriteRenderManager::Get()->DrawSprite(mTextures[frame], mPos);
+		SpriteRenderManager::Get()->DrawSprite(mTextures[22], mPos);
 	}
 		break;
 	case FighterGround::AnimationState::LeftDeath:
 	{
-		frame = ProcessingFrame(3, 3.0f, 25);
-		SpriteRenderManager::Get()->DrawSprite(mTextures[frame], mPos);
+		SpriteRenderManager::Get()->DrawSprite(mTextures[23], mPos);
 	}
 		break;
 	default:
@@ -244,9 +241,9 @@ size_t Player::ProcessingFrame(size_t count, float duration, size_t startTexture
 	if (timer <= 0.0f)
 	{
 		timer = duration;
+		frame = (frame + 1) % count + startTexture;
 	}
-	frame = (frame + 1) % count + startTexture;
-	return frame;
+	return size_t();
 }
 
 void Player::CollisionByProjectile()
