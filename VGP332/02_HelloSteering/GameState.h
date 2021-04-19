@@ -18,7 +18,7 @@ public:
 		Gathering,
 		Moving,
 		Wandering,
-		Attacking
+		Ambush
 	};
 	void Initialize() override;
 	void Terminate() override;
@@ -44,7 +44,14 @@ private:
 	Math::Vector2 previous = Math::Vector2::Zero;
 
 	Order mOrder = Order::None;
-	bool isCommand = false;
 	bool isProcessing = false;
+	bool isDisplaying = false;
+	bool isArrived = false;
+	bool isHided = false;
+
 	float mTimer = 0.0f;
+	float mHideTimer = 0.0f;
+	float mOffset = 64.0f;
+	size_t mNumberOfArrive = 0;
+	size_t mGeneral = 0;
 };

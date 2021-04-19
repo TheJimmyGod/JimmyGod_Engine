@@ -17,6 +17,11 @@ namespace Steering
 		void Update(float deltaTime);
 		void Render();
 
+		JimmyGod::AI::SteeringModule* GetSteeringModule() const
+		{
+			return mSteeringModule.get();
+		}
+
 	private:
 		std::unique_ptr<JimmyGod::AI::SteeringModule> mSteeringModule = nullptr;
 		JimmyGod::Graphics::TextureId mPlayerSprite;

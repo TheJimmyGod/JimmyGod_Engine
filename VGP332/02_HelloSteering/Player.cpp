@@ -20,13 +20,15 @@ void Player::Load()
 	mSteeringModule = std::make_unique<AI::SteeringModule>(*this);
 	Position = (Vector2(GS->GetBackBufferWidth() * 0.5f, GS->GetBackBufferHeight() * 0.5f));
 
-	mSteeringModule->AddBehavior<WanderBehavior>("Wander")->SetActive(true);
-	mSteeringModule->AddBehavior<AviodObsBehavior>("Avoid")->SetActive(true);
+	mSteeringModule->AddBehavior<WanderBehavior>("Wander")->SetActive(false);
+	mSteeringModule->AddBehavior<SeekBehavior>("Seek")->SetActive(false);
+	mSteeringModule->AddBehavior<ArriveBehavior>("Arrive")->SetActive(false);
+	mSteeringModule->AddBehavior<AviodObsBehavior>("Avoid")->SetActive(false);
 
 	mPlayerSprite = TextureManager::Get()->Load("survivor_handgun.png");
 	MaxSpeed = 200.0f;
 	Mass = 1.0f;
-	Radius = 12.0f;
+	Radius = 30.0f;
 }
 
 void Player::Unload()
@@ -41,8 +43,6 @@ void Player::Update(float deltaTime)
 	// for(records)
 	// try until you find a good 
 	auto GS = JimmyGod::Graphics::GraphicsSystem::Get();
-	Destination = { static_cast<float>(InputSystem::Get()->GetMouseScreenX()),
-		static_cast<float>(InputSystem::Get()->GetMouseScreenY()) };
 	auto force = mSteeringModule->Calculate();
 	auto accelration = (force / Mass);
 	Velocity += accelration * deltaTime;
