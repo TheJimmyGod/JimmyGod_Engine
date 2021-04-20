@@ -23,7 +23,11 @@ JimmyGod::Math::Vector2 WanderBehavior::Calculate(Agent & agent)
 
 		JimmyGod::Math::Vector2 desiredVel = JimmyGod::Math::Normalize(agent.Destination - agent.Position) * agent.MaxSpeed;
 		desiredVel -= agent.Velocity;
-
+		if (IsDebugUIActive())
+		{
+			JimmyGod::Graphics::SimpleDraw::AddScreenLine(agent.Destination, agent.Position, JimmyGod::Graphics::Colors::Aqua);
+			JimmyGod::Graphics::SimpleDraw::AddScreenCircle(JimmyGod::Math::Circle{ agent.Destination,5.0f }, JimmyGod::Graphics::Colors::Yellow);
+		}
 		return desiredVel;
 	}
 	return JimmyGod::Math::Vector2();

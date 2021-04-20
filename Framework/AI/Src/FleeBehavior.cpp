@@ -10,7 +10,11 @@ JimmyGod::Math::Vector2 FleeBehavior::Calculate(Agent & agent)
 		const double PanicDistanceSq = 500.0f * 500.0f;
 		if (JimmyGod::Math::DistanceSqr(agent.Position, agent.Destination) > PanicDistanceSq)
 			return JimmyGod::Math::Vector2{ 0,0 };
-
+		if (IsDebugUIActive())
+		{
+			JimmyGod::Graphics::SimpleDraw::AddScreenLine(agent.Destination, agent.Position, JimmyGod::Graphics::Colors::Aqua);
+			JimmyGod::Graphics::SimpleDraw::AddScreenCircle(JimmyGod::Math::Circle{ agent.Destination,10.0f },JimmyGod::Graphics::Colors::Aqua);
+		}
 		return ((JimmyGod::Math::Normalize(agent.Position - agent.Destination) *agent.MaxSpeed) - agent.Velocity);
 	}
 	else

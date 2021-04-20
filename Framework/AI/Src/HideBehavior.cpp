@@ -36,20 +36,13 @@ JimmyGod::Math::Vector2 HideBehavior::Calculate(Agent & agent)
 		return desiredVel - agent.Velocity;
 	}
 	agent.Destination = nearest;
-	JimmyGod::Math::Vector2 toTarget = agent.Destination - agent.Position;
-	float distance = JimmyGod::Math::Magnitude(toTarget);
-	float decel = 1.0f;
-	if (distance > 0.0f)
+
+	if (IsDebugUIActive())
 	{
-		float decelTweaker = 0.3f;
-		float speed = distance / decel * decelTweaker;
-		speed = JimmyGod::Math::Min(speed, agent.MaxSpeed);
-		JimmyGod::Math::Vector2 velocity = toTarget * speed / distance;
-		return velocity - agent.Velocity;
-	}
-	else
-	{
-		return JimmyGod::Math::Vector2();
+		JimmyGod::Graphics::SimpleDraw::AddScreenCircle(JimmyGod::Math::Circle{ agent.Destination,20.0f },
+			JimmyGod::Graphics::Colors::Aqua);
+		JimmyGod::Graphics::SimpleDraw::AddScreenLine(agent.Destination, agent.Position, JimmyGod::Graphics::Colors::Aqua);
 	}
 
+	return ArriveBehavior::Arrive(agent, agent.Destination, 1.0f, 0.3f);
 }

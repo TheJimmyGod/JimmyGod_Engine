@@ -240,7 +240,28 @@ void GameState::DebugUI()
 	SimpleDraw::Render(mCamera);
 	ImGui::Begin("AI Setting", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 	static bool mActive = false;
-	if (ImGui::Checkbox("Debug UI", &mActive)) { isDisplaying = mActive; }
+	if (ImGui::Checkbox("Debug UI", &mActive)) { 
+		isDisplaying = mActive;
+		for (auto& entity : mSolider)
+		{
+			entity->GetSteeringModule()->GetBehavior<SeekBehavior>("Seek")->SetActivateDebugUI(mActive);
+			entity->GetSteeringModule()->GetBehavior<WanderBehavior>("Wander")->SetActivateDebugUI(mActive);
+			entity->GetSteeringModule()->GetBehavior<PursuitBehavior>("Pursuit")->SetActivateDebugUI(mActive);
+			entity->GetSteeringModule()->GetBehavior<FleeBehavior>("Flee")->SetActivateDebugUI(mActive);
+			entity->GetSteeringModule()->GetBehavior<AvoidObsBehavior>("Avoid")->SetActivateDebugUI(mActive);
+			entity->GetSteeringModule()->GetBehavior<EvadeBehavior>("Evade")->SetActivateDebugUI(mActive);
+			entity->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActivateDebugUI(mActive);
+			entity->GetSteeringModule()->GetBehavior<HideBehavior>("Hide")->SetActivateDebugUI(mActive);
+		}
+		mPlayer->GetSteeringModule()->GetBehavior<SeekBehavior>("Seek")->SetActivateDebugUI(mActive);
+		mPlayer->GetSteeringModule()->GetBehavior<WanderBehavior>("Wander")->SetActivateDebugUI(mActive);
+		//mPlayer->GetSteeringModule()->GetBehavior<PursuitBehavior>("Pursuit")->SetActivateDebugUI(mActive);
+		//mPlayer->GetSteeringModule()->GetBehavior<FleeBehavior>("Flee")->SetActivateDebugUI(mActive);
+		mPlayer->GetSteeringModule()->GetBehavior<AvoidObsBehavior>("Avoid")->SetActivateDebugUI(mActive);
+		//mPlayer->GetSteeringModule()->GetBehavior<EvadeBehavior>("Evade")->SetActivateDebugUI(mActive);
+		mPlayer->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActivateDebugUI(mActive);
+		//mPlayer->GetSteeringModule()->GetBehavior<HideBehavior>("Hide")->SetActivateDebugUI(mActive);
+	}
 	if (ImGui::CollapsingHeader("Player Option", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 
@@ -294,7 +315,7 @@ void GameState::DebugUI()
 		}
 		if (ImGui::Checkbox("Player Obstacle Avoidance", &mPlayerAvoid))
 		{
-			mPlayer->GetSteeringModule()->GetBehavior<AI::AviodObsBehavior>("Avoid")->SetActive(mPlayerAvoid);
+			mPlayer->GetSteeringModule()->GetBehavior<AI::AvoidObsBehavior>("Avoid")->SetActive(mPlayerAvoid);
 		}
 	}
 	ImGui::NewLine();
@@ -305,7 +326,7 @@ void GameState::DebugUI()
 		if (ImGui::Checkbox("Enemy Obstacle Avoidance", &mEnemyAvoid))
 		{
 			for (auto& entity : mSolider)
-				entity->GetSteeringModule()->GetBehavior<AI::AviodObsBehavior>("Avoid")->SetActive(mEnemyAvoid);
+				entity->GetSteeringModule()->GetBehavior<AI::AvoidObsBehavior>("Avoid")->SetActive(mEnemyAvoid);
 		}
 		if (ImGui::Button("Gathering!"))
 		{
@@ -524,33 +545,5 @@ void GameState::DebugUI()
 			}
 		}
 	}
-
-	if (isDisplaying)
-	{
-		for (auto& entity : mSolider)
-		{
-			if (entity->Destination.x != 0.0f && entity->Destination.y != 0.0f)
-			{
-				if (entity->GetSteeringModule()->GetBehavior<EvadeBehavior>("Evade")->IsActive() ||
-					entity->GetSteeringModule()->GetBehavior<PursuitBehavior>("Pursuit")->IsActive())
-				{
-					JimmyGod::Graphics::SimpleDraw::AddScreenLine(entity->Position, entity->threat->Position, JimmyGod::Graphics::Colors::Red);
-					JimmyGod::Graphics::SimpleDraw::AddScreenCircle(JimmyGod::Math::Circle{ entity->threat->Position,12.5f }, JimmyGod::Graphics::Colors::Red);
-				}
-				else
-				{
-					JimmyGod::Graphics::SimpleDraw::AddScreenLine(entity->Position, entity->Destination, JimmyGod::Graphics::Colors::Red);
-					JimmyGod::Graphics::SimpleDraw::AddScreenCircle(JimmyGod::Math::Circle{ entity->Destination,12.5f }, JimmyGod::Graphics::Colors::Red);
-				}
-			}
-		}
-		if (mPlayer->Destination.x != 0.0f && mPlayer->Destination.y != 0.0f)
-		{
-			JimmyGod::Graphics::SimpleDraw::AddScreenLine(mPlayer->Position, mPlayer->Destination, JimmyGod::Graphics::Colors::White);
-			JimmyGod::Graphics::SimpleDraw::AddScreenCircle(JimmyGod::Math::Circle{ mPlayer->Destination,20.0f }, JimmyGod::Graphics::Colors::Gold);
-		}
-
-	}
-
 	ImGui::End();
 }

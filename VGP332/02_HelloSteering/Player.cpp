@@ -23,7 +23,7 @@ void Player::Load()
 	mSteeringModule->AddBehavior<WanderBehavior>("Wander")->SetActive(false);
 	mSteeringModule->AddBehavior<SeekBehavior>("Seek")->SetActive(false);
 	mSteeringModule->AddBehavior<ArriveBehavior>("Arrive")->SetActive(false);
-	mSteeringModule->AddBehavior<AviodObsBehavior>("Avoid")->SetActive(false);
+	mSteeringModule->AddBehavior<AvoidObsBehavior>("Avoid")->SetActive(false);
 
 	mPlayerSprite = TextureManager::Get()->Load("survivor_handgun.png");
 	MaxSpeed = 200.0f;

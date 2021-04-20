@@ -24,7 +24,7 @@ void Soldier::Load()
 	mSteeringModule->AddBehavior<PursuitBehavior>("Pursuit")->SetActive(false);
 	mSteeringModule->AddBehavior<EvadeBehavior>("Evade")->SetActive(false);
 	mSteeringModule->AddBehavior<WanderBehavior>("Wander")->SetActive(false);
-	mSteeringModule->AddBehavior<AviodObsBehavior>("Avoid")->SetActive(false);
+	mSteeringModule->AddBehavior<AvoidObsBehavior>("Avoid")->SetActive(false);
 	mSteeringModule->AddBehavior<HideBehavior>("Hide")->SetActive(false);
 
 	mSteeringModule->AddBehavior<SeparationBehavior>("Separation")->SetActive(false);

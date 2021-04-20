@@ -11,7 +11,6 @@ namespace JimmyGod::AI
 	{
 	public:
 		JimmyGod::Math::Vector2 Calculate(Agent& agent) override;
-
 		AIWorld* mAIWorld;
 	private:
 		JimmyGod::Math::Vector2 GetHidingPosition(const JimmyGod::Math::Vector2& pos, const float rad, const JimmyGod::Math::Vector2& posTarget)

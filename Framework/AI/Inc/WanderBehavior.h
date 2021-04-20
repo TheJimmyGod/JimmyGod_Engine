@@ -8,7 +8,6 @@ namespace JimmyGod::AI
 	{
 	public:
 		JimmyGod::Math::Vector2 Calculate(Agent& agent) override;
-
 	private:
 		JimmyGod::Math::Vector2 targetPos = JimmyGod::Math::Vector2::Zero;
 	};

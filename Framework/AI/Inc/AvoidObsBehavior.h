@@ -7,12 +7,13 @@ namespace JimmyGod::AI
 {
 	class AIWorld;
 
-	class AviodObsBehavior : public JimmyGod::AI::SteeringBehavior
+	class AvoidObsBehavior : public JimmyGod::AI::SteeringBehavior
 	{
 	public:
 		JimmyGod::Math::Vector2 Calculate(Agent& agent) override;
 		AIWorld* mAIWorld;
 	private:
+
 		bool lineIntersectsCircle(JimmyGod::Math::Circle& obs, JimmyGod::Math::Vector2 ahead, JimmyGod::Math::Vector2 ahead2)
 		{
 			return JimmyGod::Math::Distance(obs.center, ahead) <= obs.radius || JimmyGod::Math::Distance(obs.center, ahead2) <= obs.radius;

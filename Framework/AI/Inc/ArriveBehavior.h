@@ -10,5 +10,6 @@ namespace JimmyGod::AI
 	{
 	public:
 		JimmyGod::Math::Vector2 Calculate(Agent& agent) override;
+		static JimmyGod::Math::Vector2 Arrive(Agent& agent, JimmyGod::Math::Vector2 destination, float decel, float decelTweaker);
 	};
 }

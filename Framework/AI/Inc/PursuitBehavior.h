@@ -2,6 +2,7 @@
 
 #include "SteeringBehavior.h"
 #include "Agent.h"
+#include "SeekBehavior.h"
 
 namespace JimmyGod::AI
 {

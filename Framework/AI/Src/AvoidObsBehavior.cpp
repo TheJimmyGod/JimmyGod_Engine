@@ -3,7 +3,7 @@
 
 using namespace JimmyGod::AI;
 
-JimmyGod::Math::Vector2 AviodObsBehavior::Calculate(Agent & agent)
+JimmyGod::Math::Vector2 AvoidObsBehavior::Calculate(Agent & agent)
 {
 	float speed = JimmyGod::Math::Magnitude(agent.Velocity);
 	float minDistance = std::numeric_limits<float>::infinity();
@@ -65,12 +65,8 @@ JimmyGod::Math::Vector2 AviodObsBehavior::Calculate(Agent & agent)
 						localObsNearestPos = localObsPos;
 						break;
 					}
-
-
 				}
 			}
-			JimmyGod::Graphics::SimpleDraw::AddScreenCircle(Circle(Vector2(obstacle.center.x, obstacle.center.y), obstacle.radius + 3.5f), JimmyGod::Graphics::Colors::Magenta);
-
 		}
 	}
 
@@ -80,19 +76,18 @@ JimmyGod::Math::Vector2 AviodObsBehavior::Calculate(Agent & agent)
 		JimmyGod::Math::Vector2 steeringForce;
 		steeringForce.x = (nearest->radius - localObsNearestPos.x) * multiplier;
 		steeringForce.y = (nearest->radius - localObsNearestPos.y) * 0.15f;
-
-		JimmyGod::Graphics::SimpleDraw::AddScreenCircle(Circle(Vector2(nearest->center.x, nearest->center.y), nearest->radius + 5.0f), JimmyGod::Graphics::Colors::Yellow);
 		force = JimmyGod::Math::TransformCoord(steeringForce, agent.LocalToWorld());
-		JimmyGod::Graphics::SimpleDraw::AddScreenCircle(Circle(Vector2(force.x, force.y), 5.0f), JimmyGod::Graphics::Colors::White);
 		return force;
 	}
+	if (IsDebugUIActive())
+	{
+		JimmyGod::Graphics::SimpleDraw::AddScreenLine(aheadVector1, aheadVector3, JimmyGod::Graphics::Colors::Aqua);
+		JimmyGod::Graphics::SimpleDraw::AddScreenLine(aheadVector4, aheadVector2, JimmyGod::Graphics::Colors::Aqua);
+		JimmyGod::Graphics::SimpleDraw::AddScreenLine(aheadVector1, aheadVector2, JimmyGod::Graphics::Colors::Aqua);
+		JimmyGod::Graphics::SimpleDraw::AddScreenLine(aheadVector3, aheadVector4, JimmyGod::Graphics::Colors::Aqua);
+	}
 
-	JimmyGod::Graphics::SimpleDraw::AddScreenLine(aheadVector1, aheadVector3, JimmyGod::Graphics::Colors::White);
-	JimmyGod::Graphics::SimpleDraw::AddScreenLine(aheadVector4, aheadVector2, JimmyGod::Graphics::Colors::White);
-	JimmyGod::Graphics::SimpleDraw::AddScreenLine(aheadVector1, aheadVector2, JimmyGod::Graphics::Colors::White);
-	JimmyGod::Graphics::SimpleDraw::AddScreenLine(aheadVector3, aheadVector4, JimmyGod::Graphics::Colors::White);
 
-	//X::DrawScreenLine(agent.Position, aheadVector, X::Colors::Red);
 	return JimmyGod::Math::Vector2();
 }
 // Physics Engine

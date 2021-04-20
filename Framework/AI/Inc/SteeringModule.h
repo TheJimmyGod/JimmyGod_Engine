@@ -30,5 +30,6 @@ namespace JimmyGod::AI
 
 		Agent& mAgent;
 		BehaviorMap mBehaviors;
+		bool mDebugActive = false;
 	};
 }
