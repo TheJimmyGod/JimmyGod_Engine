@@ -400,7 +400,7 @@ void GameState::DebugUI()
 			for (auto& entity : mSolider)
 			{
 				entity.get()->GetSteeringModule()->GetBehavior<SeekBehavior>("Seek")->SetActive(true);
-				entity.get()->GetSteeringModule()->GetBehavior<SeekBehavior>("Arrive")->SetActive(true);
+				entity.get()->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActive(true);
 				entity.get()->GetSteeringModule()->GetBehavior<SeparationBehavior>("Separation")->SetActive(true);
 				entity.get()->GetSteeringModule()->GetBehavior<CohesionBehavior>("Cohesion")->SetActive(true);
 			}
