@@ -22,6 +22,8 @@ void GameState::Initialize()
 	mWorld.AddObstacles({ {300.0f,500.0f},100.0f });
 	mWorld.AddObstacles({ {700.0f,200.0f},120.0f });
 	mWorld.AddObstacles({ {1000.0f,300.0f},80.0f });
+	mWorld.AddWalls(LineSegment{ {200.0f,1000.0f},{900.0f, 200.0f} });
+	mWorld.AddWalls(LineSegment{ {500.0f,700.0f},{100.0f, 20.0f} });
 	mWorld.Initialize(mAI_Setting);
 
 	mPlayer = std::make_unique<Player>(mWorld);
@@ -255,20 +257,20 @@ void GameState::DebugUI()
 		}
 		mPlayer->GetSteeringModule()->GetBehavior<SeekBehavior>("Seek")->SetActivateDebugUI(mActive);
 		mPlayer->GetSteeringModule()->GetBehavior<WanderBehavior>("Wander")->SetActivateDebugUI(mActive);
-		//mPlayer->GetSteeringModule()->GetBehavior<PursuitBehavior>("Pursuit")->SetActivateDebugUI(mActive);
-		//mPlayer->GetSteeringModule()->GetBehavior<FleeBehavior>("Flee")->SetActivateDebugUI(mActive);
+		mPlayer->GetSteeringModule()->GetBehavior<FleeBehavior>("Flee")->SetActivateDebugUI(mActive);
 		mPlayer->GetSteeringModule()->GetBehavior<AvoidObsBehavior>("Avoid")->SetActivateDebugUI(mActive);
-		//mPlayer->GetSteeringModule()->GetBehavior<EvadeBehavior>("Evade")->SetActivateDebugUI(mActive);
 		mPlayer->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActivateDebugUI(mActive);
-		//mPlayer->GetSteeringModule()->GetBehavior<HideBehavior>("Hide")->SetActivateDebugUI(mActive);
+		mPlayer->GetSteeringModule()->GetBehavior<WallAvoidBehvior>("Wall")->SetActivateDebugUI(mActive);
 	}
 	if (ImGui::CollapsingHeader("Player Option", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 
 		static bool mPlayerArrive = false;
 		static bool mPlayerAvoid = false;
+		static bool mPlayerFlee = false;
 		static bool mPlayerSeek = false;
 		static bool mPlayerWander = false;
+		static bool mPlayerWallAvoid = false;
 
 		if (!mPlayerSeek && !mPlayerWander)
 			mPlayer->Velocity = Vector2::Zero;
@@ -276,46 +278,70 @@ void GameState::DebugUI()
 		if (ImGui::Checkbox("Player Arrive", &mPlayerArrive))
 		{
 			mPlayer->Velocity = Vector2::Zero;
-			mPlayer->GetSteeringModule()->GetBehavior<AI::ArriveBehavior>("Arrive")->SetActive(mPlayerArrive);
+			mPlayer->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActive(mPlayerArrive);
 			if (mPlayerArrive)
 			{
 				mPlayerSeek = true;
 				mPlayerWander = false;
-				mPlayer->GetSteeringModule()->GetBehavior<AI::WanderBehavior>("Wander")->SetActive(mPlayerWander);
-				mPlayer->GetSteeringModule()->GetBehavior<AI::SeekBehavior>("Seek")->SetActive(mPlayerSeek);
+				mPlayerFlee = false;
+				mPlayer->GetSteeringModule()->GetBehavior<WanderBehavior>("Wander")->SetActive(mPlayerWander);
+				mPlayer->GetSteeringModule()->GetBehavior<SeekBehavior>("Seek")->SetActive(mPlayerSeek);
+				mPlayer->GetSteeringModule()->GetBehavior<FleeBehavior>("Flee")->SetActive(mPlayerFlee);
 			}
 			else
 			{
 				mPlayerSeek = false;
 			}
 		}
+		if (ImGui::Checkbox("Player Flee", &mPlayerFlee))
+		{
+			mPlayer->Velocity = Vector2::Zero;
+			mPlayer->GetSteeringModule()->GetBehavior<FleeBehavior>("Flee")->SetActive(mPlayerFlee);
+			if (mPlayerFlee)
+			{
+				mPlayerSeek = false;
+				mPlayerWander = false;
+				mPlayerArrive = false;
+
+				mPlayer->GetSteeringModule()->GetBehavior<WanderBehavior>("Wander")->SetActive(mPlayerWander);
+				mPlayer->GetSteeringModule()->GetBehavior<SeekBehavior>("Seek")->SetActive(mPlayerSeek);
+				mPlayer->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActive(mPlayerFlee);
+			}
+		}
 		if (ImGui::Checkbox("Player Seek", &mPlayerSeek))
 		{
 			mPlayer->Velocity = Vector2::Zero;
-			mPlayer->GetSteeringModule()->GetBehavior<AI::SeekBehavior>("Seek")->SetActive(mPlayerSeek);
+			mPlayer->GetSteeringModule()->GetBehavior<SeekBehavior>("Seek")->SetActive(mPlayerSeek);
 			if (mPlayerSeek)
 			{
 				mPlayerWander = false;
-				mPlayerArrive = false;
-				mPlayer->GetSteeringModule()->GetBehavior<AI::WanderBehavior>("Wander")->SetActive(mPlayerWander);
-				mPlayer->GetSteeringModule()->GetBehavior<AI::ArriveBehavior>("Arrive")->SetActive(mPlayerArrive);
+				mPlayerFlee = false;
+				mPlayer->GetSteeringModule()->GetBehavior<WanderBehavior>("Wander")->SetActive(mPlayerWander);
+				mPlayer->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActive(mPlayerArrive);
+				mPlayer->GetSteeringModule()->GetBehavior<FleeBehavior>("Flee")->SetActive(mPlayerFlee);
 			}
 		}
 		if (ImGui::Checkbox("Player Wander", &mPlayerWander))
 		{
 			mPlayer->Velocity = Vector2::Zero;
-			mPlayer->GetSteeringModule()->GetBehavior<AI::WanderBehavior>("Wander")->SetActive(mPlayerWander);
+			mPlayer->GetSteeringModule()->GetBehavior<WanderBehavior>("Wander")->SetActive(mPlayerWander);
 			if (mPlayerWander)
 			{
 				mPlayerSeek = false;
 				mPlayerArrive = false;
-				mPlayer->GetSteeringModule()->GetBehavior<AI::SeekBehavior>("Seek")->SetActive(mPlayerSeek);
-				mPlayer->GetSteeringModule()->GetBehavior<AI::ArriveBehavior>("Arrive")->SetActive(mPlayerArrive);
+				mPlayerFlee = false;
+				mPlayer->GetSteeringModule()->GetBehavior<SeekBehavior>("Seek")->SetActive(mPlayerSeek);
+				mPlayer->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActive(mPlayerArrive);
+				mPlayer->GetSteeringModule()->GetBehavior<FleeBehavior>("Flee")->SetActive(mPlayerFlee);
 			}
 		}
 		if (ImGui::Checkbox("Player Obstacle Avoidance", &mPlayerAvoid))
 		{
-			mPlayer->GetSteeringModule()->GetBehavior<AI::AvoidObsBehavior>("Avoid")->SetActive(mPlayerAvoid);
+			mPlayer->GetSteeringModule()->GetBehavior<AvoidObsBehavior>("Avoid")->SetActive(mPlayerAvoid);
+		}
+		if (ImGui::Checkbox("Player Wall Avoiance", &mPlayerWallAvoid))
+		{
+			mPlayer->GetSteeringModule()->GetBehavior<WallAvoidBehvior>("Wall")->SetActive(mPlayerWallAvoid);
 		}
 	}
 	ImGui::NewLine();
@@ -323,10 +349,16 @@ void GameState::DebugUI()
 	if (ImGui::CollapsingHeader("Enemy Command Option", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		static bool mEnemyAvoid = false;
+		static bool mEnemyWallAvoid = false;
 		if (ImGui::Checkbox("Enemy Obstacle Avoidance", &mEnemyAvoid))
 		{
 			for (auto& entity : mSolider)
-				entity->GetSteeringModule()->GetBehavior<AI::AvoidObsBehavior>("Avoid")->SetActive(mEnemyAvoid);
+				entity->GetSteeringModule()->GetBehavior<AvoidObsBehavior>("Avoid")->SetActive(mEnemyAvoid);
+		}
+		if (ImGui::Checkbox("Enemy Wall Avoidance", &mEnemyWallAvoid))
+		{
+			for (auto& entity : mSolider)
+				entity->GetSteeringModule()->GetBehavior<WallAvoidBehvior>("Wall")->SetActive(mEnemyWallAvoid);
 		}
 		if (ImGui::Button("Gathering!"))
 		{
@@ -518,8 +550,8 @@ void GameState::DebugUI()
 
 			for (auto& entity : mSolider)
 			{
-				entity->GetSteeringModule()->GetBehavior<AI::EvadeBehavior>("Evade")->SetActive(true);
-				entity->GetSteeringModule()->GetBehavior<AI::SeparationBehavior>("Separation")->SetActive(true);
+				entity->GetSteeringModule()->GetBehavior<EvadeBehavior>("Evade")->SetActive(true);
+				entity->GetSteeringModule()->GetBehavior<SeparationBehavior>("Separation")->SetActive(true);
 			}
 		}
 		if (ImGui::Button("Ambush!"))
@@ -540,8 +572,8 @@ void GameState::DebugUI()
 
 			for (auto& entity : mSolider)
 			{
-				entity->GetSteeringModule()->GetBehavior<AI::HideBehavior>("Hide")->SetActive(true);
-				entity->GetSteeringModule()->GetBehavior<AI::AlignmentBehavior>("Alignment")->SetActive(true);
+				entity->GetSteeringModule()->GetBehavior<HideBehavior>("Hide")->SetActive(true);
+				entity->GetSteeringModule()->GetBehavior<AlignmentBehavior>("Alignment")->SetActive(true);
 			}
 		}
 	}

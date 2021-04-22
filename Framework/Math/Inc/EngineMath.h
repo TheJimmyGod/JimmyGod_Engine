@@ -86,6 +86,16 @@ namespace JimmyGod::Math
 		return (a.x * b.x) + (a.y * b.y); 
 	}
 
+	constexpr float Dot(float a, float b, float c, float d)
+	{
+		return (a * b) + (c * d);
+	}
+
+	constexpr float MagnitudeSqr(float a, float b)
+	{
+		return (a*a) + (b*b);
+	}
+
 	constexpr float MagnitudeSqr(const Vector2& v)
 	{
 		return (v.x * v.x) + (v.y * v.y);
@@ -112,6 +122,47 @@ namespace JimmyGod::Math
 		return Sqrt(DistanceSqr(a, b));
 	}
 
+	inline float Distance(const LineSegment& a, const Vector2& b)
+	{
+		auto A = b.x - a.from.x; auto B = b.y - a.from.y;
+		auto C = a.to.x - a.from.x; auto D = a.to.y - a.from.y;
+		auto dot = Dot(A,C,B,D);
+		auto length_sqr = MagnitudeSqr(C, D);
+		auto param = dot / length_sqr;
+		
+		float xx, yy;
+		if (param < 0.0f || (a.from.x == a.to.x && a.from.y == a.to.y))
+		{
+			xx = a.from.x; yy = a.from.y;
+		}
+		else if (param > 1)
+		{
+			xx = a.to.x; yy = a.to.y;
+		}
+		else
+		{
+			xx = a.from.x + param * C;
+			yy = a.from.y + param * D;
+		}
+
+		float dx = b.x - xx;
+		float dy = b.y - yy;
+
+		return Sqr(MagnitudeSqr(dx, dy));
+	}
+
+	constexpr float Cross(const Vector2& a, const Vector2& b)
+	{
+		return
+			(
+				((a.x * b.y) - (a.y * b.x))
+				);
+	}
+
+	constexpr Vector2 Cross(const Vector2& v)
+	{
+		return Vector2(v.y, -v.x);
+	}
 
 	constexpr Vector3 Cross(const Vector3& a, const Vector3& b)
 	{
@@ -440,7 +491,6 @@ namespace JimmyGod::Math
 	bool Intersect(const LineSegment& a, const LineSegment& b);
 	bool Intersect(const Circle& c, const LineSegment& l, Vector2* closestPoint = nullptr);
 	bool Intersect(const LineSegment& l, const Circle& c);
-
 	//Linear Interpolations
 	constexpr Quaternion Lerp(const Quaternion& from, const Quaternion& to, float time)
 	{

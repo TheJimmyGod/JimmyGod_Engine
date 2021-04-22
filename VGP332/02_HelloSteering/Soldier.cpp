@@ -26,6 +26,7 @@ void Soldier::Load()
 	mSteeringModule->AddBehavior<WanderBehavior>("Wander")->SetActive(false);
 	mSteeringModule->AddBehavior<AvoidObsBehavior>("Avoid")->SetActive(false);
 	mSteeringModule->AddBehavior<HideBehavior>("Hide")->SetActive(false);
+	mSteeringModule->AddBehavior<WallAvoidBehvior>("Wall")->SetActive(false);
 
 	mSteeringModule->AddBehavior<SeparationBehavior>("Separation")->SetActive(false);
 	mSteeringModule->AddBehavior<AlignmentBehavior>("Alignment")->SetActive(false);

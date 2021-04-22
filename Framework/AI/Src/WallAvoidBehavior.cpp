@@ -1,59 +1,63 @@
 #include "Precompiled.h"
 #include "WallAvoidBehavior.h"
 
+using namespace JimmyGod;
 using namespace JimmyGod::AI;
-
-JimmyGod::Math::Vector2 WallAvoidBehvior::Calculate(Agent & agent)
+using namespace JimmyGod::Math;
+Vector2 WallAvoidBehvior::Calculate(Agent & agent)
 {
+	float speed = JimmyGod::Math::Magnitude(agent.Velocity);
+	float minDistance = std::numeric_limits<float>::infinity();
+	float thisDistance = 0.0f;
 
-	JimmyGod::Math::Vector2 direction = JimmyGod::Math::Normalize(agent.Velocity);
+	auto forward = agent.Position + JimmyGod::Math::Normalize(agent.Velocity) * 50.0f;
+	auto halfForward = agent.Position + JimmyGod::Math::Normalize(agent.Velocity) * 25.0f;
 
-	auto forward = agent.Position + direction * 150.0f;
-	auto halfForward = agent.Position + direction * 75.0f;
+	auto aheadVector1 = forward + JimmyGod::Math::Rotate(JimmyGod::Math::Normalize(agent.Velocity), 45.0f) * agent.Radius;
+	auto aheadVector2 = forward + JimmyGod::Math::Rotate(JimmyGod::Math::Normalize(agent.Velocity), -45.0f) * agent.Radius;
 
+	auto aheadVector3 = agent.Position + JimmyGod::Math::Normalize(agent.Velocity) + JimmyGod::Math::Rotate(JimmyGod::Math::Normalize(agent.Velocity), 45.0f) * agent.Radius;
+	auto aheadVector4 = agent.Position + JimmyGod::Math::Normalize(agent.Velocity) + JimmyGod::Math::Rotate(JimmyGod::Math::Normalize(agent.Velocity), -45.0f) * agent.Radius;
 
-	float dist = 0.0f;
-	float minDist = std::numeric_limits<float>::infinity();
-	bool collision = false;
-	JimmyGod::Math::Vector2 steeringForce, point = JimmyGod::Math::Vector2();
-	JimmyGod::Math::LineSegment nearest;
-	for (auto& wall : agent.world.GetWalls())
+	float length = agent.Radius + (speed / agent.MaxSpeed) * agent.Radius;
+
+	auto ahead = agent.Position + JimmyGod::Math::Normalize(agent.Velocity) * length;
+	ahead = JimmyGod::Math::Magnitude(ahead);
+
+	Vector2 SteeringForce, point, closestPoint;
+
+	int closestWallIndex = -1;
+	for (size_t i = 0; i < agent.world.GetWalls().size(); ++i)
 	{
-		JimmyGod::Math::Vector2 iter = GetDistanceWall(agent.Position, wall);
-		dist = GetDistance(agent.Position, wall);
-
-		if (dist < minDist)
+		bool isHalf = false;
+		if (Intersect(Circle{ forward,agent.Radius }, agent.world.GetWalls()[i], &closestPoint))
 		{
-			JimmyGod::Math::Vector2 heading = iter - agent.Position;
-			float angle = JimmyGod::Math::Dot(heading, direction);
+			thisDistance = Distance(agent.world.GetWalls()[i], forward);
+			minDistance = thisDistance;
+			closestWallIndex = i;
+		}
+		else if (Intersect(Circle{ halfForward,agent.Radius }, agent.world.GetWalls()[i], &closestPoint))
+		{
+			thisDistance = Distance(agent.world.GetWalls()[i], halfForward);
+			minDistance = thisDistance;
+			closestWallIndex = i;
+		}
 
-			if (angle > 0.0f)
-			{
-				nearest = wall;
-				collision = LineIntersectsWall(agent, forward, halfForward, nearest);
-				minDist = dist;
-
-				point = iter;
-				break;
-			}
-			
+		if (closestWallIndex >= 0)
+		{
+			Vector2 overShoot = isHalf ? (halfForward - closestPoint) : (forward - closestPoint);
+			float cross = Cross(agent.world.GetWalls()[closestWallIndex].to, agent.world.GetWalls()[closestWallIndex].from);
+			SteeringForce = overShoot.x < 0.0f ? (PerpendicularLH(overShoot) * cross) : (PerpendicularRH(overShoot) * cross);
 		}
 	}
-	
-	if (collision)
-	{
-		point = GetDistanceWall(agent.Position, nearest);
-		JimmyGod::Graphics::SimpleDraw::AddScreenCircle(Circle(Vector2(nearest.to.x, nearest.from.y), 100.0f), JimmyGod::Graphics::Colors::Yellow);
-		steeringForce = forward - point;
-		steeringForce = JimmyGod::Math::Normalize(steeringForce);
-		steeringForce *= agent.MaxSpeed;
-		return steeringForce;
-	}
-	else
-	{
-		JimmyGod::Graphics::SimpleDraw::AddScreenCircle(Circle(Vector2(nearest.from.x, nearest.from.y), 3.5f), JimmyGod::Graphics::Colors::Magenta);
-	}
-	
 
-	return JimmyGod::Math::Vector2{ 0.0f, 0.0f };
+	if (IsDebugUIActive())
+	{
+		JimmyGod::Graphics::SimpleDraw::AddScreenLine(aheadVector1, aheadVector3, JimmyGod::Graphics::Colors::Aqua);
+		JimmyGod::Graphics::SimpleDraw::AddScreenLine(aheadVector4, aheadVector2, JimmyGod::Graphics::Colors::Aqua);
+		JimmyGod::Graphics::SimpleDraw::AddScreenLine(aheadVector1, aheadVector2, JimmyGod::Graphics::Colors::Aqua);
+		JimmyGod::Graphics::SimpleDraw::AddScreenLine(aheadVector3, aheadVector4, JimmyGod::Graphics::Colors::Aqua);
+	}
+
+	return SteeringForce;
 }

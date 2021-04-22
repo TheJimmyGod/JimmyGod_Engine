@@ -13,7 +13,7 @@ JimmyGod::Math::Vector2 ArriveBehavior::Calculate(Agent & agent)
 				JimmyGod::Graphics::Colors::Aqua);
 			JimmyGod::Graphics::SimpleDraw::AddScreenLine(agent.Destination, agent.Position, JimmyGod::Graphics::Colors::Aqua);
 		}
-		return Arrive(agent, agent.Destination, 3.0f, 0.3f);
+		return Arrive(agent, agent.Destination, 3.0f, 0.6f);
 	}
 	else
 	{
@@ -28,7 +28,7 @@ JimmyGod::Math::Vector2 JimmyGod::AI::ArriveBehavior::Arrive(Agent & agent, Jimm
 	float distance = JimmyGod::Math::Magnitude(toTarget);
 	JimmyGod::Math::Vector2 velocity = Vector2::Zero;
 
-	if (distance > 100.0f)
+	if (distance < 200.0f)
 	{
 		float speed = distance / decel * decelTweaker;
 		speed = JimmyGod::Math::Min(speed, agent.MaxSpeed);
