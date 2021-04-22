@@ -13,6 +13,7 @@ void GameState::Initialize()
 	mCamera.SetFov(60.0f * JimmyGod::Math::Constants::DegToRad);
 	mCamera.SetNearPlane(0.01f);
 	mCamera.SetFarPlane(10000.0f);
+
 	mTilemap.Load();
 	auto GS = JimmyGod::Graphics::GraphicsSystem::Get();
 	mAI_Setting.partitionGridSize = { 100.0f };
@@ -45,6 +46,7 @@ void GameState::Terminate()
 	mPlayer.get()->Unload();
 	for (auto& entity : mSolider)
 		entity->Unload();
+
 }
 
 void GameState::Update(float deltaTime)
@@ -52,11 +54,10 @@ void GameState::Update(float deltaTime)
 	auto input = InputSystem::Get();
 	auto GS = GraphicsSystem::Get();
 	mWorld.Update();
-
 	if (input->IsMousePressed(MouseButton::RBUTTON))
 	{
 		mPlayer->Destination = Vector2{ static_cast<float>(input->GetMouseScreenX()) ,
-			static_cast<float>(input->GetMouseScreenY()) };
+	static_cast<float>(input->GetMouseScreenY()) };
 	}
 
 	mPlayer.get()->Update(deltaTime);
@@ -73,6 +74,7 @@ void GameState::Render()
 	mTilemap.Render();
 	mWorld.DebugDraw();
 	mPlayer.get()->Render();
+
 	for (auto& entity : mSolider)
 	{
 		entity->Render();
@@ -254,6 +256,7 @@ void GameState::DebugUI()
 			entity->GetSteeringModule()->GetBehavior<EvadeBehavior>("Evade")->SetActivateDebugUI(mActive);
 			entity->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActivateDebugUI(mActive);
 			entity->GetSteeringModule()->GetBehavior<HideBehavior>("Hide")->SetActivateDebugUI(mActive);
+			entity->GetSteeringModule()->GetBehavior<WallAvoidBehvior>("Wall")->SetActivateDebugUI(mActive);
 		}
 		mPlayer->GetSteeringModule()->GetBehavior<SeekBehavior>("Seek")->SetActivateDebugUI(mActive);
 		mPlayer->GetSteeringModule()->GetBehavior<WanderBehavior>("Wander")->SetActivateDebugUI(mActive);
@@ -278,9 +281,11 @@ void GameState::DebugUI()
 		if (ImGui::Checkbox("Player Arrive", &mPlayerArrive))
 		{
 			mPlayer->Velocity = Vector2::Zero;
+			mPlayer->MaxSpeed = 300.0f;
 			mPlayer->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActive(mPlayerArrive);
 			if (mPlayerArrive)
 			{
+				mPlayer->Reaction();
 				mPlayerSeek = true;
 				mPlayerWander = false;
 				mPlayerFlee = false;
@@ -293,27 +298,44 @@ void GameState::DebugUI()
 				mPlayerSeek = false;
 			}
 		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::SetTooltip("Activate Arrive");
+			ImGui::EndTooltip();
+		}
 		if (ImGui::Checkbox("Player Flee", &mPlayerFlee))
 		{
 			mPlayer->Velocity = Vector2::Zero;
+			mPlayer->MaxSpeed = 1000.0f;
 			mPlayer->GetSteeringModule()->GetBehavior<FleeBehavior>("Flee")->SetActive(mPlayerFlee);
 			if (mPlayerFlee)
 			{
+				mPlayer->Reaction();
 				mPlayerSeek = false;
 				mPlayerWander = false;
 				mPlayerArrive = false;
 
 				mPlayer->GetSteeringModule()->GetBehavior<WanderBehavior>("Wander")->SetActive(mPlayerWander);
 				mPlayer->GetSteeringModule()->GetBehavior<SeekBehavior>("Seek")->SetActive(mPlayerSeek);
-				mPlayer->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActive(mPlayerFlee);
+				mPlayer->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActive(mPlayerArrive);
 			}
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::SetTooltip("Activate Flee");
+			ImGui::EndTooltip();
 		}
 		if (ImGui::Checkbox("Player Seek", &mPlayerSeek))
 		{
 			mPlayer->Velocity = Vector2::Zero;
+			mPlayer->MaxSpeed = 300.0f;
 			mPlayer->GetSteeringModule()->GetBehavior<SeekBehavior>("Seek")->SetActive(mPlayerSeek);
 			if (mPlayerSeek)
 			{
+				mPlayer->Reaction();
+				mPlayerArrive = false;
 				mPlayerWander = false;
 				mPlayerFlee = false;
 				mPlayer->GetSteeringModule()->GetBehavior<WanderBehavior>("Wander")->SetActive(mPlayerWander);
@@ -321,9 +343,17 @@ void GameState::DebugUI()
 				mPlayer->GetSteeringModule()->GetBehavior<FleeBehavior>("Flee")->SetActive(mPlayerFlee);
 			}
 		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::SetTooltip("Activate Seek");
+			ImGui::EndTooltip();
+		}
 		if (ImGui::Checkbox("Player Wander", &mPlayerWander))
 		{
+			mPlayer->Reaction();
 			mPlayer->Velocity = Vector2::Zero;
+			mPlayer->MaxSpeed = 300.0f;
 			mPlayer->GetSteeringModule()->GetBehavior<WanderBehavior>("Wander")->SetActive(mPlayerWander);
 			if (mPlayerWander)
 			{
@@ -335,13 +365,33 @@ void GameState::DebugUI()
 				mPlayer->GetSteeringModule()->GetBehavior<FleeBehavior>("Flee")->SetActive(mPlayerFlee);
 			}
 		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::SetTooltip("Activate Wander");
+			ImGui::EndTooltip();
+		}
 		if (ImGui::Checkbox("Player Obstacle Avoidance", &mPlayerAvoid))
 		{
+			mPlayer->Reaction();
 			mPlayer->GetSteeringModule()->GetBehavior<AvoidObsBehavior>("Avoid")->SetActive(mPlayerAvoid);
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::SetTooltip("Activate Obstacle Avoidance to avoid all obstacles");
+			ImGui::EndTooltip();
 		}
 		if (ImGui::Checkbox("Player Wall Avoiance", &mPlayerWallAvoid))
 		{
+			mPlayer->Reaction();
 			mPlayer->GetSteeringModule()->GetBehavior<WallAvoidBehvior>("Wall")->SetActive(mPlayerWallAvoid);
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::SetTooltip("Activate Wall Avoidance to avoid all walls");
+			ImGui::EndTooltip();
 		}
 	}
 	ImGui::NewLine();
@@ -353,229 +403,280 @@ void GameState::DebugUI()
 		if (ImGui::Checkbox("Enemy Obstacle Avoidance", &mEnemyAvoid))
 		{
 			for (auto& entity : mSolider)
+			{
 				entity->GetSteeringModule()->GetBehavior<AvoidObsBehavior>("Avoid")->SetActive(mEnemyAvoid);
+				entity->Reaction();
+			}
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::SetTooltip("Activate Obstacle Avoidance to avoid all obstacles");
+			ImGui::EndTooltip();
 		}
 		if (ImGui::Checkbox("Enemy Wall Avoidance", &mEnemyWallAvoid))
 		{
 			for (auto& entity : mSolider)
+			{
 				entity->GetSteeringModule()->GetBehavior<WallAvoidBehvior>("Wall")->SetActive(mEnemyWallAvoid);
-		}
-		if (ImGui::Button("Gathering!"))
-		{
-			Clear();
-			mOrder = Order::Gathering;
-			for (auto& entity : mSolider)
-			{
-				entity.get()->MaxSpeed = 200.0f;
-				entity.get()->SetOrder(true);
+				entity->Reaction();
 			}
-			previous = Vector2::Zero;
-			nearest = Vector2::Zero;
-			float lastDistance = 0.0f;
-			float minDistance = std::numeric_limits<float>::infinity();
-			for (auto& entity : mSolider)
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::SetTooltip("Activate Wall Avoidance to avoid all walls");
+			ImGui::EndTooltip();
+		}
+		if (ImGui::CollapsingHeader("Group Command Option", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (ImGui::Button("Gathering!"))
 			{
-				if (previous.x == 0 && previous.y == 0)
+				Clear();
+				mOrder = Order::Gathering;
+				for (auto& entity : mSolider)
 				{
-					previous = entity.get()->Position;
-					continue;
+					entity.get()->MaxSpeed = 200.0f;
+					entity.get()->SetOrder(true);
 				}
-				else
+				previous = Vector2::Zero;
+				nearest = Vector2::Zero;
+				float lastDistance = 0.0f;
+				float minDistance = std::numeric_limits<float>::infinity();
+				for (auto& entity : mSolider)
 				{
-					lastDistance = Distance(previous, entity.get()->Position);
-					bool isCloseAtObstacles = false;
-					for (auto& obs : mWorld.GetObstacles())
+					if (previous.x == 0 && previous.y == 0)
 					{
-						if (Distance(entity->Position, obs.center) < obs.radius + 50.0f)
-							isCloseAtObstacles = true;
-					}
-					if (isCloseAtObstacles) continue;
-					if (lastDistance < minDistance)
-					{
-						minDistance = lastDistance;
-						nearest = entity.get()->Position;
+						previous = entity.get()->Position;
+						continue;
 					}
 					else
 					{
-						previous = entity.get()->Position;
+						lastDistance = Distance(previous, entity.get()->Position);
+						bool isCloseAtObstacles = false;
+						for (auto& obs : mWorld.GetObstacles())
+						{
+							if (Distance(entity->Position, obs.center) < obs.radius + 50.0f)
+								isCloseAtObstacles = true;
+						}
+						if (isCloseAtObstacles) continue;
+						if (lastDistance < minDistance)
+						{
+							minDistance = lastDistance;
+							nearest = entity.get()->Position;
+						}
+						else
+						{
+							previous = entity.get()->Position;
+						}
 					}
 				}
-			}
 
-			if (nearest.x < 100.0f)
-				nearest.x += 350.0f;
-			if (nearest.y < 100.0f)
-				nearest.y += 350.0f;
-			if (nearest.x > static_cast<float>(GS->GetBackBufferWidth()) - 150.0f)
-				nearest.x -= 350.0f;
-			if (nearest.y > static_cast<float>(GS->GetBackBufferHeight()) - 150.0f)
-				nearest.y -= 350.0f;
-			int Index = 0;
-			int MaxIndex = mSolider.size() / 3;
-			bool FirstFormation = true;
-			bool SecondFormation = false;
-			bool ThirdFormation = false;
-			for (auto& entity : mSolider)
-			{
-				if (FirstFormation)
+				if (nearest.x < 100.0f)
+					nearest.x += 350.0f;
+				if (nearest.y < 100.0f)
+					nearest.y += 350.0f;
+				if (nearest.x > static_cast<float>(GS->GetBackBufferWidth()) - 150.0f)
+					nearest.x -= 350.0f;
+				if (nearest.y > static_cast<float>(GS->GetBackBufferHeight()) - 150.0f)
+					nearest.y -= 350.0f;
+				int Index = 0;
+				int MaxIndex = mSolider.size() / 3;
+				bool FirstFormation = true;
+				bool SecondFormation = false;
+				bool ThirdFormation = false;
+				for (auto& entity : mSolider)
 				{
-					entity.get()->Destination = Vector2{ nearest.x + (mOffset * Index), nearest.y };
-					Index++;
-					if (Index == MaxIndex)
+					if (FirstFormation)
 					{
-						FirstFormation = false;
-						SecondFormation = true;
-						Index = 0;
-						continue;
+						entity.get()->Destination = Vector2{ nearest.x + (mOffset * Index), nearest.y };
+						Index++;
+						if (Index == MaxIndex)
+						{
+							FirstFormation = false;
+							SecondFormation = true;
+							Index = 0;
+							continue;
+						}
 					}
-				}
-				if (SecondFormation)
-				{
-					entity.get()->Destination = Vector2{ nearest.x + (mOffset * Index), nearest.y + mOffset };
-					Index++;
-					if (Index == MaxIndex)
+					if (SecondFormation)
 					{
-						FirstFormation = false;
-						SecondFormation = false;
-						ThirdFormation = true;
-						Index = 0;
-						continue;
+						entity.get()->Destination = Vector2{ nearest.x + (mOffset * Index), nearest.y + mOffset };
+						Index++;
+						if (Index == MaxIndex)
+						{
+							FirstFormation = false;
+							SecondFormation = false;
+							ThirdFormation = true;
+							Index = 0;
+							continue;
+						}
+					}
+					if (ThirdFormation)
+					{
+						entity.get()->Destination = Vector2{ nearest.x + (mOffset * Index), nearest.y + mOffset * 2 };
+						Index++;
 					}
 				}
-				if (ThirdFormation)
+				mTimer = 0.0f;
+				isProcessing = true;
+				for (auto& entity : mSolider)
 				{
-					entity.get()->Destination = Vector2{ nearest.x + (mOffset * Index), nearest.y + mOffset * 2 };
-					Index++;
+					entity.get()->GetSteeringModule()->GetBehavior<SeekBehavior>("Seek")->SetActive(true);
+					entity.get()->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActive(true);
+					entity.get()->GetSteeringModule()->GetBehavior<SeparationBehavior>("Separation")->SetActive(true);
+					entity.get()->GetSteeringModule()->GetBehavior<CohesionBehavior>("Cohesion")->SetActive(true);
+					entity->Reaction();
 				}
 			}
-			mTimer = 0.0f;
-			isProcessing = true;
-			for (auto& entity : mSolider)
+			if (ImGui::IsItemHovered())
 			{
-				entity.get()->GetSteeringModule()->GetBehavior<SeekBehavior>("Seek")->SetActive(true);
-				entity.get()->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActive(true);
-				entity.get()->GetSteeringModule()->GetBehavior<SeparationBehavior>("Separation")->SetActive(true);
-				entity.get()->GetSteeringModule()->GetBehavior<CohesionBehavior>("Cohesion")->SetActive(true);
+				ImGui::BeginTooltip();
+				ImGui::SetTooltip("Gathering is an order to call all entities \nin a poision where the nearest is.\nAdditionally they will be arranged in order.\nSometimes some enemies will not be in poistion,\nbut don't worry since it will be ended automatically.\nThe order is combination of Arrive, Sepearation, Cohesion, and Seek.");
+				ImGui::EndTooltip();
 			}
-		}
-		if (ImGui::Button("Moving!"))
-		{
-			Clear();
-			mOrder = Order::Moving;
-			for (auto& entity : mSolider)
+			if (ImGui::Button("Moving!"))
 			{
-				entity->MaxSpeed = 50.0f;
-				entity.get()->SetOrder(true);
-			}
+				Clear();
+				mOrder = Order::Moving;
+				for (auto& entity : mSolider)
+				{
+					entity->MaxSpeed = 50.0f;
+					entity.get()->SetOrder(true);
+				}
 
-			size_t size = mSolider.size();
-			mGeneral = static_cast<size_t>(RandomInt(0, size - 1));
-			mSolider[mGeneral]->MaxSpeed = 500.0f;
-			for (auto& entity : mSolider)
-				entity->threat = mSolider[mGeneral].get();
+				size_t size = mSolider.size();
+				mGeneral = static_cast<size_t>(RandomInt(0, size - 1));
+				mSolider[mGeneral]->MaxSpeed = 500.0f;
+				for (auto& entity : mSolider)
+					entity->threat = mSolider[mGeneral].get();
 
-			Circle obstacle;
-			for (auto& obs : mWorld.GetObstacles())
-			{
-				if (Distance(nearest, obs.center) < obs.radius + 150.0f)
-					obstacle = Circle{obs.center,obs.radius};
-			}
-			nearest = Vector2{ RandomFloat(150.0f, (static_cast<float>(GS->GetBackBufferWidth()) - 150.0f))
-, RandomFloat(150.0f, static_cast<float>(GS->GetBackBufferHeight()) - 150.0f) };
-			
-			bool isCheck = false;
-			while (isCheck == false)
-			{
-				nearest = Vector2{ RandomFloat(150.0f, (static_cast<float>(GS->GetBackBufferWidth()) - 150.0f))
-				, RandomFloat(150.0f, static_cast<float>(GS->GetBackBufferHeight()) - 150.0f) };
-				bool isCloseAtObstacles = false;
-				float dis = Distance(nearest, obstacle.center);
-				if (dis < obstacle.radius)
-					isCloseAtObstacles = true;
+				Circle obstacle;
 				for (auto& obs : mWorld.GetObstacles())
 				{
-					dis = Distance(nearest, obs.center);
-					if (dis < obs.radius)
+					if (Distance(nearest, obs.center) < obs.radius + 150.0f)
+						obstacle = Circle{ obs.center,obs.radius };
+				}
+				nearest = Vector2{ RandomFloat(150.0f, (static_cast<float>(GS->GetBackBufferWidth()) - 150.0f))
+	, RandomFloat(150.0f, static_cast<float>(GS->GetBackBufferHeight()) - 150.0f) };
+
+				bool isCheck = false;
+				while (isCheck == false)
+				{
+					nearest = Vector2{ RandomFloat(150.0f, (static_cast<float>(GS->GetBackBufferWidth()) - 150.0f))
+					, RandomFloat(150.0f, static_cast<float>(GS->GetBackBufferHeight()) - 150.0f) };
+					bool isCloseAtObstacles = false;
+					float dis = Distance(nearest, obstacle.center);
+					if (dis < obstacle.radius)
 						isCloseAtObstacles = true;
+					for (auto& obs : mWorld.GetObstacles())
+					{
+						dis = Distance(nearest, obs.center);
+						if (dis < obs.radius)
+							isCloseAtObstacles = true;
+					}
+					if (isCloseAtObstacles)
+					{
+						continue;
+					}
+					if (Distance(nearest, previous) > 350.0f)
+					{
+						isCheck = true;
+					}
 				}
-				if (isCloseAtObstacles)
+
+				if (nearest.x < 100.0f)
+					nearest.x += 350.0f;
+				if (nearest.y < 100.0f)
+					nearest.y += 350.0f;
+				if (nearest.x > static_cast<float>(GS->GetBackBufferWidth()) - 150.0f)
+					nearest.x -= 350.0f;
+				if (nearest.y > static_cast<float>(GS->GetBackBufferHeight()) - 150.0f)
+					nearest.y -= 350.0f;
+
+				previous = nearest;
+				mSolider[mGeneral]->Destination = nearest;
+				mSolider[mGeneral].get()->GetSteeringModule()->GetBehavior<ArriveBehavior>("Seek")->SetActive(true);
+				mSolider[mGeneral].get()->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActive(true);
+				mTimer = 0.0f;
+				isProcessing = true;
+
+				for (auto& entity : mSolider)
 				{
-					continue;
+					if (entity == mSolider[mGeneral])
+						continue;
+					entity.get()->Destination = entity->threat->Destination;
+					entity.get()->MaxSpeed = 1.0f;
+					entity.get()->GetSteeringModule()->GetBehavior<PursuitBehavior>("Pursuit")->SetActive(true);
+					entity.get()->GetSteeringModule()->GetBehavior<SeparationBehavior>("Separation")->SetActive(true);
+					entity.get()->GetSteeringModule()->GetBehavior<AlignmentBehavior>("Alignment")->SetActive(true);
+					entity->Reaction();
 				}
-				if (Distance(nearest, previous) > 350.0f)
+			}
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::SetTooltip("Moving is the tricky order that has two steps to move\nFirstly, random picked scout will be moving in a random position.\n After the scout arrived, other soldiers are following in these position.\nThe idea is to implement a concept of real time strategy game.\nThe order is combination of Seek, Arrive, Pursuit, Alignment, and Sepearation");
+				ImGui::EndTooltip();
+			}
+			if (ImGui::Button("Wandering!"))
+			{
+				Clear();
+				mOrder = Order::Wandering;
+				for (auto& entity : mSolider)
 				{
-					isCheck = true;
+					entity.get()->MaxSpeed = 50.0f;
+					entity.get()->SetOrder(true);
+					entity.get()->threat = mPlayer.get();
+				}
+				mTimer = 0.0f;
+				isProcessing = true;
+
+				for (auto& entity : mSolider)
+				{
+					entity->GetSteeringModule()->GetBehavior<EvadeBehavior>("Evade")->SetActive(true);
+					entity->GetSteeringModule()->GetBehavior<SeparationBehavior>("Separation")->SetActive(true);
+					entity->Reaction();
 				}
 			}
-
-			if (nearest.x < 100.0f)
-				nearest.x += 350.0f;
-			if (nearest.y < 100.0f)
-				nearest.y += 350.0f;
-			if (nearest.x > static_cast<float>(GS->GetBackBufferWidth()) - 150.0f)
-				nearest.x -= 350.0f;
-			if (nearest.y > static_cast<float>(GS->GetBackBufferHeight()) - 150.0f)
-				nearest.y -= 350.0f;
-
-			previous = nearest;
-			mSolider[mGeneral]->Destination = nearest;
-			mSolider[mGeneral].get()->GetSteeringModule()->GetBehavior<ArriveBehavior>("Seek")->SetActive(true);
-			mSolider[mGeneral].get()->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActive(true);
-			mTimer = 0.0f;
-			isProcessing = true;
-
-			for (auto& entity : mSolider)
+			if (ImGui::IsItemHovered())
 			{
-				if (entity == mSolider[mGeneral])
-					continue;
-				entity.get()->Destination = entity->threat->Destination;
-				entity.get()->MaxSpeed = 1.0f;
-				entity.get()->GetSteeringModule()->GetBehavior<PursuitBehavior>("Pursuit")->SetActive(true);
-				entity.get()->GetSteeringModule()->GetBehavior<SeparationBehavior>("Separation")->SetActive(true);
-				entity.get()->GetSteeringModule()->GetBehavior<AlignmentBehavior>("Alignment")->SetActive(true);
+				ImGui::BeginTooltip();
+				ImGui::SetTooltip("Wandering is a simple order to make all entities move anywhere,\nbut consider where the player is.\nThe order is combination of Wander and Evade.");
+				ImGui::EndTooltip();
 			}
-		}
-		if (ImGui::Button("Wandering!"))
-		{
-			Clear();
-			mOrder = Order::Wandering;
-			for (auto& entity : mSolider)
+			if (ImGui::Button("Ambush!"))
 			{
-				entity.get()->MaxSpeed = 50.0f;
-				entity.get()->SetOrder(true);
-				entity.get()->threat = mPlayer.get();
-			}
-			mTimer = 0.0f;
-			isProcessing = true;
+				Clear();
+				isHided = false;
+				mOrder = Order::Ambush;
+				for (auto& entity : mSolider)
+				{
+					entity.get()->MaxSpeed = 200.0f;
+					entity.get()->SetOrder(true);
+					entity.get()->threat = mPlayer.get();
+				}
 
-			for (auto& entity : mSolider)
-			{
-				entity->GetSteeringModule()->GetBehavior<EvadeBehavior>("Evade")->SetActive(true);
-				entity->GetSteeringModule()->GetBehavior<SeparationBehavior>("Separation")->SetActive(true);
-			}
-		}
-		if (ImGui::Button("Ambush!"))
-		{
-			Clear();
-			isHided = false;
-			mOrder = Order::Ambush;
-			for (auto& entity : mSolider)
-			{
-				entity.get()->MaxSpeed = 200.0f;
-				entity.get()->SetOrder(true);
-				entity.get()->threat = mPlayer.get();
-			}
+				mTimer = 0.0f;
+				mHideTimer = 0.0f;
+				isProcessing = true;
 
-			mTimer = 0.0f;
-			mHideTimer = 0.0f;
-			isProcessing = true;
-
-			for (auto& entity : mSolider)
+				for (auto& entity : mSolider)
+				{
+					entity->GetSteeringModule()->GetBehavior<HideBehavior>("Hide")->SetActive(true);
+					entity->GetSteeringModule()->GetBehavior<AlignmentBehavior>("Alignment")->SetActive(true);
+					entity->Reaction();
+				}
+			}
+			if (ImGui::IsItemHovered())
 			{
-				entity->GetSteeringModule()->GetBehavior<HideBehavior>("Hide")->SetActive(true);
-				entity->GetSteeringModule()->GetBehavior<AlignmentBehavior>("Alignment")->SetActive(true);
+				ImGui::BeginTooltip();
+				ImGui::SetTooltip("Ambush is a strong order to command all entites get hide in behind of obstacles.\nAfter they are waiting in few minutes,\nThey are suddenly attacking on the player.\nThe idea is to implement a strategy in order to act entities flexible.\nThe order is combination of Hide, Pursuit, Alignment, and Sepearaion.");
+				ImGui::EndTooltip();
 			}
 		}
 	}
+
+
 	ImGui::End();
 }

@@ -6,7 +6,8 @@ using namespace JimmyGod::Graphics;
 
 void TileMap::Load()
 {
-	mTextureIds[0] = TextureManager::Get()->Load("grass.png");
+	mTextureIds[0] = TextureManager::Get()->Load("tile2.png");
+	//mTextureIds[1] = TextureManager::Get()->Load("tile2.png");
 	mColumns = 50;
 	mRows = 40;
 	mTiles.resize(static_cast<size_t>(mColumns * mRows), 0);
@@ -30,7 +31,7 @@ void TileMap::Render()
 				static_cast<float>(x) * mTileSize,
 				static_cast<float>(y) * mTileSize
 			};
-			SpriteRenderManager::Get()->DrawSprite(mTextureIds[mTiles[index]], pos, Pivot::TopLeft);
+			SpriteRenderManager::Get()->DrawSprite(mTextureIds[0], pos, Pivot::TopLeft);
 		}
 	}
 }

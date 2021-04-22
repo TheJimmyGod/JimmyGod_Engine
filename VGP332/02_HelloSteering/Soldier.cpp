@@ -32,6 +32,24 @@ void Soldier::Load()
 	mSteeringModule->AddBehavior<AlignmentBehavior>("Alignment")->SetActive(false);
 	mSteeringModule->AddBehavior<CohesionBehavior>("Cohesion")->SetActive(false);
 
+	SpriteAnimationInfo spriteInfo;
+	spriteInfo.fileName = "SmokeSprite.png";
+	spriteInfo.columns = 8;
+	spriteInfo.rows = 8;
+	spriteInfo.frameCount = 64;
+	spriteInfo.framePerSecond = 64.0f;
+	spriteInfo.looping = true;
+
+	SpriteAnimationInfo spriteInfo_behavior;
+	spriteInfo_behavior.fileName = "Effect.png";
+	spriteInfo_behavior.columns = 5;
+	spriteInfo_behavior.rows = 6;
+	spriteInfo_behavior.frameCount = 30;
+	spriteInfo_behavior.framePerSecond = 30.0f;
+	spriteInfo_behavior.looping = false;
+	mSmoke.Load(spriteInfo);
+	mBehaviorEffect.Load(spriteInfo_behavior);
+
 	mSoldierSprite = TextureManager::Get()->Load("zombie_idle.png");
 	MaxSpeed = 200.0f;
 	Mass = 1.0f;
@@ -42,6 +60,7 @@ void Soldier::Unload()
 {
 	mSoldierSprite = 0;
 	mSteeringModule.reset();
+	mBehaviorEffect.Unload();
 }
 
 void Soldier::Update(float deltaTime)
@@ -75,6 +94,25 @@ void Soldier::Update(float deltaTime)
 		Velocity = Velocity / speed * MaxSpeed;
 
 
+	mSmoke.Update(deltaTime);
+	mSmoke.SetPosition(Position);
+
+	mBehaviorEffect.Update(deltaTime);
+	mBehaviorEffect.SetPosition(Position);
+	if (IsZero(Velocity) == false)
+	{
+		if (isStarted == false)
+		{
+			isStarted = true;
+			mSmoke.Play();
+		}
+	}
+	else
+	{
+		isStarted = false;
+		mSmoke.Stop();
+	}
+
 	Position += Velocity * deltaTime;
 
 
@@ -94,7 +132,9 @@ void Soldier::Update(float deltaTime)
 
 void Soldier::Render()
 {
-	const float angle = atan2(Heading.y, Heading.x) * Math::Constants::RadToDeg / 50.0f; // Texture frames
+	mSmoke.Render();
+	const float angle = atan2(Heading.y, Heading.x) * Math::Constants::RadToDeg / 60.0f; // Texture frames
 
 	SpriteRenderManager::Get()->DrawSprite(mSoldierSprite, Position,angle);
+	mBehaviorEffect.Render();
 }

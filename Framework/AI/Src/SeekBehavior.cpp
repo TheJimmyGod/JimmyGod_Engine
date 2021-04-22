@@ -22,5 +22,5 @@ JimmyGod::Math::Vector2 SeekBehavior::Calculate(Agent & agent)
 
 JimmyGod::Math::Vector2 SeekBehavior::Seek(Agent & agent, JimmyGod::Math::Vector2 destination)
 {
-	return ((JimmyGod::Math::Normalize(agent.Destination - agent.Position) *agent.MaxSpeed) - agent.Velocity);
+	return ((JimmyGod::Math::Normalize(destination - agent.Position) *agent.MaxSpeed) - agent.Velocity);
 }

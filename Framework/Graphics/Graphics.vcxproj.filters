@@ -177,6 +177,12 @@
     <ClInclude Include="Inc\TextureType.h">
       <Filter>Inc\Texture</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\SpriteAnimation.h">
+      <Filter>Inc\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\SpriteAnimationInfo.h">
+      <Filter>Inc\Animation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\GraphicsSystem.cpp">
@@ -265,6 +271,9 @@
     </ClCompile>
     <ClCompile Include="Src\SpriteRenderManager.cpp">
       <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SpriteAnimation.cpp">
+      <Filter>Src\Animation</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
