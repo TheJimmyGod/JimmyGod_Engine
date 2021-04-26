@@ -11,9 +11,11 @@ namespace JimmyGod
 	void Terminate();
 	void Update(float deltaTime);
 	void ShowCloth(const JimmyGod::Math::Vector3& pos);
-	void Render(const JimmyGod::Graphics::Camera& camera);
+	void Render(const JimmyGod::Graphics::Camera& camera, const JimmyGod::Math::Vector3& pos = Vector3::Zero);
+	void SetVelocity(const JimmyGod::Math::Vector3& vel);
 
 	void Active(bool act) { IsDisplay = act; }
+	bool IsActive() const { return IsDisplay; }
 private:
 	bool IsDisplay = false;
 	size_t GetIndex(uint32_t x, uint32_t y, uint32_t column) { return (y*column) + x; }
@@ -30,5 +32,7 @@ private:
 
 	JimmyGod::Graphics::PixelShader mPixelShader;
 	JimmyGod::Graphics::VertexShader mVertexShader;
+
+	float mTime = 0.0f;
 };
 }

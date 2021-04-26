@@ -146,4 +146,23 @@ void PhysicsWorld::SatisfyConstraints()
 			}
 		}
 	}
+
+	for (auto p : mParticles)
+	{
+		if (IsContained(p->position, SingleOBB))
+		{
+			auto velocity = p->position - p->lastPosition;
+			auto direction = Math::Normalize(velocity);
+
+			Math::Ray ray{ p->lastPosition, direction };
+			Math::Vector3 point, normal;
+			GetContactPoint(ray, SingleOBB, point, normal);
+
+			auto velocityPerpendicular = normal * Math::Dot(velocity, normal);
+			auto velocityParallel = velocity - velocityPerpendicular;
+			auto newVelocity = (velocityParallel * (1.0f - mSettings.drag)) - (velocityPerpendicular * p->bounce);
+			p->SetPosition(p->position - velocityPerpendicular);
+			p->SetVelocity(newVelocity);
+		}
+	}
 }

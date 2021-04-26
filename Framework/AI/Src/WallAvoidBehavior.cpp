@@ -10,8 +10,8 @@ Vector2 WallAvoidBehvior::Calculate(Agent & agent)
 	float minDistance = std::numeric_limits<float>::infinity();
 	float thisDistance = 0.0f;
 
-	auto forward = agent.Position + JimmyGod::Math::Normalize(agent.Velocity) * 50.0f;
-	auto halfForward = agent.Position + JimmyGod::Math::Normalize(agent.Velocity) * 25.0f;
+	auto forward = agent.Position + JimmyGod::Math::Normalize(agent.Velocity) * 25.0f;
+	auto halfForward = agent.Position + JimmyGod::Math::Normalize(agent.Velocity) * 10.0f;
 
 	auto aheadVector1 = forward + JimmyGod::Math::Rotate(JimmyGod::Math::Normalize(agent.Velocity), 45.0f) * agent.Radius;
 	auto aheadVector2 = forward + JimmyGod::Math::Rotate(JimmyGod::Math::Normalize(agent.Velocity), -45.0f) * agent.Radius;
@@ -41,6 +41,7 @@ Vector2 WallAvoidBehvior::Calculate(Agent & agent)
 			thisDistance = Distance(agent.world.GetWalls()[i], halfForward);
 			minDistance = thisDistance;
 			closestWallIndex = i;
+			isHalf = true;
 		}
 
 		if (closestWallIndex >= 0)

@@ -136,5 +136,5 @@ void Soldier::Render()
 	const float angle = atan2(Heading.y, Heading.x) * Math::Constants::RadToDeg / 60.0f; // Texture frames
 
 	SpriteRenderManager::Get()->DrawSprite(mSoldierSprite, Position,angle);
-	mBehaviorEffect.Render();
+	mBehaviorEffect.Render(); // TODO: Changing sprite
 }

@@ -142,7 +142,5 @@ void AnimationIO::Read(FILE* file, AnimationClip& animationClip)
 		animationClip.boneAnimations[i] = std::move(boneAnimation);
 		Read(file, *animationClip.boneAnimations[i]);
 	}
-
-	fclose(file);
 	// Homework
 }

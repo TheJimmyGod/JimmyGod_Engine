@@ -32,6 +32,7 @@ namespace JimmyGod::Physics
 		void AddOBB(const Math::OBB& obb);
 		void Clear(bool onlyDynamic = false);
 
+		Math::OBB SingleOBB;
 	private:
 		void AccumulateForces();
 		void Integrate();

@@ -16,7 +16,7 @@ void Cloth::Initialize(const std::filesystem::path & path, uint32_t width, uint3
 	mPhysicsWorld.Initialize(settings);
 
 	mWidth = width; mHeight = height;
-	mMesh = JimmyGod::Graphics::MeshBuilder::CreatePlanePX(mWidth, mHeight);
+	mMesh = JimmyGod::Graphics::MeshBuilder::CreatePlanePX(mHeight, mWidth);
 	mMeshBuffer.Initialize(mMesh, true);
 	std::filesystem::path texturePath = L"../../Assets/Shaders/DoTexturing.fx";
 	mVertexShader.Initialize(texturePath, JimmyGod::Graphics::VertexPX::Format);
@@ -65,7 +65,7 @@ void Cloth::ShowCloth(const JimmyGod::Math::Vector3 & pos)
 		{
 			auto p = new Particle({ Vector3{ -offset.x + (static_cast<float>(x)), offset.y - (static_cast<float>(y)),0.0f } });
 			p->SetVelocity(Vector3{ RandomFloat(0.01f, 0.1f) });
-			p->radius = 0.1f;
+			p->radius = 0.2f;
 			p->bounce = 0.3f;
 			mParticles.push_back(p);
 			mPhysicsWorld.AddParticle(p);
@@ -85,27 +85,37 @@ void Cloth::ShowCloth(const JimmyGod::Math::Vector3 & pos)
 			}
 			if (y + 1 < mHeight)
 			{
-				mPhysicsWorld.AddConstraint(new Spring(mParticles[GetIndex(x,y,mWidth)], mParticles[GetIndex(x,y+1,mWidth)]));
+				mPhysicsWorld.AddConstraint(new Spring(mParticles[GetIndex(x,y,mWidth)], mParticles[GetIndex(x,y+1, mWidth)]));
 			}
 		}
 	}
 }
 
-void Cloth::Render(const JimmyGod::Graphics::Camera & camera)
+void Cloth::Render(const JimmyGod::Graphics::Camera & camera, const JimmyGod::Math::Vector3& pos)
 {
 	if (!IsDisplay) return;
 
 	auto view = camera.GetViewMatrix();
 	auto projection = camera.GetPerspectiveMatrix();
+	float cal = Magnitude(pos);
+	auto matWorld = (cal == 0.0f) ? Matrix4::Identity : Matrix4::Scaling(0.8f) * Matrix4::Translation(pos);
 
 	mConstantBuffer.BindVS();
 	mVertexShader.Bind();
 	mPixelShader.Bind();
 	mSampler.BindPS();
 	mTexture.BindPS();
-
-	auto matrixViewProjection = JimmyGod::Math::Transpose(view * projection);
+	
+	auto matrixViewProjection = JimmyGod::Math::Transpose(matWorld * view * projection);
 	mConstantBuffer.Update(&matrixViewProjection);
 	mMeshBuffer.Update(mMesh.vertices.data(), static_cast<uint32_t>(mMesh.vertices.size()));
 	mMeshBuffer.Draw();
+}
+
+void Cloth::SetVelocity(const Vector3 & vel)
+{
+	for (auto& p : mParticles)
+	{
+		p->SetVelocity(vel);
+	}
 }
