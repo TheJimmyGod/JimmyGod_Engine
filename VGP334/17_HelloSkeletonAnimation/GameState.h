@@ -59,6 +59,7 @@ private:
 		float padding;
 	};
 
+	using TransformBuffer = JimmyGod::Graphics::TypedConstantBuffer<TransformData>;
 	using LightBuffer = JimmyGod::Graphics::TypedConstantBuffer<JimmyGod::Graphics::DirectionalLight>;
 	using MaterialBuffer = JimmyGod::Graphics::TypedConstantBuffer<JimmyGod::Graphics::Material>;
 	using SettingsBuffer = JimmyGod::Graphics::TypedConstantBuffer<SettingsData>;
@@ -67,7 +68,6 @@ private:
 	using ShadowConstantBuffer = JimmyGod::Graphics::TypedConstantBuffer<JimmyGod::Math::Matrix4>;
 	
 
-	using TransformBuffer = JimmyGod::Graphics::TypedConstantBuffer<TransformData>;
 	TransformBuffer mTransformBuffer;
 	LightBuffer mLightBuffer;
 	MaterialBuffer mMaterialBuffer;
@@ -119,7 +119,6 @@ private:
 	bool showSkeleton = false;
 	bool stopAnimation = false;
 	float fps = 0.0f;
-
 	Vector3 startingPos = { 12.0f, 0.25f, 12.0f };
 
 	Vector3 startingPos2 = { 8.0f, 0.25f, 12.0f };

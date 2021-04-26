@@ -32,8 +32,6 @@ namespace JimmyGod::AI
 		void AddObstacles(const JimmyGod::Math::Circle& obstacles);
 		void AddWalls(const JimmyGod::Math::LineSegment& walls);
 
-		// TODO: Cleaner for obstacles and walls
-
 		EntityList GetEntities(const JimmyGod::Math::Circle& range, int typeId);
 		AgentList GetNeighborhood(const JimmyGod::Math::Circle& range, int typeId);
 

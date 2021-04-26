@@ -359,10 +359,10 @@ void GameState::DrawScene()
 		}
 
 	}
-	mBoneTransformBuffer.Update(&boneTransformData);
 	auto wvpLight = Transpose(matWorld * matViewLight * matProjLight);
 	mShadowConstantBuffer.Update(&wvpLight);
 
+	mBoneTransformBuffer.Update(&boneTransformData);
 
 	auto matWorld2 = Matrix4::Scaling(100.0f) * Matrix4::Translation(Vector3{0.0f,0.0f,0.0f});
 	TransformData transformData2;

@@ -10,6 +10,9 @@
     <Filter Include="Inc\App">
       <UniqueIdentifier>{e9ce0718-1713-4543-8cdd-6fbdcdcd77b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Inc\Terrain">
+      <UniqueIdentifier>{6e851077-ce00-43a5-b767-0fb54f9c21a8}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Src\App">
       <UniqueIdentifier>{ac95f8c5-6e27-4c99-bf27-ffbe54ded84e}</UniqueIdentifier>
     </Filter>
@@ -57,9 +60,6 @@
     </Filter>
     <Filter Include="Src\Planet">
       <UniqueIdentifier>{47c4ae24-78d2-4bf2-88e3-4ca30efa5161}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Inc\Terrain">
-      <UniqueIdentifier>{6e851077-ce00-43a5-b767-0fb54f9c21a8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

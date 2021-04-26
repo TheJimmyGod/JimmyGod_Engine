@@ -37,7 +37,7 @@ void GameState::Initialize()
 	mPhysicsWorld.AddPlane({Vector3::YAxis, 0.0f});
 	mPhysicsWorld.AddOBB({ { 0.0f,2.0f,0.0f }, { 4.0f,0.5f,5.0f }, Quaternion::RotationAxis(Vector3::ZAxis, 10.0f * Constants::DegToRad) });
 	mPhysicsWorld.AddStaticOBB({ { 0.0f,2.0f,0.0f }, { 4.0f,0.5f,5.0f }, Quaternion::RotationAxis(Vector3::ZAxis, 10.0f * Constants::DegToRad) });
-	mPhysicsWorld.AddOBB({ { 0.0f,2.0f,0.0f }, { 2.0f,0.5f,2.0f }, Quaternion::Identity });
+	
 	mCloth.Initialize("../../Assets/Textures/flag.png",10,10);
 	//mCloth2.Initialize("../../Assets/Textures/SimYoung.jpg", 10, 10);
 }
