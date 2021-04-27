@@ -15,31 +15,31 @@ META_DERIVED_BEGIN(ColliderComponent, Component)
 	META_FIELD_END
 META_CLASS_END
 
-void ColliderComponent::Initialize() // simliar Start() as Monobehavior in Unity
+void JimmyGod::ColliderComponent::Initialize() // simliar Start() as Monobehavior in Unity
 {
 	mTransformComponent = GetOwner().GetComponent<TransformComponent>();
 }
 
-void ColliderComponent::Terminate()
+void JimmyGod::ColliderComponent::Terminate()
 {
 }
 
-void ColliderComponent::Update(float deltaTime)
+void JimmyGod::ColliderComponent::Update(float deltaTime)
 {
 }
 
-void ColliderComponent::Render()
+void JimmyGod::ColliderComponent::Render()
 {
 
 }
 
-void ColliderComponent::DebugUI()
+void JimmyGod::ColliderComponent::DebugUI()
 {
 	auto aabb = GetAABB();
 	SimpleDraw::AddAABB({aabb.center, aabb.extend}, Colors::LightGreen);
 }
 
-void ColliderComponent::SetAABB(const Math::AABB & aabb)
+void JimmyGod::ColliderComponent::SetAABB(const Math::AABB & aabb)
 {
 	center = aabb.center;
 	extend = aabb.extend;
@@ -47,6 +47,8 @@ void ColliderComponent::SetAABB(const Math::AABB & aabb)
 
 const Math::AABB & ColliderComponent::GetAABB() const
 {
+	if (!isActive)
+		return Math::AABB{};
 	auto translation = mTransformComponent->pos;
 
 	// This is incorrect if we have orientation as well
@@ -55,12 +57,21 @@ const Math::AABB & ColliderComponent::GetAABB() const
 
 const Math::OBB & JimmyGod::ColliderComponent::GetOBB() const
 {
-	return Math::OBB();
+	if (!isActive)
+		return Math::OBB();
+	return Math::OBB(center,extend, Quaternion::Identity);
 }
 
 const Math::Sphere JimmyGod::ColliderComponent::GetSphere() const
 {
-	return Math::Sphere();
+	return Math::Sphere(center,mRadius);
+}
+
+void JimmyGod::ColliderComponent::Active()
+{
+	isActive = !isActive;
+	if (!isActive)
+		isDebugUI = false;
 }
 
 bool JimmyGod::ColliderComponent::CheckAABBCollider(const Math::AABB & a, const Math::AABB & b)

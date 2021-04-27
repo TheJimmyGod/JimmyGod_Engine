@@ -69,6 +69,7 @@ void GameState::Update(float deltaTime)
 		mCamera.Yaw(inputSystem->GetMouseMoveX() * kTurnSpeed * deltaTime);
 		mCamera.Pitch(inputSystem->GetMouseMoveY() * kTurnSpeed * deltaTime);
 	}
+
 	mPhysicsWorld.Update(deltaTime);
 	mTime += deltaTime;
 	

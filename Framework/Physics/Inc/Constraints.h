@@ -23,6 +23,7 @@ namespace JimmyGod::Physics
 		void DebugDraw() const override;
 
 		void SetPosition(const Math::Vector3& position);
+		const Vector3& GetPosition() { return mPosition; }
 	protected:
 		Particle* mParticle;
 		Vector3 mPosition;

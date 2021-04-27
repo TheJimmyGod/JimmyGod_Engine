@@ -24,6 +24,8 @@ namespace JimmyGod
 		const Math::OBB& GetOBB() const;
 		const Math::Sphere GetSphere()const;
 
+		void Active();
+
 		bool CheckAABBCollider(const Math::AABB& a, const Math::AABB& b);
 
 		const Vector3& GetMin() const;
@@ -33,9 +35,10 @@ namespace JimmyGod
 		Math::Vector3 extend;
 	private:
 		Math::AABB mAABB;
-
+		float mRadius = 1.0f;
 		const TransformComponent* mTransformComponent = nullptr;
 
 		bool isDebugUI = false;
+		bool isActive = true;
 	};
 }

@@ -11,13 +11,26 @@ namespace JimmyGod
 	void Terminate();
 	void Update(float deltaTime);
 	void ShowCloth(const JimmyGod::Math::Vector3& pos);
-	void Render(const JimmyGod::Graphics::Camera& camera);
+	void Render(const JimmyGod::Graphics::Camera& camera, const JimmyGod::Math::Vector3& pos = Vector3::Zero);
+	void DebugUI(bool debug = false);
+	void SetVelocity(const JimmyGod::Math::Vector3& vel);
+	void SetPosition(const JimmyGod::Math::Vector3& pos, const JimmyGod::Math::Vector3& Left,
+		const JimmyGod::Math::Vector3& Right);
 
 	void Active(bool act) { IsDisplay = act; }
+	bool IsActive() const { return IsDisplay; }
 private:
 	bool IsDisplay = false;
+	bool IsDebugUI = false;
+
 	size_t GetIndex(uint32_t x, uint32_t y, uint32_t column) { return (y*column) + x; }
 	std::vector<JimmyGod::Physics::Particle*> mParticles;
+	std::vector<JimmyGod::Physics::Fixed*> mFixedParticles;
+	std::vector<size_t> mFixed;
+	JimmyGod::Math::Vector3 mOffset = JimmyGod::Math::Vector3::Zero;
+	JimmyGod::Math::Vector3 mPosition = JimmyGod::Math::Vector3::Zero;
+	JimmyGod::Math::Vector3 mLeft = JimmyGod::Math::Vector3::Zero;
+	JimmyGod::Math::Vector3 mRight = JimmyGod::Math::Vector3::Zero;
 
 	JimmyGod::Physics::PhysicsWorld mPhysicsWorld;
 	uint32_t mWidth;
@@ -30,5 +43,6 @@ private:
 
 	JimmyGod::Graphics::PixelShader mPixelShader;
 	JimmyGod::Graphics::VertexShader mVertexShader;
+	float mTime = 0.0f;
 };
 }
