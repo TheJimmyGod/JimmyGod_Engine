@@ -165,6 +165,7 @@
     <ClInclude Include="Inc\Planet.h" />
     <ClInclude Include="Inc\Service.h" />
     <ClInclude Include="Inc\SkyDome.h" />
+    <ClInclude Include="Inc\Spark.h" />
     <ClInclude Include="Inc\Terrain.h" />
     <ClInclude Include="Inc\TransformComponent.h" />
     <ClInclude Include="Src\MetaRegistration.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="Src\Precompiled.cpp" />
     <ClCompile Include="Src\Service.cpp" />
     <ClCompile Include="Src\SkyDome.cpp" />
+    <ClCompile Include="Src\Spark.cpp" />
     <ClCompile Include="Src\Terrain.cpp" />
     <ClCompile Include="Src\TransformComponent.cpp" />
   </ItemGroup>

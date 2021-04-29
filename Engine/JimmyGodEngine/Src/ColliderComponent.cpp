@@ -59,7 +59,7 @@ const Math::OBB & JimmyGod::ColliderComponent::GetOBB() const
 {
 	if (!isActive)
 		return Math::OBB();
-	return Math::OBB(center,extend, Quaternion::Identity);
+	return Math::OBB(/*center,extend, Quaternion::Identity*/);
 }
 
 const Math::Sphere JimmyGod::ColliderComponent::GetSphere() const

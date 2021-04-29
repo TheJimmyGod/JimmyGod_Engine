@@ -162,6 +162,7 @@ namespace JimmyGod::Math
 		}
 
 		static Matrix4 Transform(const Vector3& translation, const Quaternion& rotation, const Vector3& scale);
+		static Matrix4 Transform(const Vector3& translation, const Matrix4& rotation, const Vector3& scale);
 	};
 }
 

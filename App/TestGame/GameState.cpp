@@ -18,9 +18,9 @@ void GameState::Initialize()
 	auto& camera = mCamera->GetActiveCamera();
 
 	camera.SetNearPlane(0.1f);
-	camera.SetFarPlane(500.0f);
-	camera.SetPosition({ 0.0f, 10.0f, -15.0f });
-	camera.SetLookAt({ 0.0f, 7.0f, 0.0f });
+	camera.SetFarPlane(1750.0f);
+	camera.SetPosition({ 0.0f, 7.5f, -20.0f });
+	camera.SetLookAt({ 0.0f, 0.0f, 0.0f });
 	mWorld.Create("../../Assets/Templates/tallBox.json", "Jimmy");
 
 	mModel.Initialize("../../Assets/Models/Batman/Idle.model");
@@ -64,10 +64,11 @@ void GameState::Initialize()
 	settings.iterations = 1;
 
 	mPhysicsWorld.Initialize(settings);
-	mPhysicsWorld.SingleOBB = mWorld.Find("Jimmy").Get()->GetComponent<ColliderComponent>()->GetOBB();
-	mPhysicsWorld.AddOBB(mPhysicsWorld.SingleOBB);
+	//mPhysicsWorld.SingleOBB = mWorld.Find("Jimmy").Get()->GetComponent<ColliderComponent>()->GetOBB();
+	//mPhysicsWorld.AddOBB(mPhysicsWorld.SingleOBB);
 
 	mCloak.Initialize("../../Assets/Textures/BatTexture.png", 4, 7);
+	mSpark.Initialize("../../Assets/Textures/Spark.png", 0.2f);
 }
 
 void GameState::Terminate()
@@ -84,6 +85,7 @@ void GameState::Terminate()
 	mMaterialBuffer.Terminate();
 	mSettingsBuffer.Terminate();
 	mCloak.Terminate();
+	mSpark.Terminate();
 	mPhysicsWorld.Clear();
 }
 
@@ -101,8 +103,8 @@ void GameState::Update(float deltaTime)
 	if (!stopAnimation)
 		mAnimator.Update(deltaTime);
 	mPhysicsWorld.Update(deltaTime);
-	mCloak.Update(deltaTime);
-
+	mCloak.Update(deltaTime, static_cast<int>(mDirection));
+	mSpark.Update(deltaTime);
 	if (inputSystem->IsMouseDown(MouseButton::RBUTTON))
 	{
 		camera.Yaw(inputSystem->GetMouseMoveX() * kTurnSpeed * deltaTime);
@@ -112,6 +114,7 @@ void GameState::Update(float deltaTime)
 	position = Vector3{ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().x,
 mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().y + 0.4f,
 mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z - 0.5f };
+
 	if (mCloak.IsActive())
 		mCloak.SetPosition(position + GetTranslation(mModel.mSkeleton.bones[4]->offsetTransform * mAnimator.GetBoneMatrices()[4]) * 0.04f,
 			position + GetTranslation(mModel.mSkeleton.bones[6]->offsetTransform * mAnimator.GetBoneMatrices()[6]) * 0.04f,
@@ -133,7 +136,7 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 		if (mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.y > 0.1f)
 		{
 			mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.y += mGravity * deltaTime;
-			accelation.y += mGravity * deltaTime;
+			accelation.y += kMoveSpeed * deltaTime;
 			accelation.z -= kMoveSpeed* deltaTime;
 			if (mCloak.IsActive())
 				mCloak.SetVelocity(-accelation);
@@ -142,7 +145,7 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 	else
 	{
 		mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.y -= 1.2f * mGravity * deltaTime;
-		accelation.y -= 1.2f * mGravity * deltaTime;
+		accelation.y -= mGravity * deltaTime;
 		accelation.z -= kMoveSpeed * deltaTime;
 		if (mCloak.IsActive())
 			mCloak.SetVelocity(-accelation);
@@ -151,7 +154,9 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 	}
 	if (inputSystem->IsKeyDown(KeyCode::W))
 	{
+		mDirection = Direction::Back;
 		camera.Walk(kMoveSpeed * deltaTime);
+		rotation = Matrix4::RotationAxis(mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.YAxis, 180.0f * Constants::DegToRad);
 		mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.z += kMoveSpeed * deltaTime;
 		accelation.z += kMoveSpeed * deltaTime;
 		if (mCloak.IsActive())
@@ -159,7 +164,9 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 	}
 	if (inputSystem->IsKeyDown(KeyCode::S))
 	{
+		mDirection = Direction::Front;
 		camera.Walk(-kMoveSpeed * deltaTime);
+		rotation = Matrix4::RotationAxis(mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.YAxis, 0.0f * Constants::DegToRad);
 		mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.z -= kMoveSpeed * deltaTime;
 		accelation.z -= kMoveSpeed * deltaTime;
 		if (mCloak.IsActive())
@@ -167,23 +174,30 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 	}
 	if (inputSystem->IsKeyDown(KeyCode::D))
 	{
+		mDirection = Direction::Right;
 		camera.Strafe(kMoveSpeed * deltaTime);
+		rotation = Matrix4::RotationAxis(mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.YAxis, -90.0f * Constants::DegToRad);
 		mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.x += kMoveSpeed * deltaTime;
 		accelation.x += kMoveSpeed * deltaTime;
 		if (mCloak.IsActive())
 			mCloak.SetVelocity(-accelation);
+
 	}
 	if (inputSystem->IsKeyDown(KeyCode::A))
 	{
+		mDirection = Direction::Left;
 		camera.Strafe(-kMoveSpeed * deltaTime);
+		rotation = Matrix4::RotationAxis(mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.YAxis, 90.0f * Constants::DegToRad);
 		mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.x -= kMoveSpeed * deltaTime;
 		accelation.x -= kMoveSpeed * deltaTime;
 		if (mCloak.IsActive())
 			mCloak.SetVelocity(-accelation);
+
 	}
 
 	velocity += accelation * deltaTime;
 	velocity = Normalize(velocity);
+	
 
 	if (mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.y < 0.1f)
 	{
@@ -204,10 +218,8 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 			mAnimator.PlayAnimation(3);
 			currentAnimation = 3;
 			mTime += 1.75f;
-			accelation.z -= kMoveSpeed * deltaTime / 5.0f;
-			accelation.x += kMoveSpeed * deltaTime / 5.0f;
-			if (mCloak.IsActive())
-				mCloak.SetVelocity(-accelation);
+
+			mSpark.ShowSpark(position + GetTranslation(mModel.mSkeleton.bones[50]->offsetTransform * mAnimator.GetBoneMatrices()[50]) * 0.04f, 10, 3.0f);
 		}
 
 		if (inputSystem->IsKeyPressed(KeyCode::X))
@@ -238,15 +250,15 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 			{
 				mCloak.ShowCloth(position + GetTranslation(mModel.mSkeleton.bones[4]->offsetTransform * mAnimator.GetBoneMatrices()[4]) * 0.04f);
 			}
-
 		}
 	}
-
+	//mRotation += deltaTime;
+	//std::string str = std::to_string(mRotation);
+	//SpriteRenderManager::Get()->DrawScreenText(str.c_str(), 1000.0f, 400.0f, 20.0f, Colors::Aqua);
 }
 
 void GameState::Render()
 {
-	mPhysicsWorld.DebugDraw();
 	auto matView = mCamera->GetActiveCamera().GetViewMatrix();
 	auto matProj = mCamera->GetActiveCamera().GetPerspectiveMatrix();
 	mWorld.Render();
@@ -271,8 +283,9 @@ void GameState::Render()
 
 	mBoneTransformBuffer.BindVS(5);
 
+	auto matWorld = Matrix4::Scaling(0.04f) * rotation * Matrix4::Translation(mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition());
+	//auto matWorld =  Matrix4::Translation(mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition()) * rotation * Matrix4::Scaling(0.04f);
 
-	auto matWorld = Matrix4::Scaling(0.04f) * Matrix4::Translation(mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos);
 	TransformData transformData;
 	transformData.world = Transpose(matWorld);
 	transformData.wvp = Transpose(matWorld * matView * matProj);
@@ -295,12 +308,9 @@ void GameState::Render()
 
 	}
 	mBoneTransformBuffer.Update(&boneTransformData);
-
-	
-
-	mCloak.Render(mCamera->GetActiveCamera(), position + GetTranslation(mModel.mSkeleton.bones[4]->offsetTransform * mAnimator.GetBoneMatrices()[4]) * 0.04f);
-
-	SimpleDraw::AddGroundPlane(50.0f,Colors::DarkMagenta);
+	mCloak.Render(mCamera->GetActiveCamera());
+	mSpark.Render(mCamera->GetActiveCamera());
+	SimpleDraw::AddGroundPlane(30.0f,Colors::DarkMagenta);
 	SimpleDraw::Render(mCamera->GetActiveCamera());
 }
 
@@ -317,7 +327,7 @@ void GameState::DebugUI()
 		if (ImGui::Checkbox("Set Skeleton", &showSkeleton))
 		{
 		}
-		if (ImGui::Checkbox("Show DebugUI for Cloak", &showDebugUI))
+		if (ImGui::Checkbox("Show DebugUI of particles", &showDebugUI))
 		{
 		}
 		if (ImGui::Checkbox("OBB Debug UI active/inactive", &OBBcollision))
@@ -328,6 +338,10 @@ void GameState::DebugUI()
 	if (isCloak == true)
 	{
 		mCloak.DebugUI(showDebugUI);
+	}
+	if (isSpark == true)
+	{
+		mSpark.DebugUI(showDebugUI);
 	}
 	ImGui::End();
 }

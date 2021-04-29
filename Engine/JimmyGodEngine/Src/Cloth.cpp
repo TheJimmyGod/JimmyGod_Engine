@@ -36,12 +36,12 @@ void Cloth::Terminate()
 	mPixelShader.Terminate();
 	mVertexShader.Terminate();
 	mMeshBuffer.Terminate();
+	mPhysicsWorld.Clear();
 }
 
-void Cloth::Update(float deltaTime)
+void Cloth::Update(float deltaTime, int dir)
 {
 	if (!IsDisplay)return;
-	auto input = Input::InputSystem::Get();
 	mPhysicsWorld.Update(deltaTime);
 	
 	if (IsDisplay && (mMesh.vertices.size() == mParticles.size()))
@@ -53,20 +53,87 @@ void Cloth::Update(float deltaTime)
 	}
 	for (size_t i = 0; i < mFixed.size(); i++)
 	{
-		if (i == 0)
+
+		switch (dir)
 		{
-			mFixedParticles[i]->SetPosition(Vector3{ mLeft.x + (static_cast<float>(i) - 1.5f), static_cast<float>(mLeft.y + mHeight) - 3.0f,mLeft.z });
-			mParticles[mFixed[i]]->SetPosition(Vector3{ mLeft.x + (static_cast<float>(i) - 1.5f), static_cast<float>(mLeft.y + mHeight) - 3.0f, mLeft.z });
+		case 0: // Back
+		{
+			if (i == 0)
+			{
+				mFixedParticles[i]->SetPosition(Vector3{ mLeft.x + (static_cast<float>(i) - 2.25f), static_cast<float>(mLeft.y + mHeight) - 2.5f,mLeft.z - 3.25f});
+				mParticles[mFixed[i]]->SetPosition(Vector3{ mLeft.x + (static_cast<float>(i) - 2.25f), static_cast<float>(mLeft.y + mHeight) - 2.5f, mLeft.z - 3.25f });
+			}
+			else if (i == mFixed.size() - 1)
+			{
+				mFixedParticles[i]->SetPosition(Vector3{ mRight.x + (static_cast<float>(i) - 2.25f), static_cast<float>(mRight.y + mHeight) - 2.5f,mRight.z - 3.25f });
+				mParticles[mFixed[i]]->SetPosition(Vector3{ mRight.x + (static_cast<float>(i) - 2.25f), static_cast<float>(mRight.y + mHeight) - 2.5f, mRight.z - 3.25f });
+			}
+			else
+			{
+				mFixedParticles[i]->SetPosition(Vector3{ mPosition.x + (static_cast<float>(i) - 2.25f), static_cast<float>(mPosition.y + mHeight) - 2.5f,mPosition.z - 3.25f });
+				mParticles[mFixed[i]]->SetPosition(Vector3{ mPosition.x + (static_cast<float>(i) - 2.25f), static_cast<float>(mPosition.y + mHeight) - 2.5f, mPosition.z - 3.25f });
+			}
 		}
-		else if (i == mFixed.size())
+			break;
+		case 1: // Front
 		{
-			mFixedParticles[i]->SetPosition(Vector3{ mRight.x + (static_cast<float>(i) - 2.0f), static_cast<float>(mRight.y + mHeight) - 2.5f,mRight.z });
-			mParticles[mFixed[i]]->SetPosition(Vector3{ mRight.x + (static_cast<float>(i) - 2.0f), static_cast<float>(mRight.y + mHeight) - 2.5f, mRight.z });
+			if (i == 0)
+			{
+				mFixedParticles[i]->SetPosition(Vector3{ mLeft.x + (static_cast<float>(i) - 2.25f), static_cast<float>(mLeft.y + mHeight) - 2.5f,mLeft.z });
+				mParticles[mFixed[i]]->SetPosition(Vector3{ mLeft.x + (static_cast<float>(i) - 2.25f), static_cast<float>(mLeft.y + mHeight) - 2.5f, mLeft.z });
+			}
+			else if (i == mFixed.size() - 1)
+			{
+				mFixedParticles[i]->SetPosition(Vector3{ mRight.x + (static_cast<float>(i) - 2.25f), static_cast<float>(mRight.y + mHeight) - 2.5f,mRight.z });
+				mParticles[mFixed[i]]->SetPosition(Vector3{ mRight.x + (static_cast<float>(i) - 2.25f), static_cast<float>(mRight.y + mHeight) - 2.5f, mRight.z });
+			}
+			else
+			{
+				mFixedParticles[i]->SetPosition(Vector3{ mPosition.x + (static_cast<float>(i) - 2.25f), static_cast<float>(mPosition.y + mHeight) - 2.5f,mPosition.z });
+				mParticles[mFixed[i]]->SetPosition(Vector3{ mPosition.x + (static_cast<float>(i) - 2.25f), static_cast<float>(mPosition.y + mHeight) - 2.5f, mPosition.z });
+			}
 		}
-		else
+			break;
+		case 2: // Right
 		{
-			mFixedParticles[i]->SetPosition(Vector3{ mPosition.x + (static_cast<float>(i) - 2.0f), static_cast<float>(mPosition.y + mHeight) - 2.5f,mPosition.z });
-			mParticles[mFixed[i]]->SetPosition(Vector3{ mPosition.x + (static_cast<float>(i) - 2.0f), static_cast<float>(mPosition.y + mHeight) - 2.5f, mPosition.z });
+			if (i == 0)
+			{
+				mFixedParticles[i]->SetPosition(Vector3{ mLeft.x - 2.5f, static_cast<float>(mLeft.y + mHeight) - 2.5f,mLeft.z + (static_cast<float>(i) - 4.0f) });
+				mParticles[mFixed[i]]->SetPosition(Vector3{ mLeft.x - 2.5f, static_cast<float>(mLeft.y + mHeight) - 2.5f, mLeft.z + (static_cast<float>(i) - 4.0f) });
+			}
+			else if (i == mFixed.size() - 1)
+			{
+				mFixedParticles[i]->SetPosition(Vector3{ mRight.x - 2.5f, static_cast<float>(mRight.y + mHeight) - 2.5f,mRight.z + (static_cast<float>(i) - 4.0f) });
+				mParticles[mFixed[i]]->SetPosition(Vector3{ mRight.x - 2.5f, static_cast<float>(mRight.y + mHeight) - 2.5f, mRight.z + (static_cast<float>(i) - 4.0f) });
+			}
+			else
+			{
+				mFixedParticles[i]->SetPosition(Vector3{ mPosition.x - 2.5f, static_cast<float>(mPosition.y + mHeight) - 2.5f,mPosition.z + (static_cast<float>(i) - 3.5f) });
+				mParticles[mFixed[i]]->SetPosition(Vector3{ mPosition.x - 2.5f, static_cast<float>(mPosition.y + mHeight) - 2.5f, mPosition.z + (static_cast<float>(i) - 3.5f) });
+			}
+		}
+			break;
+		case 3: // Left
+		{
+			if (i == 0)
+			{
+				mFixedParticles[i]->SetPosition(Vector3{ mLeft.x + 0.5f, static_cast<float>(mLeft.y + mHeight) - 2.5f,mLeft.z + (static_cast<float>(i) - 4.0f) });
+				mParticles[mFixed[i]]->SetPosition(Vector3{ mLeft.x + 0.5f, static_cast<float>(mLeft.y + mHeight) - 2.5f, mLeft.z + (static_cast<float>(i) - 4.0f) });
+			}
+			else if (i == mFixed.size() - 1)
+			{
+				mFixedParticles[i]->SetPosition(Vector3{ mRight.x + 0.5f, static_cast<float>(mRight.y + mHeight) - 2.5f,mRight.z + (static_cast<float>(i) - 4.0f) });
+				mParticles[mFixed[i]]->SetPosition(Vector3{ mRight.x + 0.5f, static_cast<float>(mRight.y + mHeight) - 2.5f, mRight.z + (static_cast<float>(i) - 4.0f) });
+			}
+			else
+			{
+				mFixedParticles[i]->SetPosition(Vector3{ mPosition.x + 0.5f, static_cast<float>(mPosition.y + mHeight) - 2.5f,mPosition.z + (static_cast<float>(i) - 3.5f) });
+				mParticles[mFixed[i]]->SetPosition(Vector3{ mPosition.x + 0.5f, static_cast<float>(mPosition.y + mHeight) - 2.5f, mPosition.z + (static_cast<float>(i) - 3.5f) });
+			}
+		}
+			break;
+		default:
+			break;
 		}
 	}
 }
@@ -120,7 +187,7 @@ void Cloth::ShowCloth(const JimmyGod::Math::Vector3 & pos)
 	}
 }
 
-void Cloth::Render(const JimmyGod::Graphics::Camera & camera, const JimmyGod::Math::Vector3& pos)
+void Cloth::Render(const JimmyGod::Graphics::Camera & camera, const Matrix4& rotation)
 {
 	if (!IsDisplay) return;
 
@@ -132,7 +199,6 @@ void Cloth::Render(const JimmyGod::Graphics::Camera & camera, const JimmyGod::Ma
 	mPixelShader.Bind();
 	mSampler.BindPS();
 	mTexture.BindPS();
-	
 	auto matrixViewProjection = JimmyGod::Math::Transpose(view * projection);
 	mConstantBuffer.Update(&matrixViewProjection);
 	mMeshBuffer.Update(mMesh.vertices.data(), static_cast<uint32_t>(mMesh.vertices.size()));

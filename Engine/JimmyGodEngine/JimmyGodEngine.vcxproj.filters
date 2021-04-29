@@ -117,6 +117,9 @@
     <ClInclude Include="Inc\Planet.h">
       <Filter>Inc\Planet</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Spark.h">
+      <Filter>Inc\Cloth</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\JimmyGodEngine.cpp">
@@ -166,6 +169,9 @@
     </ClCompile>
     <ClCompile Include="Src\Planet.cpp">
       <Filter>Src\Planet</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Spark.cpp">
+      <Filter>Src\Cloth</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

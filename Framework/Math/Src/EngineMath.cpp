@@ -430,3 +430,15 @@ Matrix4 JimmyGod::Math::Matrix4::Transform(const Vector3& translation, const Qua
 	transform._43 = translation.z;
 	return transform;
 }
+
+Matrix4 JimmyGod::Math::Matrix4::Transform(const Vector3& translation, const Matrix4& rotation, const Vector3& scale)
+{
+	Math::Matrix4 transform = rotation;
+	transform._11 *= scale.x;
+	transform._22 *= scale.y;
+	transform._33 *= scale.z;
+	transform._41 = translation.x;
+	transform._42 = translation.y;
+	transform._43 = translation.z;
+	return transform;
+}

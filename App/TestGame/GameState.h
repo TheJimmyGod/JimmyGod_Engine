@@ -5,6 +5,14 @@
 class GameState : public JimmyGod::AppState
 {
 public:
+	enum class Direction
+	{
+		Back,
+		Front,
+		Right,
+		Left
+	};
+
 	void Initialize() override;
 	void Terminate() override;
 
@@ -30,6 +38,10 @@ private:
 	bool isKicked = false;
 	bool isThrew = false;
 	bool isCloak = false;
+	bool isSpark = false;
+
+	Direction mDirection = Direction::Front;
+
 	struct SettingsData
 	{
 		float specularMapWeight = 1.0f;
@@ -77,6 +89,7 @@ private:
 	bool stopAnimation = false;
 
 	JimmyGod::Math::Vector3 position = JimmyGod::Math::Vector3::Zero;
+	JimmyGod::Math::Matrix4 rotation = JimmyGod::Math::Matrix4::Identity;
 	JimmyGod::Math::Vector3 accelation = JimmyGod::Math::Vector3::Zero;
 	JimmyGod::Math::Vector3 velocity = JimmyGod::Math::Vector3::Zero;
 
@@ -86,4 +99,5 @@ private:
 	JimmyGod::Physics::PhysicsWorld mPhysicsWorld;
 	std::vector<JimmyGod::Physics::Particle*> particles;
 	JimmyGod::Cloth mCloak;
+	JimmyGod::Spark mSpark;
 };

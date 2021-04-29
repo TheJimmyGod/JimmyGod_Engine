@@ -18,6 +18,7 @@
 
 // Object headers
 #include "Cloth.h"
+#include "Spark.h"
 #include "Planet.h"
 #include "SkyDome.h"
 
