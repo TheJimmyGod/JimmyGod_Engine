@@ -61,6 +61,18 @@
     <Filter Include="Src\Planet">
       <UniqueIdentifier>{47c4ae24-78d2-4bf2-88e3-4ca30efa5161}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Inc\Effect">
+      <UniqueIdentifier>{e7b41acd-1107-4bcd-917c-4eb3942a76c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Effect">
+      <UniqueIdentifier>{2c08882d-1e0b-4b04-aa6a-a697dca75edb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inc\Object">
+      <UniqueIdentifier>{557d044a-bb62-4ccb-8f69-d396f1f70c9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Object">
+      <UniqueIdentifier>{65ddb414-0b9a-4695-a64a-e94a026b697f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\Common.h">
@@ -118,7 +130,10 @@
       <Filter>Inc\Planet</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Spark.h">
-      <Filter>Inc\Cloth</Filter>
+      <Filter>Inc\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Bomb.h">
+      <Filter>Inc\Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -171,7 +186,10 @@
       <Filter>Src\Planet</Filter>
     </ClCompile>
     <ClCompile Include="Src\Spark.cpp">
-      <Filter>Src\Cloth</Filter>
+      <Filter>Src\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Bomb.cpp">
+      <Filter>Src\Object</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

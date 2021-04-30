@@ -1,12 +1,12 @@
 #include "Precompiled.h"
-#include "Spark.h"
+#include "Bomb.h"
 
 using namespace JimmyGod;
 using namespace JimmyGod::Math;
-using namespace JimmyGod::Physics;
 using namespace JimmyGod::Graphics;
+using namespace JimmyGod::Physics;
 
-void JimmyGod::Spark::Initialize(const std::filesystem::path & path, uint32_t amount, float radius)
+void JimmyGod::Bomb::Initialize(const std::filesystem::path & path, float radius)
 {
 	PhysicsWorld::Settings settings;
 	settings.gravity = { 0.0f,-9.8f,0.0f };
@@ -14,10 +14,11 @@ void JimmyGod::Spark::Initialize(const std::filesystem::path & path, uint32_t am
 	settings.drag = 0.3f;
 	settings.iterations = 1;
 	mPhysicsWorld.Initialize(settings);
+	mPhysicsWorld.AddPlane({ Vector3::YAxis, 0.0f });
 
 	mRadius = radius;
 	mMesh = JimmyGod::Graphics::MeshBuilder::CreateSpherePX(mRadius);
-	mAmount = amount;
+
 	mMeshBuffer.Initialize(mMesh, true);
 	std::filesystem::path texturePath = L"../../Assets/Shaders/DoTexturing.fx";
 	mVertexShader.Initialize(texturePath, JimmyGod::Graphics::VertexPX::Format);
@@ -29,7 +30,7 @@ void JimmyGod::Spark::Initialize(const std::filesystem::path & path, uint32_t am
 	mConstantBuffer.Initialize(sizeof(Matrix4));
 }
 
-void JimmyGod::Spark::Terminate()
+void JimmyGod::Bomb::Terminate()
 {
 	mConstantBuffer.Terminate();
 	mSampler.Terminate();
@@ -38,9 +39,12 @@ void JimmyGod::Spark::Terminate()
 	mVertexShader.Terminate();
 	mMeshBuffer.Terminate();
 	mPhysicsWorld.Clear();
+
+	mParticle = nullptr;
+	delete mParticle;
 }
 
-void JimmyGod::Spark::Update(float deltaTime)
+void JimmyGod::Bomb::Update(float deltaTime)
 {
 	if (!IsDisplay)return;
 	mPhysicsWorld.Update(deltaTime);
@@ -50,37 +54,39 @@ void JimmyGod::Spark::Update(float deltaTime)
 		IsSummoned = false;
 	if (IsSummoned == false)
 	{
-		mParticles.clear();
+		mParticle = nullptr;
 		mPhysicsWorld.Clear(true);
 	}
+
 }
 
-void JimmyGod::Spark::ShowSpark(const JimmyGod::Math::Vector3 & pos, const JimmyGod::Math::Vector3& dir, float endTime)
+void JimmyGod::Bomb::ShowBomb(const JimmyGod::Math::Vector3 & pos, const JimmyGod::Math::Vector3 & dir, float endTime)
 {
 	IsDisplay = true;
+	IsSummoned = false;
+
 	mTime = endTime;
-	IsSummoned = true;
-	
+
 	Vector3 NormalizedDir = Normalize(dir);
-
-	mParticles.clear();
-	mFoot = pos;
+	float offset = 0.2f;
+	float throwOffset = 7.0f;
+	mPosition = pos;
+	mParticle = nullptr;
 	mPhysicsWorld.Clear(true);
-	for (uint32_t i = 0; i < mAmount; ++i)
-	{
-		auto p = new Particle({ Vector3{ mFoot.x,mFoot.y + 2.5f, mFoot.z } });
-		p->SetVelocity(Vector3{ NormalizedDir.x + RandomFloat(-1.0f, 1.0f),
-			NormalizedDir.y + RandomFloat(-1.0f, 1.0f),
-			NormalizedDir.z + RandomFloat(-1.0f, 1.0f) });
-		p->radius = mRadius;
-		p->bounce = 0.3f;
-		mParticles.push_back(p);
-		mPhysicsWorld.AddParticle(p);
-	}
 
+	auto p = new Particle({ Vector3{ mPosition.x + (NormalizedDir.x * throwOffset),mPosition.y + 5.5f, mPosition.z + (NormalizedDir.z * throwOffset) } });
+	p->SetVelocity(Vector3{ NormalizedDir.x * offset,
+		NormalizedDir.y,
+		NormalizedDir.z * offset });
+	p->radius = mRadius;
+	p->bounce = 0.7f;
+	mParticle = std::move(p);
+	
+	mPhysicsWorld.AddParticle(p);
+	IsSummoned = true;
 }
 
-void JimmyGod::Spark::Render(const JimmyGod::Graphics::Camera & camera)
+void JimmyGod::Bomb::Render(const JimmyGod::Graphics::Camera & camera)
 {
 	if (!IsDisplay) return;
 
@@ -92,21 +98,18 @@ void JimmyGod::Spark::Render(const JimmyGod::Graphics::Camera & camera)
 	mPixelShader.Bind();
 	mSampler.BindPS();
 	mTexture.BindPS();
-	if (mParticles.empty())
+	
+	if (mParticle == nullptr)
 		return;
-	for (uint32_t i = 0; i < mAmount; ++i)
-	{
-		auto matWorld = Matrix4::Translation(mParticles[i]->position);
-		auto matrixViewProjection = JimmyGod::Math::Transpose(matWorld * view * projection);
-		mConstantBuffer.Update(&matrixViewProjection);
-		mMeshBuffer.Update(mMesh.vertices.data(), static_cast<uint32_t>(mMesh.vertices.size()));
-		if (IsDebugUI == false)
-			mMeshBuffer.Draw();
-	}
-
+	auto matWorld = Matrix4::Translation(mParticle->position);
+	auto matrixViewProjection = JimmyGod::Math::Transpose(matWorld * view * projection);
+	mConstantBuffer.Update(&matrixViewProjection);
+	mMeshBuffer.Update(mMesh.vertices.data(), static_cast<uint32_t>(mMesh.vertices.size()));
+	if (IsDebugUI == false)
+		mMeshBuffer.Draw();
 }
 
-void JimmyGod::Spark::DebugUI(bool debug)
+void JimmyGod::Bomb::DebugUI(bool debug)
 {
 	IsDebugUI = debug;
 

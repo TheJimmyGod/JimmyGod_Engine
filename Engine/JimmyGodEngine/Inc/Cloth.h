@@ -9,7 +9,7 @@ namespace JimmyGod
 		~Cloth() = default;
 	void Initialize(const std::filesystem::path& path, uint32_t width, uint32_t height);
 	void Terminate();
-	void Update(float deltaTime, int dir);
+	void Update(float deltaTime, int dir = 0, bool hasDirection = false);
 	void ShowCloth(const JimmyGod::Math::Vector3& pos);
 	void Render(const JimmyGod::Graphics::Camera& camera, const Matrix4& rotation = Matrix4::Identity);
 	void DebugUI(bool debug = false);

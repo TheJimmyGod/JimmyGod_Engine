@@ -68,7 +68,8 @@ void GameState::Initialize()
 	//mPhysicsWorld.AddOBB(mPhysicsWorld.SingleOBB);
 
 	mCloak.Initialize("../../Assets/Textures/BatTexture.png", 4, 7);
-	mSpark.Initialize("../../Assets/Textures/Spark.png", 0.2f);
+	mSpark.Initialize("../../Assets/Textures/Sun.jpg", 20 ,0.2f);
+	mBomb.Initialize("../../Assets/Textures/BatTexture.png", 0.5f);
 }
 
 void GameState::Terminate()
@@ -84,9 +85,14 @@ void GameState::Terminate()
 	mLightBuffer.Terminate();
 	mMaterialBuffer.Terminate();
 	mSettingsBuffer.Terminate();
+	mBomb.Terminate();
 	mCloak.Terminate();
 	mSpark.Terminate();
 	mPhysicsWorld.Clear();
+
+	mRainBuffer.Terminate();
+	mRainTexture.Terminate();
+
 }
 
 void GameState::Update(float deltaTime)
@@ -101,9 +107,13 @@ void GameState::Update(float deltaTime)
 
 	mWorld.Update(deltaTime);
 	if (!stopAnimation)
+	{
+		mTime -= deltaTime;
 		mAnimator.Update(deltaTime);
+	}
+	mBomb.Update(deltaTime);
 	mPhysicsWorld.Update(deltaTime);
-	mCloak.Update(deltaTime, static_cast<int>(mDirection));
+	mCloak.Update(deltaTime, static_cast<int>(mDirection), true);
 	mSpark.Update(deltaTime);
 	if (inputSystem->IsMouseDown(MouseButton::RBUTTON))
 	{
@@ -119,17 +129,25 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 		mCloak.SetPosition(position + GetTranslation(mModel.mSkeleton.bones[4]->offsetTransform * mAnimator.GetBoneMatrices()[4]) * 0.04f,
 			position + GetTranslation(mModel.mSkeleton.bones[6]->offsetTransform * mAnimator.GetBoneMatrices()[6]) * 0.04f,
 			position + GetTranslation(mModel.mSkeleton.bones[25]->offsetTransform * mAnimator.GetBoneMatrices()[25]) * 0.04f);
-	if (mTime > 0.1f)
+
+	if (mTime < 1.3f)
 	{
-		if(stopAnimation == false)
-			mTime -= deltaTime;
+		if (isKicked == true)
+		{
+			mSpark.ShowSpark(position + GetTranslation(mModel.mSkeleton.bones[50]->offsetTransform * mAnimator.GetBoneMatrices()[50]) * 0.04f, velocity,3.0f);
+			isKicked = false;
+		}
+	}
+	if (mTime < 1.1f)
+	{
+		if (isThrew == true)
+		{
+			mBomb.ShowBomb(position, velocity, 5.0f);
+			isThrew = false;
+		}
+	}
+	if (mTime > 0.1f && stopAnimation == false)
 		return;
-	}
-	else
-	{
-		isKicked = false;
-		isThrew = false;
-	}
 
 	if (!isJump)
 	{
@@ -194,9 +212,8 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 			mCloak.SetVelocity(-accelation);
 
 	}
-
-	velocity += accelation * deltaTime;
-	velocity = Normalize(velocity);
+	if(IsZero(accelation) == false)
+		velocity = accelation;
 	
 
 	if (mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.y < 0.1f)
@@ -217,9 +234,7 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 			mAnimator.SetTime(0.0f);
 			mAnimator.PlayAnimation(3);
 			currentAnimation = 3;
-			mTime += 1.75f;
-
-			mSpark.ShowSpark(position + GetTranslation(mModel.mSkeleton.bones[50]->offsetTransform * mAnimator.GetBoneMatrices()[50]) * 0.04f, 10, 3.0f);
+			mTime = 1.75f;
 		}
 
 		if (inputSystem->IsKeyPressed(KeyCode::X))
@@ -228,11 +243,7 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 			mAnimator.SetTime(0.0f);
 			mAnimator.PlayAnimation(4);
 			currentAnimation = 4;
-			mTime += 2.5f;
-			accelation.z -= kMoveSpeed * deltaTime / 5.0f;
-			accelation.x += kMoveSpeed * deltaTime / 5.0f;
-			if (mCloak.IsActive())
-				mCloak.SetVelocity(-accelation);
+			mTime = 2.5f;
 		}
 
 		if (inputSystem->IsKeyPressed(KeyCode::SPACE))
@@ -244,12 +255,9 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 		if (inputSystem->IsKeyPressed(KeyCode::C))
 		{
 			isCloak = !isCloak;
-			mPhysicsWorld.Clear(true);
 			mCloak.Active(isCloak);
 			if (mCloak.IsActive())
-			{
 				mCloak.ShowCloth(position + GetTranslation(mModel.mSkeleton.bones[4]->offsetTransform * mAnimator.GetBoneMatrices()[4]) * 0.04f);
-			}
 		}
 	}
 	//mRotation += deltaTime;
@@ -310,6 +318,8 @@ void GameState::Render()
 	mBoneTransformBuffer.Update(&boneTransformData);
 	mCloak.Render(mCamera->GetActiveCamera());
 	mSpark.Render(mCamera->GetActiveCamera());
+	mBomb.Render(mCamera->GetActiveCamera());
+
 	SimpleDraw::AddGroundPlane(30.0f,Colors::DarkMagenta);
 	SimpleDraw::Render(mCamera->GetActiveCamera());
 }
@@ -339,9 +349,7 @@ void GameState::DebugUI()
 	{
 		mCloak.DebugUI(showDebugUI);
 	}
-	if (isSpark == true)
-	{
-		mSpark.DebugUI(showDebugUI);
-	}
+	mSpark.DebugUI(showDebugUI);
+	mBomb.DebugUI(showDebugUI);
 	ImGui::End();
 }

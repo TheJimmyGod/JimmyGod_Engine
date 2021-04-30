@@ -60,6 +60,10 @@ private:
 	MaterialBuffer mMaterialBuffer;
 	SettingsBuffer mSettingsBuffer;
 
+	JimmyGod::Graphics::MeshPX mRainMesh;
+	JimmyGod::Graphics::MeshBuffer mRainBuffer;
+	JimmyGod::Graphics::Texture mRainTexture;
+
 	JimmyGod::Graphics::AnimationBulider mAnimationBuilder;
 	JimmyGod::Graphics::Animation mAnimation;
 	float mAnimationTimer = 0.0f;
@@ -100,4 +104,5 @@ private:
 	std::vector<JimmyGod::Physics::Particle*> particles;
 	JimmyGod::Cloth mCloak;
 	JimmyGod::Spark mSpark;
+	JimmyGod::Bomb mBomb;
 };

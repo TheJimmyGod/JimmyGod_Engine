@@ -2,15 +2,15 @@
 
 namespace JimmyGod
 {
-	class Spark
+	class Bomb
 	{
 	public:
-		Spark() = default;
-		~Spark() = default;
-		void Initialize(const std::filesystem::path& path, uint32_t amount, float radius);
+		Bomb() = default;
+		~Bomb() = default;
+		void Initialize(const std::filesystem::path& path, float radius);
 		void Terminate();
 		void Update(float deltaTime);
-		void ShowSpark(const JimmyGod::Math::Vector3& pos, const JimmyGod::Math::Vector3& dir, float endTime);
+		void ShowBomb(const JimmyGod::Math::Vector3& pos, const JimmyGod::Math::Vector3& dir,float endTime);
 		void Render(const JimmyGod::Graphics::Camera& camera);
 		void DebugUI(bool debug = false);
 
@@ -21,13 +21,15 @@ namespace JimmyGod
 		bool IsSummoned = false;
 		bool IsDebugUI = false;
 
-		std::vector<JimmyGod::Physics::Particle*> mParticles;
-		JimmyGod::Math::Vector3 mFoot = JimmyGod::Math::Vector3::Zero;
-		
+		JimmyGod::Physics::Particle* mParticle;
+
+		JimmyGod::Math::Vector3 mPosition = JimmyGod::Math::Vector3::Zero;
+
 		JimmyGod::Physics::PhysicsWorld mPhysicsWorld;
 		float mRadius = 0;;
-		uint32_t mAmount = 0;
+
 		JimmyGod::Graphics::MeshPX mMesh;
+
 		JimmyGod::Graphics::MeshBuffer mMeshBuffer;
 		JimmyGod::Graphics::Sampler mSampler;
 		JimmyGod::Graphics::Texture mTexture;
@@ -35,6 +37,7 @@ namespace JimmyGod
 
 		JimmyGod::Graphics::PixelShader mPixelShader;
 		JimmyGod::Graphics::VertexShader mVertexShader;
+
 		float mTime = 0.0f;
 	};
 }

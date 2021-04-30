@@ -39,7 +39,7 @@ void Cloth::Terminate()
 	mPhysicsWorld.Clear();
 }
 
-void Cloth::Update(float deltaTime, int dir)
+void Cloth::Update(float deltaTime, int dir, bool hasDirection)
 {
 	if (!IsDisplay)return;
 	mPhysicsWorld.Update(deltaTime);
@@ -51,6 +51,8 @@ void Cloth::Update(float deltaTime, int dir)
 			mMesh.vertices[i].position = mParticles[i]->position;
 		}
 	}
+	if (hasDirection == false)
+		return;
 	for (size_t i = 0; i < mFixed.size(); i++)
 	{
 

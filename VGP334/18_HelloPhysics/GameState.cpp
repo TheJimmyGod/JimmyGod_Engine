@@ -365,13 +365,13 @@ void GameState::DebugUI()
 			}
 		}
 
-		auto p3 = new Particle();
-		p3->SetPosition(Vector3{ 0.0f,static_cast<float>(size),0.0f });
-		p3->SetVelocity(1.2f);
-		p3->radius = 1.0f;
-		p3->bounce = 0.3f;
-		mPhysicsWorld.AddParticle(p3);
-		mPhysicsWorld.AddConstraint(new Spring(particles[particles.size() - 1], p3));
+		//auto p3 = new Particle();
+		//p3->SetPosition(Vector3{ 0.0f,static_cast<float>(size),0.0f });
+		//p3->SetVelocity(1.2f);
+		//p3->radius = 1.0f;
+		//p3->bounce = 0.3f;
+		//mPhysicsWorld.AddParticle(p3);
+		//mPhysicsWorld.AddConstraint(new Spring(particles[particles.size() - 1], p3));
 	}
 	if (ImGui::Button("Flag!"))
 	{

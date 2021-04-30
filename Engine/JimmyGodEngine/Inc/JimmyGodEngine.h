@@ -17,6 +17,7 @@
 #include "Terrain.h"
 
 // Object headers
+#include "Bomb.h"
 #include "Cloth.h"
 #include "Spark.h"
 #include "Planet.h"
