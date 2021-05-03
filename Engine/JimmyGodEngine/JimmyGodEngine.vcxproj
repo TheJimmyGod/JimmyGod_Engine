@@ -164,6 +164,7 @@
     <ClInclude Include="Inc\GameWorld.h" />
     <ClInclude Include="Inc\JimmyGodEngine.h" />
     <ClInclude Include="Inc\Planet.h" />
+    <ClInclude Include="Inc\Rope.h" />
     <ClInclude Include="Inc\Service.h" />
     <ClInclude Include="Inc\SkyDome.h" />
     <ClInclude Include="Inc\Spark.h" />
@@ -186,6 +187,7 @@
     <ClCompile Include="Src\MetaRegistration.cpp" />
     <ClCompile Include="Src\Planet.cpp" />
     <ClCompile Include="Src\Precompiled.cpp" />
+    <ClCompile Include="Src\Rope.cpp" />
     <ClCompile Include="Src\Service.cpp" />
     <ClCompile Include="Src\SkyDome.cpp" />
     <ClCompile Include="Src\Spark.cpp" />

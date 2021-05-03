@@ -30,15 +30,15 @@ Vector2 WallAvoidBehvior::Calculate(Agent & agent)
 	for (size_t i = 0; i < agent.world.GetWalls().size(); ++i)
 	{
 		bool isHalf = false;
-		if (Intersect(Circle{ forward,agent.Radius }, agent.world.GetWalls()[i], &closestPoint))
+		if (Intersect(Circle{ forward,agent.Radius }, agent.world.GetWalls()[i].line, &closestPoint))
 		{
-			thisDistance = Distance(agent.world.GetWalls()[i], forward);
+			thisDistance = Distance(agent.world.GetWalls()[i].line, forward);
 			minDistance = thisDistance;
 			closestWallIndex = i;
 		}
-		else if (Intersect(Circle{ halfForward,agent.Radius }, agent.world.GetWalls()[i], &closestPoint))
+		else if (Intersect(Circle{ halfForward,agent.Radius }, agent.world.GetWalls()[i].line, &closestPoint))
 		{
-			thisDistance = Distance(agent.world.GetWalls()[i], halfForward);
+			thisDistance = Distance(agent.world.GetWalls()[i].line, halfForward);
 			minDistance = thisDistance;
 			closestWallIndex = i;
 		}
@@ -46,7 +46,7 @@ Vector2 WallAvoidBehvior::Calculate(Agent & agent)
 		if (closestWallIndex >= 0)
 		{
 			Vector2 overShoot = isHalf ? (halfForward - closestPoint) : (forward - closestPoint);
-			float cross = Cross(agent.world.GetWalls()[closestWallIndex].to, agent.world.GetWalls()[closestWallIndex].from);
+			float cross = Cross(agent.world.GetWalls()[closestWallIndex].line.to, agent.world.GetWalls()[closestWallIndex].line.from);
 			SteeringForce = overShoot.x < 0.0f ? (PerpendicularLH(overShoot) * cross) : (PerpendicularRH(overShoot) * cross);
 		}
 	}

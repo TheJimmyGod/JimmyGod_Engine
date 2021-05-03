@@ -1,5 +1,6 @@
 #include "Precompiled.h"
 #include "Bomb.h"
+#include "Spark.h"
 
 using namespace JimmyGod;
 using namespace JimmyGod::Math;
@@ -18,6 +19,7 @@ void JimmyGod::Bomb::Initialize(const std::filesystem::path & path, float radius
 
 	mRadius = radius;
 	mMesh = JimmyGod::Graphics::MeshBuilder::CreateSpherePX(mRadius);
+	mSpark.Initialize("../../Assets/Textures/Color.png", 25, 0.05f);
 
 	mMeshBuffer.Initialize(mMesh, true);
 	std::filesystem::path texturePath = L"../../Assets/Shaders/DoTexturing.fx";
@@ -39,7 +41,7 @@ void JimmyGod::Bomb::Terminate()
 	mVertexShader.Terminate();
 	mMeshBuffer.Terminate();
 	mPhysicsWorld.Clear();
-
+	mSpark.Terminate();
 	mParticle = nullptr;
 	delete mParticle;
 }
@@ -48,19 +50,32 @@ void JimmyGod::Bomb::Update(float deltaTime)
 {
 	if (!IsDisplay)return;
 	mPhysicsWorld.Update(deltaTime);
+	mSpark.Update(deltaTime);
 	if (mTime > 0.0f)
+	{
+		if (mSec < 0.0f)
+		{
+			mSpark.ShowSpark(Vector3{ mParticle->position.x,mParticle->position.y - 1.0f,mParticle->position.z}, mParticle->position.YAxis / deltaTime, 0.05f);
+			mSec = 0.12f;
+		}
 		mTime -= deltaTime;
+		mSec -= deltaTime;
+	}
 	else
 		IsSummoned = false;
-	if (IsSummoned == false)
+	if (IsSummoned == false && mParticle != nullptr)
 	{
+		mSpark.Clear();
 		mParticle = nullptr;
 		mPhysicsWorld.Clear(true);
+		mSpark.Active(false);
+		Active(false);
 	}
 
 }
 
-void JimmyGod::Bomb::ShowBomb(const JimmyGod::Math::Vector3 & pos, const JimmyGod::Math::Vector3 & dir, float endTime)
+void JimmyGod::Bomb::ShowBomb(const JimmyGod::Math::Vector3 & pos, const JimmyGod::Math::Vector3 & dir, float endTime, 
+	float radius, float bounce, float power, float throwDist)
 {
 	IsDisplay = true;
 	IsSummoned = false;
@@ -68,18 +83,16 @@ void JimmyGod::Bomb::ShowBomb(const JimmyGod::Math::Vector3 & pos, const JimmyGo
 	mTime = endTime;
 
 	Vector3 NormalizedDir = Normalize(dir);
-	float offset = 0.2f;
-	float throwOffset = 7.0f;
 	mPosition = pos;
 	mParticle = nullptr;
 	mPhysicsWorld.Clear(true);
-
-	auto p = new Particle({ Vector3{ mPosition.x + (NormalizedDir.x * throwOffset),mPosition.y + 5.5f, mPosition.z + (NormalizedDir.z * throwOffset) } });
-	p->SetVelocity(Vector3{ NormalizedDir.x * offset,
+	mRadius = radius;
+	auto p = new Particle({ Vector3{ mPosition.x + (NormalizedDir.x * throwDist),mPosition.y + 5.5f, mPosition.z + (NormalizedDir.z * throwDist) } });
+	p->SetVelocity(Vector3{ NormalizedDir.x * power,
 		NormalizedDir.y,
-		NormalizedDir.z * offset });
+		NormalizedDir.z * power});
 	p->radius = mRadius;
-	p->bounce = 0.7f;
+	p->bounce = bounce;
 	mParticle = std::move(p);
 	
 	mPhysicsWorld.AddParticle(p);
@@ -107,6 +120,7 @@ void JimmyGod::Bomb::Render(const JimmyGod::Graphics::Camera & camera)
 	mMeshBuffer.Update(mMesh.vertices.data(), static_cast<uint32_t>(mMesh.vertices.size()));
 	if (IsDebugUI == false)
 		mMeshBuffer.Draw();
+	mSpark.Render(camera);
 }
 
 void JimmyGod::Bomb::DebugUI(bool debug)
@@ -117,4 +131,5 @@ void JimmyGod::Bomb::DebugUI(bool debug)
 	{
 		mPhysicsWorld.DebugDraw();
 	}
+	mSpark.DebugUI(IsDebugUI);
 }

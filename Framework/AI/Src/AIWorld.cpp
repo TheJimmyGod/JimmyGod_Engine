@@ -45,6 +45,10 @@ void AIWorld::Initialize(const Settings& settings)
 	const int columns = static_cast<int>(std::ceilf(settings.worldSize.x / settings.partitionGridSize));
 	const int rows = static_cast<int>(std::ceilf(settings.worldSize.y / settings.partitionGridSize));
 	mPartitionGrid.Resize(columns, rows);
+
+	mRockTexture[0] = Graphics::TextureManager::Get()->Load("Rock1.png");
+	mRockTexture[1] = Graphics::TextureManager::Get()->Load("Rock2.png");
+	mRockTexture[2] = Graphics::TextureManager::Get()->Load("Rock3.png");
 }
 
 void AIWorld::Update()
@@ -56,6 +60,29 @@ void AIWorld::Update()
 		int row = static_cast<int>(entity->Position.y / mSetting.partitionGridSize);
 		mPartitionGrid.GetCell(column, row).push_back(entity);
 	}
+}
+
+void JimmyGod::AI::AIWorld::Render()
+{
+	for (auto& wall : mWalls)
+	{
+		if (!wall.diagonal)
+		{
+			Graphics::SpriteRenderManager::Get()->DrawSprite(mRockTexture[2], (wall.line.from + wall.line.to) * 0.5f, wall.degree); // 89.5f
+		}
+		else
+		{
+			Graphics::SpriteRenderManager::Get()->DrawSprite(mRockTexture[2], (wall.line.from + wall.line.to) * 0.5f, wall.degree); //-6.95f
+		}
+	}
+	for (auto& rock : mObstacles)
+	{
+		if(rock.radius == 80.0f)
+			Graphics::SpriteRenderManager::Get()->DrawSprite(mRockTexture[0], rock.center);
+		else if(rock.radius == 50.0f)
+			Graphics::SpriteRenderManager::Get()->DrawSprite(mRockTexture[1], rock.center);
+	}
+
 }
 
 void AIWorld::RegisterEntity(Entity * entity)
@@ -78,9 +105,9 @@ void AIWorld::AddObstacles(const JimmyGod::Math::Circle & obstacles)
 	mObstacles.push_back(obstacles);
 }
 
-void AIWorld::AddWalls(const JimmyGod::Math::LineSegment & walls)
+void AIWorld::AddWalls(const JimmyGod::Math::LineSegment & walls, bool dia, float degree)
 {
-	mWalls.push_back(walls);
+	mWalls.push_back({ walls,dia, degree });
 }
 
 EntityList AIWorld::GetEntities(const JimmyGod::Math::Circle & range, int typeId)
@@ -101,7 +128,7 @@ void AIWorld::DebugDraw() const
 	}
 	for (auto& wall : mWalls)
 	{
-		JimmyGod::Graphics::SimpleDraw::AddScreenLine(wall.from, wall.to, JimmyGod::Graphics::Colors::Cyan);
+		JimmyGod::Graphics::SimpleDraw::AddScreenLine(wall.line.from, wall.line.to, JimmyGod::Graphics::Colors::Cyan);
 	}
 	for (int x = 0; x < mPartitionGrid.GetColumns(); x++)
 	{
@@ -119,7 +146,7 @@ bool AIWorld::HasLineOfSight(const JimmyGod::Math::Vector2 & start, const JimmyG
 
 	for (auto& wall : mWalls)
 	{
-		if (JimmyGod::Math::Intersect(line, wall))
+		if (JimmyGod::Math::Intersect(line, wall.line))
 			return false;
 	}
 

@@ -16,7 +16,6 @@ namespace Steering
 		void Unload();
 		void Update(float deltaTime);
 		void Render();
-		void Reaction() { mBehaviorEffect.Play(); }
 
 		JimmyGod::AI::SteeringModule* GetSteeringModule() const
 		{
@@ -30,7 +29,6 @@ namespace Steering
 		float mTimer;
 
 		SpriteAnimation mSmoke;
-		SpriteAnimation mBehaviorEffect;
 		bool isStarted = false;
 	};
 }

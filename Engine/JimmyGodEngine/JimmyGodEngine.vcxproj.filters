@@ -135,6 +135,9 @@
     <ClInclude Include="Inc\Bomb.h">
       <Filter>Inc\Object</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Rope.h">
+      <Filter>Inc\Object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\JimmyGodEngine.cpp">
@@ -189,6 +192,9 @@
       <Filter>Src\Effect</Filter>
     </ClCompile>
     <ClCompile Include="Src\Bomb.cpp">
+      <Filter>Src\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Rope.cpp">
       <Filter>Src\Object</Filter>
     </ClCompile>
   </ItemGroup>

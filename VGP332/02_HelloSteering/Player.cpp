@@ -36,7 +36,6 @@ void Player::Load()
 	spriteInfo_behavior.frameCount = 30;
 	spriteInfo_behavior.framePerSecond = 30.0f;
 	spriteInfo_behavior.looping = false;
-	mBehaviorEffect.Load(spriteInfo_behavior);
 
 	mSteeringModule->AddBehavior<WanderBehavior>("Wander")->SetActive(false);
 	mSteeringModule->AddBehavior<SeekBehavior>("Seek")->SetActive(false);
@@ -55,7 +54,6 @@ void Player::Unload()
 	mPlayerSprite = 0;
 	mSteeringModule.reset();
 	mSmoke.Unload();
-	mBehaviorEffect.Unload();
 }
 
 void Player::Update(float deltaTime)
@@ -68,18 +66,17 @@ void Player::Update(float deltaTime)
 	auto force = mSteeringModule->Calculate();
 	auto accelration = (force / Mass);
 	Velocity += accelration * deltaTime;
+
+
 	auto speed = Magnitude(Velocity);
 	if (speed > MaxSpeed)
 	{
 		Velocity = Velocity / speed * MaxSpeed;
 	}
-
 	mSmoke.Update(deltaTime);
 	mSmoke.SetPosition(Position);
 
-	mBehaviorEffect.Update(deltaTime);
-	mBehaviorEffect.SetPosition(Position);
-	if (IsZero(Velocity) == false)
+	if (speed > 150.0f)
 	{
 		if (isStarted == false)
 		{
@@ -95,9 +92,10 @@ void Player::Update(float deltaTime)
 	Position += Velocity * deltaTime;
 
 	if (speed > 0.0f)
-	{
 		Heading = Normalize(Velocity);
-	}
+
+
+
 
 	if (Position.x < 0.0f)
 		Position.x = (static_cast<float>(GS->GetBackBufferWidth()));
@@ -118,5 +116,4 @@ void Player::Render()
 	mSmoke.Render();
 	const float angle = atan2(Heading.y, Heading.x) * Math::Constants::RadToDeg / 50.0f;
 	SpriteRenderManager::Get()->DrawSprite(mPlayerSprite, Position,angle);
-	mBehaviorEffect.Render();
 }

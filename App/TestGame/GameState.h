@@ -37,6 +37,7 @@ private:
 	bool isJump = false;
 	bool isKicked = false;
 	bool isThrew = false;
+	bool isRope = false;
 	bool isCloak = false;
 	bool isSpark = false;
 
@@ -59,10 +60,6 @@ private:
 	LightBuffer mLightBuffer;
 	MaterialBuffer mMaterialBuffer;
 	SettingsBuffer mSettingsBuffer;
-
-	JimmyGod::Graphics::MeshPX mRainMesh;
-	JimmyGod::Graphics::MeshBuffer mRainBuffer;
-	JimmyGod::Graphics::Texture mRainTexture;
 
 	JimmyGod::Graphics::AnimationBulider mAnimationBuilder;
 	JimmyGod::Graphics::Animation mAnimation;
@@ -91,11 +88,16 @@ private:
 	JimmyGod::Graphics::Animator mAnimator;
 	bool showSkeleton = false;
 	bool stopAnimation = false;
+	bool triggerActive = false;
 
 	JimmyGod::Math::Vector3 position = JimmyGod::Math::Vector3::Zero;
 	JimmyGod::Math::Matrix4 rotation = JimmyGod::Math::Matrix4::Identity;
 	JimmyGod::Math::Vector3 accelation = JimmyGod::Math::Vector3::Zero;
 	JimmyGod::Math::Vector3 velocity = JimmyGod::Math::Vector3::Zero;
+
+	JimmyGod::Graphics::Bone* mLeftShoulder = nullptr;
+	JimmyGod::Graphics::Bone* mRightShoulder = nullptr;
+	JimmyGod::Graphics::Bone* mNeck = nullptr;
 
 	float mRotation = 0.0f;
 	float fps = 0.0f;
@@ -103,6 +105,7 @@ private:
 	JimmyGod::Physics::PhysicsWorld mPhysicsWorld;
 	std::vector<JimmyGod::Physics::Particle*> particles;
 	JimmyGod::Cloth mCloak;
+	JimmyGod::Rope mRope;
 	JimmyGod::Spark mSpark;
 	JimmyGod::Bomb mBomb;
 };

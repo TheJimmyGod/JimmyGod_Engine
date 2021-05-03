@@ -15,6 +15,7 @@
 #include "Mesh.h"
 #include "MeshBuffer.h"
 #include "MeshBuilder.h"
+#include "RasterizerState.h"
 #include "RenderTarget.h"
 #include "Sampler.h"
 #include "SimpleDraw.h"

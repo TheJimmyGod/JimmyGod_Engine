@@ -8,9 +8,24 @@ using namespace JimmyGod::Input;
 using namespace JimmyGod::Math;
 using namespace JimmyGod::Physics;
 
+static bool ActiveBomb = true;
+static bool ActiveRope = false;
+static float BombLifeTime = 5.0f;
+static float BombPower = 0.2f;
+static float BombThrowDist = 7.0f;
+static float BombBounce = 0.7f;
+static float BombRadius = 0.5f;
+
+static float RopeLifeTime = 3.0f;
+static float RopePower = 0.2f;
+static float RopeThrowDist = 4.0f;
+static float RopeBounce = 0.4f;
+static float RopeRadius = 0.1f;
+static int RopeLength = 50;
+
 void GameState::Initialize()
 {
-	GraphicsSystem::Get()->SetClearColor(Colors::Black);
+	GraphicsSystem::Get()->SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 
 	mCamera = mWorld.AddService<CameraService>();
 	mWorld.Initialize(100);
@@ -41,11 +56,11 @@ void GameState::Initialize()
 
 	mDirectionalLight.direction = Normalize({ 1.0f, -1.0f, 1.0f });
 	mDirectionalLight.ambient = { 0.3f, 0.3f, 0.3f, 1.0f };
-	mDirectionalLight.diffuse = { 0.35f, 0.35f, 0.35f, 1.0f };
+	mDirectionalLight.diffuse = { 0.8f, 0.8f, 0.8f, 1.0f };
 	mDirectionalLight.specular = { 0.25f, 0.25f, 0.25f, 1.0f };
 
 	mMaterial.ambient = { 0.3f, 0.3f, 0.3f, 1.0f };
-	mMaterial.diffuse = { 0.3f, 0.3f, 0.3f, 1.0f };
+	mMaterial.diffuse = { 0.8f, 0.8f, 0.8f, 1.0f };
 	mMaterial.specular = { 0.5f, 0.5f, 0.5f, 1.0f };
 	mMaterial.power = 40.0f;
 
@@ -69,7 +84,8 @@ void GameState::Initialize()
 
 	mCloak.Initialize("../../Assets/Textures/BatTexture.png", 4, 7);
 	mSpark.Initialize("../../Assets/Textures/Sun.jpg", 20 ,0.2f);
-	mBomb.Initialize("../../Assets/Textures/BatTexture.png", 0.5f);
+	mRope.Initialize("../../Assets/Textures/BatTexture.png", RopeRadius, static_cast<uint32_t>(RopeLength));
+	mBomb.Initialize("../../Assets/Textures/BatTexture.png", BombRadius);
 }
 
 void GameState::Terminate()
@@ -89,10 +105,7 @@ void GameState::Terminate()
 	mCloak.Terminate();
 	mSpark.Terminate();
 	mPhysicsWorld.Clear();
-
-	mRainBuffer.Terminate();
-	mRainTexture.Terminate();
-
+	mRope.Terminate();
 }
 
 void GameState::Update(float deltaTime)
@@ -104,7 +117,6 @@ void GameState::Update(float deltaTime)
 	const float kTurnSpeed = 1.0f;
 	fps = 1.0f / deltaTime;
 	accelation = Vector3::Zero;
-
 	mWorld.Update(deltaTime);
 	if (!stopAnimation)
 	{
@@ -115,20 +127,23 @@ void GameState::Update(float deltaTime)
 	mPhysicsWorld.Update(deltaTime);
 	mCloak.Update(deltaTime, static_cast<int>(mDirection), true);
 	mSpark.Update(deltaTime);
+	mRope.Update(deltaTime, Vector3{ position.x + (3.0f * Normalize(velocity).x),position.y + 4.0f, position.z +(3.0f * Normalize(velocity).z) });
 	if (inputSystem->IsMouseDown(MouseButton::RBUTTON))
 	{
 		camera.Yaw(inputSystem->GetMouseMoveX() * kTurnSpeed * deltaTime);
 		camera.Pitch(inputSystem->GetMouseMoveY() * kTurnSpeed * deltaTime);
 	}
 
-	position = Vector3{ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().x,
-mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().y + 0.4f,
-mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z - 0.5f };
+	position = mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition();
 
+
+	mLeftShoulder = FindBone(mModel.mSkeleton, "mixamorig1:LeftShoulder");
+	mRightShoulder = FindBone(mModel.mSkeleton, "mixamorig1:RightShoulder");
+	mNeck = FindBone(mModel.mSkeleton, "mixamorig1:Spine");
 	if (mCloak.IsActive())
-		mCloak.SetPosition(position + GetTranslation(mModel.mSkeleton.bones[4]->offsetTransform * mAnimator.GetBoneMatrices()[4]) * 0.04f,
-			position + GetTranslation(mModel.mSkeleton.bones[6]->offsetTransform * mAnimator.GetBoneMatrices()[6]) * 0.04f,
-			position + GetTranslation(mModel.mSkeleton.bones[25]->offsetTransform * mAnimator.GetBoneMatrices()[25]) * 0.04f);
+		mCloak.SetPosition(position + GetTranslation(mNeck->offsetTransform * mAnimator.GetBoneMatrices()[mNeck->index]) * 0.04f,
+			position + GetTranslation(mLeftShoulder->offsetTransform * mAnimator.GetBoneMatrices()[mLeftShoulder->index]) * 0.04f,
+			position + GetTranslation(mRightShoulder->offsetTransform * mAnimator.GetBoneMatrices()[mRightShoulder->index]) * 0.04f);
 
 	if (mTime < 1.3f)
 	{
@@ -142,8 +157,13 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 	{
 		if (isThrew == true)
 		{
-			mBomb.ShowBomb(position, velocity, 5.0f);
+			mBomb.ShowBomb(position, velocity, BombLifeTime,BombRadius,BombBounce,BombPower, BombThrowDist);
 			isThrew = false;
+		}
+		if (isRope == true)
+		{
+			mRope.ShowRope(position, velocity, RopeRadius,RopePower,static_cast<uint32_t>(RopeLength),RopeBounce,RopeThrowDist,RopeLifeTime);
+			isRope = false;
 		}
 	}
 	if (mTime > 0.1f && stopAnimation == false)
@@ -154,19 +174,23 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 		if (mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.y > 0.1f)
 		{
 			mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.y += mGravity * deltaTime;
-			accelation.y += kMoveSpeed * deltaTime;
-			accelation.z -= kMoveSpeed* deltaTime;
+			accelation.y += mGravity * deltaTime;
+			triggerActive = false;
 			if (mCloak.IsActive())
+			{
 				mCloak.SetVelocity(-accelation);
+			}
 		}
 	}
 	else
 	{
 		mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.y -= 1.2f * mGravity * deltaTime;
 		accelation.y -= mGravity * deltaTime;
-		accelation.z -= kMoveSpeed * deltaTime;
+		triggerActive = false;
 		if (mCloak.IsActive())
+		{
 			mCloak.SetVelocity(-accelation);
+		}
 		if (mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.y > 5.0f)
 			isJump = false;
 	}
@@ -176,9 +200,12 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 		camera.Walk(kMoveSpeed * deltaTime);
 		rotation = Matrix4::RotationAxis(mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.YAxis, 180.0f * Constants::DegToRad);
 		mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.z += kMoveSpeed * deltaTime;
-		accelation.z += kMoveSpeed * deltaTime;
+		accelation.z += deltaTime;
+		triggerActive = false;
 		if (mCloak.IsActive())
-			mCloak.SetVelocity(-accelation / 3.0f);
+		{
+			mCloak.SetVelocity(-accelation);
+		}
 	}
 	if (inputSystem->IsKeyDown(KeyCode::S))
 	{
@@ -186,9 +213,12 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 		camera.Walk(-kMoveSpeed * deltaTime);
 		rotation = Matrix4::RotationAxis(mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.YAxis, 0.0f * Constants::DegToRad);
 		mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.z -= kMoveSpeed * deltaTime;
-		accelation.z -= kMoveSpeed * deltaTime;
+		accelation.z -= deltaTime;
+		triggerActive = false;
 		if (mCloak.IsActive())
+		{
 			mCloak.SetVelocity(-accelation);
+		}
 	}
 	if (inputSystem->IsKeyDown(KeyCode::D))
 	{
@@ -196,10 +226,12 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 		camera.Strafe(kMoveSpeed * deltaTime);
 		rotation = Matrix4::RotationAxis(mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.YAxis, -90.0f * Constants::DegToRad);
 		mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.x += kMoveSpeed * deltaTime;
-		accelation.x += kMoveSpeed * deltaTime;
+		accelation.x += deltaTime;
+		triggerActive = false;
 		if (mCloak.IsActive())
+		{
 			mCloak.SetVelocity(-accelation);
-
+		}
 	}
 	if (inputSystem->IsKeyDown(KeyCode::A))
 	{
@@ -207,15 +239,27 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 		camera.Strafe(-kMoveSpeed * deltaTime);
 		rotation = Matrix4::RotationAxis(mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.YAxis, 90.0f * Constants::DegToRad);
 		mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.x -= kMoveSpeed * deltaTime;
-		accelation.x -= kMoveSpeed * deltaTime;
+		accelation.x -= deltaTime;
+		triggerActive = false;
 		if (mCloak.IsActive())
+		{
 			mCloak.SetVelocity(-accelation);
+		}
+	}
+	if (IsZero(accelation) == false)
+	{
+		velocity = accelation * deltaTime;
 
 	}
-	if(IsZero(accelation) == false)
-		velocity = accelation;
-	
-
+	else
+	{
+		if (triggerActive == false)
+		{
+			if (mCloak.IsActive())
+				mCloak.SetVelocity(accelation * 2.0f);
+			triggerActive = true;
+		}
+	}
 	if (mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.y < 0.1f)
 	{
 		if (Magnitude(accelation) != 0.0f)
@@ -235,15 +279,47 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 			mAnimator.PlayAnimation(3);
 			currentAnimation = 3;
 			mTime = 1.75f;
+			if (mCloak.IsActive())
+			{
+				switch (mDirection)
+				{
+				case GameState::Direction::Back:
+					accelation.z += deltaTime;
+					break;
+				case GameState::Direction::Right:
+					accelation.x += deltaTime;
+					break;
+				case GameState::Direction::Left:
+					accelation.x -= deltaTime;
+					break;
+				case GameState::Direction::Front:
+					accelation.z -= deltaTime;
+					break;
+				default:
+					break;
+				}
+				mCloak.SetVelocity(-accelation * deltaTime);
+			}
 		}
 
 		if (inputSystem->IsKeyPressed(KeyCode::X))
 		{
-			isThrew = true;
+			if (ActiveBomb)
+			{
+				mBomb.Initialize("../../Assets/Textures/BatTexture.png", BombRadius);
+				isThrew = true;
+			}
+			else if (ActiveRope)
+			{
+				mRope.Initialize("../../Assets/Textures/BatTexture.png", RopeRadius,static_cast<uint32_t>(RopeLength));
+				isRope = true;
+			}
 			mAnimator.SetTime(0.0f);
 			mAnimator.PlayAnimation(4);
 			currentAnimation = 4;
 			mTime = 2.5f;
+			if (mCloak.IsActive())
+				mCloak.SetVelocity(accelation);
 		}
 
 		if (inputSystem->IsKeyPressed(KeyCode::SPACE))
@@ -257,12 +333,10 @@ mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition().z 
 			isCloak = !isCloak;
 			mCloak.Active(isCloak);
 			if (mCloak.IsActive())
-				mCloak.ShowCloth(position + GetTranslation(mModel.mSkeleton.bones[4]->offsetTransform * mAnimator.GetBoneMatrices()[4]) * 0.04f);
+				mCloak.ShowCloth(position + GetTranslation(mModel.mSkeleton.bones[127]->offsetTransform * mAnimator.GetBoneMatrices()[127]) * 0.04f);
 		}
 	}
-	//mRotation += deltaTime;
-	//std::string str = std::to_string(mRotation);
-	//SpriteRenderManager::Get()->DrawScreenText(str.c_str(), 1000.0f, 400.0f, 20.0f, Colors::Aqua);
+
 }
 
 void GameState::Render()
@@ -292,7 +366,6 @@ void GameState::Render()
 	mBoneTransformBuffer.BindVS(5);
 
 	auto matWorld = Matrix4::Scaling(0.04f) * rotation * Matrix4::Translation(mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition());
-	//auto matWorld =  Matrix4::Translation(mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition()) * rotation * Matrix4::Scaling(0.04f);
 
 	TransformData transformData;
 	transformData.world = Transpose(matWorld);
@@ -302,25 +375,19 @@ void GameState::Render()
 
 	BoneTransformData boneTransformData{};
 	for (size_t i = 0; i < mAnimator.GetBoneMatrices().size(); ++i)
-	{
 		boneTransformData.BoneTransforms[i] = Transpose(mModel.mSkeleton.bones[i]->offsetTransform * mAnimator.GetBoneMatrices()[i] /** Matrix4::Translation(pos)*/);
-	}
 	if (!showSkeleton)
 		mModel.Render();
 	else
-	{
 		for (auto& b : mModel.mSkeleton.bones)
-		{
-			DrawSkeleton(b.get(), mAnimator.GetBoneMatrices(), mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition(), 0.04f);
-		}
-
-	}
+			DrawSkeleton(b.get(), mAnimator.GetBoneMatrices(), mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition(), 0.04f,rotation);
 	mBoneTransformBuffer.Update(&boneTransformData);
-	mCloak.Render(mCamera->GetActiveCamera());
+	mCloak.Render(mCamera->GetActiveCamera(), static_cast<int>(mDirection));
 	mSpark.Render(mCamera->GetActiveCamera());
+	mRope.Render(mCamera->GetActiveCamera());
 	mBomb.Render(mCamera->GetActiveCamera());
 
-	SimpleDraw::AddGroundPlane(30.0f,Colors::DarkMagenta);
+	SimpleDraw::AddGroundPlane(100.0f, 2.0f, Colors::Magenta);
 	SimpleDraw::Render(mCamera->GetActiveCamera());
 }
 
@@ -329,27 +396,65 @@ void GameState::DebugUI()
 	mWorld.DebugUI();
 	static bool showDebugUI = false;
 	static bool OBBcollision = true;
+
 	ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 	if (ImGui::CollapsingHeader("Animation", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ImGui::Text("fps: %.2f", fps);
+		if (ImGui::CollapsingHeader("Debug UI Option", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (ImGui::Checkbox("Set Skeleton", &showSkeleton))
+			{
+			}
+			if (ImGui::Checkbox("Show DebugUI of particles", &showDebugUI))
+			{
+			}
+			if (ImGui::Checkbox("OBB Debug UI active/inactive", &OBBcollision))
+				mWorld.Find("Jimmy").Get()->GetComponent<ColliderComponent>()->Active();
+		}
 
-		if (ImGui::Checkbox("Set Skeleton", &showSkeleton))
+		if (ImGui::CollapsingHeader("Batman Weapon Option", ImGuiTreeNodeFlags_DefaultOpen))
 		{
+			if (ImGui::CollapsingHeader("BatBomb Option", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+
+				if (mBomb.IsActive() == false)
+				{
+					if (ImGui::Checkbox("BatBomb", &ActiveBomb))
+					{
+						if (ActiveBomb)
+							ActiveRope = false;
+					}
+					ImGui::DragFloat("BatBomb Bounce##BatBomb", &BombBounce, 0.1f, 0.1f, 2.0f);
+					ImGui::DragFloat("BatBomb Life Time##BatBomb", &BombLifeTime, 1.0f, 0.1f, 7.0f);
+					ImGui::DragFloat("BatBomb Power##BatBomb", &BombPower, 0.1f, 0.1f, 10.0f);
+					ImGui::DragFloat("BatBomb Radius##BatBomb", &BombRadius, 0.1f, 0.1f, 10.0f);
+					ImGui::DragFloat("BatBomb Thorw Distance##BatBomb", &BombThrowDist, 0.1f, 0.1f, 10.0f);
+				}
+			}
+			if (ImGui::CollapsingHeader("BatRope Option", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				if (mRope.IsActive() == false)
+				{
+					if (ImGui::Checkbox("BatRope", &ActiveRope))
+					{
+						if (ActiveRope)
+							ActiveBomb = false;
+					}
+					ImGui::DragFloat("BatRope Bounce##BatRope", &RopeBounce, 0.1f, 0.1f, 2.0f);
+					ImGui::DragInt("BatRope Length##BatRope", &RopeLength, 1.0f, 1.0f, 100.0f);
+					ImGui::DragFloat("BatRope Life Time##BatRope", &RopeLifeTime, 1.0f, 0.1f, 7.0f);
+					ImGui::DragFloat("BatRope Power##BatRope", &RopePower, 0.1f, 0.1f, 2.0f);
+					ImGui::DragFloat("BatRope Radius##BatRope", &RopeRadius, 0.1f, 0.1f, 10.0f);
+					ImGui::DragFloat("BatRope Thorw Distance##BatRope", &RopeThrowDist, 0.1f, 0.1f, 10.0f);
+				}
+			}
 		}
-		if (ImGui::Checkbox("Show DebugUI of particles", &showDebugUI))
-		{
-		}
-		if (ImGui::Checkbox("OBB Debug UI active/inactive", &OBBcollision))
-		{
-			mWorld.Find("Jimmy").Get()->GetComponent<ColliderComponent>()->Active();
-		}
+
 	}
-	if (isCloak == true)
-	{
-		mCloak.DebugUI(showDebugUI);
-	}
+	mCloak.DebugUI(showDebugUI);
 	mSpark.DebugUI(showDebugUI);
 	mBomb.DebugUI(showDebugUI);
+	mRope.DebugUI(showDebugUI);
 	ImGui::End();
 }

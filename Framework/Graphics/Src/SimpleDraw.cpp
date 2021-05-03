@@ -428,10 +428,16 @@ void SimpleDraw::AddBone(const Math::Matrix4 & transform)
 	sInstance->AddLine(p, p + u * 0.1f, Colors::Green);
 	sInstance->AddLine(p, p + l * 0.1f, Colors::Blue);
 }
+
 void SimpleDraw::AddGroundPlane(float size, const Color & color)
 {
+	AddGroundPlane(size, 1.0f, color);
+}
+
+void SimpleDraw::AddGroundPlane(float size, float cellSize, const Color & color)
+{
 	const float halfSize = size * 0.5f;
-	for (float i = -halfSize; i <= halfSize; i += 1.0f)
+	for (float i = -halfSize; i <= halfSize; i += cellSize)
 	{
 		sInstance->AddLine({i,0.0f, -halfSize}, {i,0.0f,halfSize}, color);
 		sInstance->AddLine({-halfSize,0.0f,i}, {halfSize,0.0f,i}, color);

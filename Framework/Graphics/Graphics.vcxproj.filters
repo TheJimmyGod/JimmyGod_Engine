@@ -183,6 +183,9 @@
     <ClInclude Include="Inc\SpriteAnimationInfo.h">
       <Filter>Inc\Animation</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\RasterizerState.h">
+      <Filter>Inc\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\GraphicsSystem.cpp">
@@ -274,6 +277,9 @@
     </ClCompile>
     <ClCompile Include="Src\SpriteAnimation.cpp">
       <Filter>Src\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\RasterizerState.cpp">
+      <Filter>Src\Shader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

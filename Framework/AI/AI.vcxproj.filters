@@ -153,6 +153,9 @@
     <ClInclude Include="Inc\PathFindTypes.h">
       <Filter>Inc\Pathing</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\EnforceNonPenetrationConstraint.h">
+      <Filter>Inc\Steering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Precompiled.cpp">
@@ -229,6 +232,9 @@
     </ClCompile>
     <ClCompile Include="Src\Graph.cpp">
       <Filter>Src\Pathing</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\EnforceNonPenetrationConstraint.cpp">
+      <Filter>Src\Steering</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

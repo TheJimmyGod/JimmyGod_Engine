@@ -39,7 +39,7 @@ void Planet::Update(float deltaTime)
 	mRot += deltaTime;
 }
 
-void Planet::Render(const Graphics::Camera & camera, const JimmyGod::Math::Matrix4& mat)
+void Planet::Render(const Graphics::Camera & camera, float range, float scl, const JimmyGod::Math::Matrix4& mat)
 {
 	auto matView = camera.GetViewMatrix();
 	auto matProj = camera.GetPerspectiveMatrix();
@@ -49,12 +49,12 @@ void Planet::Render(const Graphics::Camera & camera, const JimmyGod::Math::Matri
 	mConstantBuffer.BindPS();
 	mSampler.BindPS();
 
-	auto matWorld = Matrix4::RotationY(mRot.y * 2.0f);
-	auto matSpin = Matrix4::RotationY(mRot.y * 0.5f);
+	auto matWorld = Matrix4::RotationY(mRot.y * range);
+	auto matSpin = Matrix4::RotationY(mRot.y * 0.105f);
 	auto matTranslation = Matrix4::Translation(mPos);
-	auto matScl = Matrix4::Scaling(0.15f);
-	auto matMoon = matWorld * matTranslation * matSpin;
-	auto matWVP = Transpose(matScl * matMoon * mat * matView * matProj);
+	auto matScl = Matrix4::Scaling(scl);
+	auto matPlanet = matWorld * matTranslation * matSpin;
+	auto matWVP = Transpose(matScl * matPlanet * mat * matView * matProj);
 	mConstantBuffer.Update(&matWVP);
 	mConstantBuffer.BindPS(0);
 	mConstantBuffer.BindVS(0);

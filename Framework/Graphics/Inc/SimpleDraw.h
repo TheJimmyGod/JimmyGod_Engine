@@ -20,6 +20,7 @@ namespace JimmyGod::Graphics::SimpleDraw
 	void AddTransform(const Math::Matrix4& transform);
 	void AddBone(const Math::Matrix4& transform);
 	void AddGroundPlane(float size, const Color& color);
+	void AddGroundPlane(float size, float cellSize, const Color& color);
 	void AddScreenCircle(const Math::Circle& circle, const Color& color);
 	void AddScreenLine(const Math::Vector2& v0, const Math::Vector2& v1, const Color& color);
 	void Render(const Camera& camera);

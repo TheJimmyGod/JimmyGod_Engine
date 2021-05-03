@@ -10,7 +10,7 @@ namespace JimmyGod
 		void Initialize(const std::filesystem::path& path, const JimmyGod::Math::Vector3& pos, float radius, float rings, float slices);
 		void Terminate();
 		void Update(float deltaTime);
-		void Render(const JimmyGod::Graphics::Camera& camera, const JimmyGod::Math::Matrix4& mat = Math::Matrix4::Identity);
+		void Render(const JimmyGod::Graphics::Camera& camera, float range, float scl, const JimmyGod::Math::Matrix4& mat = JimmyGod::Math::Matrix4::Identity);
 
 	private:
 		struct TransformData

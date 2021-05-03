@@ -172,6 +172,7 @@
     <ClInclude Include="Inc\DecisionModule.h" />
     <ClInclude Include="Inc\DFS.h" />
     <ClInclude Include="Inc\Dijkstra.h" />
+    <ClInclude Include="Inc\EnforceNonPenetrationConstraint.h" />
     <ClInclude Include="Inc\Entity.h" />
     <ClInclude Include="Inc\EvadeBehavior.h" />
     <ClInclude Include="Inc\FleeBehavior.h" />
@@ -208,6 +209,7 @@
     <ClCompile Include="Src\CohesionBehavior.cpp" />
     <ClCompile Include="Src\DFS.cpp" />
     <ClCompile Include="Src\Dijkstra.cpp" />
+    <ClCompile Include="Src\EnforceNonPenetrationConstraint.cpp" />
     <ClCompile Include="Src\Entity.cpp" />
     <ClCompile Include="Src\EvadeBehavior.cpp" />
     <ClCompile Include="Src\FleeBehavior.cpp" />

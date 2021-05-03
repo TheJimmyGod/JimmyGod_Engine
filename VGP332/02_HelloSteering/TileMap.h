@@ -14,7 +14,7 @@ private:
 		return x + (y* mColumns);
 	}
 
-	std::array<TextureId, 1> mTextureIds;
+	std::array<TextureId, 2> mTextureIds;
 	std::vector<int> mTiles;
 	int mColumns = 0;
 	int mRows = 0;

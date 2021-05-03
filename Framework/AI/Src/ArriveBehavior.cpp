@@ -28,7 +28,7 @@ JimmyGod::Math::Vector2 JimmyGod::AI::ArriveBehavior::Arrive(Agent & agent, Jimm
 	float distance = JimmyGod::Math::Magnitude(toTarget);
 	JimmyGod::Math::Vector2 velocity = Vector2::Zero;
 
-	if (distance < 200.0f)
+	if (distance < 250.0f)
 	{
 		float speed = distance / decel * decelTweaker;
 		speed = JimmyGod::Math::Min(speed, agent.MaxSpeed);

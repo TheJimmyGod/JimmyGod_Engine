@@ -81,12 +81,20 @@ private:
 	Texture mNightMap;
 	Texture mEarthCould;
 	Sampler mSampler;
-	Vector3 mRotation = 0.0f;
+	Vector3 mRotation = Vector3::Zero;
+	Vector3 mVelocity = Vector3::Zero;
+	Vector3 mAccelation = Vector3::Zero;
 
 	// Space
 	JimmyGod::SkyDome mSkyDome;
 
-	// Moon
+	// Planets
 	JimmyGod::Planet mMoon;
-
+	JimmyGod::Planet mMercury;
+	JimmyGod::Planet mVenus;
+	JimmyGod::Planet mMars;
+	JimmyGod::Planet mJupiter;
+	JimmyGod::Planet mSaturn;
+	JimmyGod::Planet mUranos;
+	JimmyGod::Planet mNeptune;
 };

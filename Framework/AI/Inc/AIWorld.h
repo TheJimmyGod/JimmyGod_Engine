@@ -12,14 +12,19 @@ namespace JimmyGod::AI
 			JimmyGod::Math::Vector2 worldSize = {0.0f, 0.0f};
 			float partitionGridSize = 0.0f;
 		};
-
+		struct WallSettings
+		{
+			JimmyGod::Math::LineSegment line;
+			bool diagonal = false;
+			float degree = 0.0f;
+		};
 
 		using Obstacles = std::vector<JimmyGod::Math::Circle>;
-		using Walls = std::vector<JimmyGod::Math::LineSegment>;
+		using Walls = std::vector<WallSettings>;
 
 		void Initialize(const Settings& settings);
 		void Update();
-
+		void Render();
 		void RegisterEntity(Entity* entity);
 		void UnregisterEntity(Entity* entity);
 
@@ -30,7 +35,7 @@ namespace JimmyGod::AI
 		}
 
 		void AddObstacles(const JimmyGod::Math::Circle& obstacles);
-		void AddWalls(const JimmyGod::Math::LineSegment& walls);
+		void AddWalls(const JimmyGod::Math::LineSegment& walls, bool dia = false, float degree = 0.0f);
 
 		EntityList GetEntities(const JimmyGod::Math::Circle& range, int typeId);
 		AgentList GetNeighborhood(const JimmyGod::Math::Circle& range, int typeId);
@@ -49,5 +54,7 @@ namespace JimmyGod::AI
 		EntityList mEntityList;
 		PartitionGrid<Entity> mPartitionGrid;
 		uint32_t mNextId = 0;
+
+		Graphics::TextureId mRockTexture[3];
 	};
 }

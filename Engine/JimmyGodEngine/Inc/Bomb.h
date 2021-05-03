@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Spark.h"
 namespace JimmyGod
 {
 	class Bomb
@@ -10,7 +10,7 @@ namespace JimmyGod
 		void Initialize(const std::filesystem::path& path, float radius);
 		void Terminate();
 		void Update(float deltaTime);
-		void ShowBomb(const JimmyGod::Math::Vector3& pos, const JimmyGod::Math::Vector3& dir,float endTime);
+		void ShowBomb(const JimmyGod::Math::Vector3& pos, const JimmyGod::Math::Vector3& dir,float endTime, float radius, float bounce, float power, float throwDist);
 		void Render(const JimmyGod::Graphics::Camera& camera);
 		void DebugUI(bool debug = false);
 
@@ -37,7 +37,8 @@ namespace JimmyGod
 
 		JimmyGod::Graphics::PixelShader mPixelShader;
 		JimmyGod::Graphics::VertexShader mVertexShader;
-
+		JimmyGod::Spark mSpark;
 		float mTime = 0.0f;
+		float mSec = 0.12f;
 	};
 }

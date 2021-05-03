@@ -107,6 +107,21 @@ float4 PSGaussian(VSOutput input) : SV_Target
     return Color;
 }
 
+float4 PSGreyScale(VSOutput input) : SV_Target
+{
+    float4 color = textureMap.Sample(textureSampler, input.texCoord);
+    color.rgb = (color.r + color.g + color.b) / 3.0f;
+    color.a = 1.0f;
+    return color;
+}
+
+float4 PSNegative(VSOutput input) : SV_Target
+{
+    float4 color = 1.0f - textureMap.Sample(textureSampler, input.texCoord);
+    color.a = 1.0f;
+    return color;
+}
+
 float4 PSNoProcessing(VSOutput input) : SV_Target
 {
 	float4 color = textureMap.Sample(textureSampler, input.texCoord);

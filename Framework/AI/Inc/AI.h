@@ -24,6 +24,7 @@
 #include "AlignmentBehavior.h"
 #include "ArriveBehavior.h"
 #include "CohesionBehavior.h"
+#include "EnforceNonPenetrationConstraint.h"
 #include "EvadeBehavior.h"
 #include "SeekBehavior.h"
 #include "FleeBehavior.h"

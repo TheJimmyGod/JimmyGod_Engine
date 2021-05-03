@@ -4,6 +4,11 @@ using namespace JimmyGod::Input;
 using namespace JimmyGod::Graphics;
 using namespace JimmyGod::Math;
 
+static bool ActiveRadialBlur = false;
+static bool ActiveGaussianBlur = false;
+static bool ActiveGreyscale = false;
+static bool ActiveNegative = false;
+
 void GameState::Initialize()
 {
 	GraphicsSystem::Get()->SetClearColor(Colors::Gray);
@@ -59,7 +64,28 @@ void GameState::Initialize()
 	mSkyDome.Intialize("../../Assets/Textures/Space.jpg", 1000, 12, 360, {0.0f,0.0f,0.0f});
 
 	// Moon
-	mMoon.Initialize("../../Assets/Textures/Moon.jpg", Vector3{ 95.5f,0.0f,0.0f }, 20.0f, 64.0f, 64.0f);
+	mMoon.Initialize("../../Assets/Textures/Moon.jpg", Vector3{ 95.5f,0.0f,0.0f }, 15.0f, 64.0f, 64.0f);
+
+	// Mercury
+	mMercury.Initialize("../../Assets/Textures/Mercury.jpg", Vector3{ 130.0f,0.0f,0.0f }, 24.0f, 64.0f, 64.0f);
+
+	// Venus
+	mVenus.Initialize("../../Assets/Textures/Venus.jpg", Vector3{ 170.0f,0.0f,0.0f }, 28.0f, 64.0f, 64.0f);
+
+	// Mars
+	mMars.Initialize("../../Assets/Textures/Mars.jpg", Vector3{ 200.0f,0.0f,0.0f }, 32.0f, 64.0f, 64.0f);
+
+	// Jupitor
+	mJupiter.Initialize("../../Assets/Textures/Jupiter.jpg", Vector3{ 280.0f,0.0f,0.0f }, 62.0f, 64.0f, 64.0f);
+
+	// Saturn
+	mSaturn.Initialize("../../Assets/Textures/Saturn.jpg", Vector3{ 360.0f,0.0f,0.0f }, 27.0f, 64.0f, 64.0f);
+
+	// Uranos
+	mUranos.Initialize("../../Assets/Textures/Uranos.jpg", Vector3{ 420.0f,0.0f,0.0f }, 25.0f, 64.0f, 64.0f);
+
+	// Neptune
+	mNeptune.Initialize("../../Assets/Textures/Neptune.jpg", Vector3{ 480.0f,0.0f,0.0f }, 23.0f, 64.0f, 64.0f);
 }
 
 void GameState::Terminate()
@@ -87,6 +113,13 @@ void GameState::Terminate()
 	mEarthCould.Terminate();
 	mSkyDome.Terminate();
 	mMoon.Terminate();
+	mMercury.Terminate();
+	mVenus.Terminate();
+	mMars.Terminate();
+	mJupiter.Terminate();
+	mSaturn.Terminate();
+	mUranos.Terminate();
+	mNeptune.Terminate();
 }
 
 void GameState::Update(float deltaTime)
@@ -94,14 +127,18 @@ void GameState::Update(float deltaTime)
 	const float kMoveSpeed = 100.5f;
 	const float kTurnSpeed = 0.5f;
 
+	mAccelation = Vector3::Zero;
+
 	auto inputSystem = InputSystem::Get();
 	if (inputSystem->IsKeyDown(KeyCode::W))
 	{
 		mCamera.Walk(kMoveSpeed*deltaTime);
+		mAccelation += kMoveSpeed;
 	}
 	if (inputSystem->IsKeyDown(KeyCode::S))
 	{
 		mCamera.Walk(-kMoveSpeed * deltaTime);
+		mAccelation -= kMoveSpeed;
 	}
 	if (inputSystem->IsKeyDown(KeyCode::A))
 	{
@@ -113,8 +150,26 @@ void GameState::Update(float deltaTime)
 	}
 	mCloudRotation += 0.0001f;
 
+	mVelocity += mAccelation * deltaTime;
+	auto Speed = Magnitude(mVelocity);
+	if (ActiveRadialBlur)
+	{
+		if (Speed > 30.0f && Speed < 500.0f)
+			mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSRadialBlur");
+		else
+			mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSNoProcessing");
+	}
+
+
 	mSkyDome.Update(mCamera);
 	mMoon.Update(deltaTime);
+	mMercury.Update(deltaTime);
+	mVenus.Update(deltaTime);
+	mMars.Update(deltaTime);
+	mJupiter.Update(deltaTime);
+	mSaturn.Update(deltaTime);
+	mUranos.Update(deltaTime);
+	mNeptune.Update(deltaTime);
 }
 
 void GameState::Render()
@@ -125,6 +180,18 @@ void GameState::Render()
 	mRenderTarget.BindPS(0);
 	PostProcess();
 	mRenderTarget.UnbindPS(0);
+
+	std::string str1 = (ActiveRadialBlur) ? "Active Radial Blur" : "Inactive Radial Blur";
+	SpriteRenderManager::Get()->DrawScreenText(str1.c_str(), 1050.0f, 600.0f, 15.0f, (!ActiveRadialBlur) ? Colors::WhiteSmoke : Colors::Magenta);
+
+	std::string str2 = (ActiveGaussianBlur) ? "Active Gaussian Blur" : "Inactive Gaussian Blur";
+	SpriteRenderManager::Get()->DrawScreenText(str2.c_str(), 1050.0f, 620.0f, 15.0f, (!ActiveGaussianBlur) ? Colors::WhiteSmoke : Colors::Magenta);
+
+	std::string str3 = (ActiveGreyscale) ? "Active Greyscale" : "Inactive Greyscale";
+	SpriteRenderManager::Get()->DrawScreenText(str3.c_str(), 1050.0f, 640.0f, 15.0f, (!ActiveGreyscale) ? Colors::WhiteSmoke : Colors::Magenta);
+
+	std::string str4 = (ActiveNegative) ? "Active Negative" : "Inactive Negative";
+	SpriteRenderManager::Get()->DrawScreenText(str4.c_str(), 1050.0f, 660.0f, 15.0f, (!ActiveNegative) ? Colors::WhiteSmoke : Colors::Magenta);
 }
 
 void GameState::DebugUI()
@@ -159,7 +226,7 @@ void GameState::DebugUI()
 	{
 		static bool specularMap = true;
 		static bool normalMap = true;
-		ImGui::SliderFloat("Displacement", &mSettings.bumpMapWeight, 0.0f, 100.0f);
+		ImGui::SliderFloat("Displacement", &mSettings.bumpMapWeight, 0.2f, 100.0f);
 		if (ImGui::Checkbox("Normal", &normalMap))
 		{
 			mSettings.normalMapWeight = normalMap ? 1.0f : 0.0f;
@@ -169,19 +236,66 @@ void GameState::DebugUI()
 			mSettings.specularWeight = specularMap ? 1.0f : 0.0f;
 		}
 
-		if (ImGui::Button("No Post-Processing"))
-		{
-			mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSNoProcessing");
-		}
 		if (ImGui::Button("Radial Blur"))
 		{
-			mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSRadialBlur");
+			if (ActiveGaussianBlur || ActiveGreyscale || ActiveNegative)
+			{
+				ActiveRadialBlur = false;
+			}
+			else
+			{
+				ActiveRadialBlur = !ActiveRadialBlur;
+				if (!ActiveRadialBlur)
+					mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSNoProcessing");
+			}
+
 		}
 		if (ImGui::Button("Gaussian"))
 		{
-			mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSGaussian");
+			if (ActiveRadialBlur || ActiveGreyscale || ActiveNegative)
+			{
+				ActiveGaussianBlur = false;
+			}
+			else
+			{
+				ActiveGaussianBlur = !ActiveGaussianBlur;
+				if (!ActiveGaussianBlur)
+					mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSNoProcessing");
+				else
+					mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSGaussian");
+			}
 		}
-		//TODO: Make new checkboxs for post-processing
+		if (ImGui::Button("GreyScale"))
+		{
+			if (ActiveRadialBlur || ActiveGaussianBlur || ActiveNegative)
+			{
+				ActiveGreyscale = false;
+			}
+			else
+			{
+				ActiveGreyscale = !ActiveGreyscale;
+				if (!ActiveGreyscale)
+					mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSNoProcessing");
+				else
+					mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSGreyScale");
+			}
+
+		}
+		if (ImGui::Button("Negative"))
+		{
+			if (ActiveRadialBlur || ActiveGreyscale || ActiveGaussianBlur)
+			{
+				ActiveNegative = false;
+			}
+			else
+			{
+				ActiveNegative = !ActiveNegative;
+				if (!ActiveNegative)
+					mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSNoProcessing");
+				else
+					mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSNegative");
+			}
+		}
 	}
 	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
@@ -254,8 +368,14 @@ void GameState::DrawScene()
 	mBlendState.Set();
 	mMeshBuffer.Draw();
 
-	mMoon.Render(mCamera, matWorld);
-
+	mMoon.Render(mCamera, 1.5f, 0.15f, matWorld);
+	mMercury.Render(mCamera, 2.1f, 0.2f, matWorld);
+	mVenus.Render(mCamera, 2.6f, 0.3f, matWorld);
+	mMars.Render(mCamera, 3.1f, 0.4f, matWorld);
+	mJupiter.Render(mCamera, 3.6f, 0.5f, matWorld);
+	mSaturn.Render(mCamera, 4.1f, 0.3f, matWorld);
+	mUranos.Render(mCamera, 4.6f, 0.2f, matWorld);
+	mNeptune.Render(mCamera, 5.1f, 0.2f, matWorld);
 	SimpleDraw::Render(mCamera);
 }
 

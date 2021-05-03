@@ -20,11 +20,11 @@ void GameState::Initialize()
 	mAI_Setting.worldSize.x = static_cast<float>(GS->GetBackBufferWidth());
 	mAI_Setting.worldSize.y = static_cast<float>(GS->GetBackBufferHeight());
 
-	mWorld.AddObstacles({ {300.0f,500.0f},100.0f });
-	mWorld.AddObstacles({ {700.0f,200.0f},120.0f });
+	mWorld.AddObstacles({ {150.0f,150.0f},50.0f });
+	mWorld.AddObstacles({ {300.0f,500.0f},80.0f });
+	mWorld.AddObstacles({ {700.0f,200.0f},50.0f });
 	mWorld.AddObstacles({ {1000.0f,300.0f},80.0f });
-	mWorld.AddWalls(LineSegment{ {200.0f,1000.0f},{900.0f, 200.0f} });
-	mWorld.AddWalls(LineSegment{ {500.0f,700.0f},{100.0f, 20.0f} });
+	mWorld.AddWalls(LineSegment{ {380.0f,500.0f},{700.0f, 240.0f} }, true, -6.95f);
 	mWorld.Initialize(mAI_Setting);
 
 	mPlayer = std::make_unique<Player>(mWorld);
@@ -79,6 +79,7 @@ void GameState::Render()
 	{
 		entity->Render();
 	}
+	mWorld.Render();
 	if(mOrder == Order::None)
 		SpriteRenderManager::Get()->DrawScreenText("Order completed!", 100.0f, 100.0f, 20.0f, JimmyGod::Graphics::Colors::Red);
 }
@@ -257,6 +258,7 @@ void GameState::DebugUI()
 			entity->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActivateDebugUI(mActive);
 			entity->GetSteeringModule()->GetBehavior<HideBehavior>("Hide")->SetActivateDebugUI(mActive);
 			entity->GetSteeringModule()->GetBehavior<WallAvoidBehvior>("Wall")->SetActivateDebugUI(mActive);
+			entity->GetSteeringModule()->GetBehavior<EnforceNonPenetrationConstraint>("Enforce")->SetActivateDebugUI(mActive);
 		}
 		mPlayer->GetSteeringModule()->GetBehavior<SeekBehavior>("Seek")->SetActivateDebugUI(mActive);
 		mPlayer->GetSteeringModule()->GetBehavior<WanderBehavior>("Wander")->SetActivateDebugUI(mActive);
@@ -285,7 +287,6 @@ void GameState::DebugUI()
 			mPlayer->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActive(mPlayerArrive);
 			if (mPlayerArrive)
 			{
-				mPlayer->Reaction();
 				mPlayerSeek = true;
 				mPlayerWander = false;
 				mPlayerFlee = false;
@@ -294,9 +295,7 @@ void GameState::DebugUI()
 				mPlayer->GetSteeringModule()->GetBehavior<FleeBehavior>("Flee")->SetActive(mPlayerFlee);
 			}
 			else
-			{
 				mPlayerSeek = false;
-			}
 		}
 		if (ImGui::IsItemHovered())
 		{
@@ -311,7 +310,6 @@ void GameState::DebugUI()
 			mPlayer->GetSteeringModule()->GetBehavior<FleeBehavior>("Flee")->SetActive(mPlayerFlee);
 			if (mPlayerFlee)
 			{
-				mPlayer->Reaction();
 				mPlayerSeek = false;
 				mPlayerWander = false;
 				mPlayerArrive = false;
@@ -334,7 +332,6 @@ void GameState::DebugUI()
 			mPlayer->GetSteeringModule()->GetBehavior<SeekBehavior>("Seek")->SetActive(mPlayerSeek);
 			if (mPlayerSeek)
 			{
-				mPlayer->Reaction();
 				mPlayerArrive = false;
 				mPlayerWander = false;
 				mPlayerFlee = false;
@@ -351,7 +348,6 @@ void GameState::DebugUI()
 		}
 		if (ImGui::Checkbox("Player Wander", &mPlayerWander))
 		{
-			mPlayer->Reaction();
 			mPlayer->Velocity = Vector2::Zero;
 			mPlayer->MaxSpeed = 300.0f;
 			mPlayer->GetSteeringModule()->GetBehavior<WanderBehavior>("Wander")->SetActive(mPlayerWander);
@@ -372,10 +368,7 @@ void GameState::DebugUI()
 			ImGui::EndTooltip();
 		}
 		if (ImGui::Checkbox("Player Obstacle Avoidance", &mPlayerAvoid))
-		{
-			mPlayer->Reaction();
 			mPlayer->GetSteeringModule()->GetBehavior<AvoidObsBehavior>("Avoid")->SetActive(mPlayerAvoid);
-		}
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
@@ -383,10 +376,7 @@ void GameState::DebugUI()
 			ImGui::EndTooltip();
 		}
 		if (ImGui::Checkbox("Player Wall Avoiance", &mPlayerWallAvoid))
-		{
-			mPlayer->Reaction();
 			mPlayer->GetSteeringModule()->GetBehavior<WallAvoidBehvior>("Wall")->SetActive(mPlayerWallAvoid);
-		}
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
@@ -400,12 +390,12 @@ void GameState::DebugUI()
 	{
 		static bool mEnemyAvoid = false;
 		static bool mEnemyWallAvoid = false;
+		static bool mEnemyOverlap = false;
 		if (ImGui::Checkbox("Enemy Obstacle Avoidance", &mEnemyAvoid))
 		{
 			for (auto& entity : mSolider)
 			{
 				entity->GetSteeringModule()->GetBehavior<AvoidObsBehavior>("Avoid")->SetActive(mEnemyAvoid);
-				entity->Reaction();
 			}
 		}
 		if (ImGui::IsItemHovered())
@@ -419,13 +409,25 @@ void GameState::DebugUI()
 			for (auto& entity : mSolider)
 			{
 				entity->GetSteeringModule()->GetBehavior<WallAvoidBehvior>("Wall")->SetActive(mEnemyWallAvoid);
-				entity->Reaction();
 			}
 		}
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
 			ImGui::SetTooltip("Activate Wall Avoidance to avoid all walls");
+			ImGui::EndTooltip();
+		}
+		if (ImGui::Checkbox("Enemy Zero Overlap", &mEnemyOverlap))
+		{
+			for (auto& entity : mSolider)
+			{
+				entity->GetSteeringModule()->GetBehavior<EnforceNonPenetrationConstraint>("Enforce")->SetActive(mEnemyOverlap);
+			}
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::SetTooltip("Activate Zero Overlap\n*Warning* Group behaviors cannot be worked while using");
 			ImGui::EndTooltip();
 		}
 		if (ImGui::CollapsingHeader("Group Command Option", ImGuiTreeNodeFlags_DefaultOpen))
@@ -526,7 +528,7 @@ void GameState::DebugUI()
 					entity.get()->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActive(true);
 					entity.get()->GetSteeringModule()->GetBehavior<SeparationBehavior>("Separation")->SetActive(true);
 					entity.get()->GetSteeringModule()->GetBehavior<CohesionBehavior>("Cohesion")->SetActive(true);
-					entity->Reaction();
+
 				}
 			}
 			if (ImGui::IsItemHovered())
@@ -610,7 +612,6 @@ void GameState::DebugUI()
 					entity.get()->GetSteeringModule()->GetBehavior<PursuitBehavior>("Pursuit")->SetActive(true);
 					entity.get()->GetSteeringModule()->GetBehavior<SeparationBehavior>("Separation")->SetActive(true);
 					entity.get()->GetSteeringModule()->GetBehavior<AlignmentBehavior>("Alignment")->SetActive(true);
-					entity->Reaction();
 				}
 			}
 			if (ImGui::IsItemHovered())
@@ -636,7 +637,6 @@ void GameState::DebugUI()
 				{
 					entity->GetSteeringModule()->GetBehavior<EvadeBehavior>("Evade")->SetActive(true);
 					entity->GetSteeringModule()->GetBehavior<SeparationBehavior>("Separation")->SetActive(true);
-					entity->Reaction();
 				}
 			}
 			if (ImGui::IsItemHovered())
@@ -665,7 +665,6 @@ void GameState::DebugUI()
 				{
 					entity->GetSteeringModule()->GetBehavior<HideBehavior>("Hide")->SetActive(true);
 					entity->GetSteeringModule()->GetBehavior<AlignmentBehavior>("Alignment")->SetActive(true);
-					entity->Reaction();
 				}
 			}
 			if (ImGui::IsItemHovered())
