@@ -17,7 +17,7 @@ static float BombBounce = 0.7f;
 static float BombRadius = 0.5f;
 
 static float RopeLifeTime = 3.0f;
-static float RopePower = 0.2f;
+static float RopePower = 1.0f;
 static float RopeThrowDist = 4.0f;
 static float RopeBounce = 0.4f;
 static float RopeRadius = 0.1f;
@@ -147,25 +147,25 @@ void GameState::Update(float deltaTime)
 
 	if (mTime < 1.3f)
 	{
+		mAnimator.SetSpeed(1.0f);
 		if (isKicked == true)
 		{
 			mSpark.ShowSpark(position + GetTranslation(mModel.mSkeleton.bones[50]->offsetTransform * mAnimator.GetBoneMatrices()[50]) * 0.04f, velocity,3.0f);
 			isKicked = false;
 		}
-	}
-	if (mTime < 1.1f)
-	{
+
 		if (isThrew == true)
 		{
-			mBomb.ShowBomb(position, velocity, BombLifeTime,BombRadius,BombBounce,BombPower, BombThrowDist);
+			mBomb.ShowBomb(position, velocity, BombLifeTime, BombRadius, BombBounce, BombPower, BombThrowDist);
 			isThrew = false;
 		}
 		if (isRope == true)
 		{
-			mRope.ShowRope(position, velocity, RopeRadius,RopePower,static_cast<uint32_t>(RopeLength),RopeBounce,RopeThrowDist,RopeLifeTime);
+			mRope.ShowRope(position, velocity, RopeRadius, RopePower, static_cast<uint32_t>(RopeLength), RopeBounce, RopeThrowDist, RopeLifeTime);
 			isRope = false;
 		}
 	}
+
 	if (mTime > 0.1f && stopAnimation == false)
 		return;
 
@@ -304,6 +304,7 @@ void GameState::Update(float deltaTime)
 
 		if (inputSystem->IsKeyPressed(KeyCode::X))
 		{
+			
 			if (ActiveBomb)
 			{
 				mBomb.Initialize("../../Assets/Textures/BatTexture.png", BombRadius);
@@ -315,17 +316,18 @@ void GameState::Update(float deltaTime)
 				isRope = true;
 			}
 			mAnimator.SetTime(0.0f);
+			mAnimator.SetSpeed(3.0f);
 			mAnimator.PlayAnimation(4);
 			currentAnimation = 4;
-			mTime = 2.5f;
-			if (mCloak.IsActive())
-				mCloak.SetVelocity(accelation);
+			mTime = 1.75f;
+
 		}
 
 		if (inputSystem->IsKeyPressed(KeyCode::SPACE))
 		{
 			isJump = true;
 			mAnimator.SetTime(0.0f);
+			mAnimator.SetSpeed(1.0f);
 			mAnimator.PlayAnimation(2);
 		}
 		if (inputSystem->IsKeyPressed(KeyCode::C))
@@ -333,10 +335,14 @@ void GameState::Update(float deltaTime)
 			isCloak = !isCloak;
 			mCloak.Active(isCloak);
 			if (mCloak.IsActive())
-				mCloak.ShowCloth(position + GetTranslation(mModel.mSkeleton.bones[127]->offsetTransform * mAnimator.GetBoneMatrices()[127]) * 0.04f);
+				mCloak.ShowCloth(position + GetTranslation(mNeck->offsetTransform * mAnimator.GetBoneMatrices()[mNeck->index]) * 0.04f);
+			else
+				mCloak.Clear();
 		}
 	}
 
+	if (mCloak.IsActive())
+		mCloak.SetVelocity(accelation);
 }
 
 void GameState::Render()

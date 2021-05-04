@@ -41,13 +41,6 @@ void Soldier::Load()
 	spriteInfo.framePerSecond = 64.0f;
 	spriteInfo.looping = true;
 
-	SpriteAnimationInfo spriteInfo_behavior;
-	spriteInfo_behavior.fileName = "Effect.png";
-	spriteInfo_behavior.columns = 5;
-	spriteInfo_behavior.rows = 6;
-	spriteInfo_behavior.frameCount = 30;
-	spriteInfo_behavior.framePerSecond = 30.0f;
-	spriteInfo_behavior.looping = false;
 	mSmoke.Load(spriteInfo);
 
 	mSoldierSprite = TextureManager::Get()->Load("zombie_idle.png");
@@ -95,7 +88,7 @@ void Soldier::Update(float deltaTime)
 
 	mSmoke.Update(deltaTime);
 	mSmoke.SetPosition(Position);
-	if (speed > 150.0f)
+	if (speed > 100.0f)
 	{
 		if (isStarted == false)
 		{

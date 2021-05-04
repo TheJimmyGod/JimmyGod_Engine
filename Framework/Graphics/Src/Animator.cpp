@@ -37,7 +37,8 @@ void Animator::BlendTo(int index, float duration)
 void Animator::Update(float deltaTime)
 {
 	auto& animationClip = mModel->mAnimationSet.clips[mClipIndex];
-	mTimer += deltaTime * animationClip->ticksPerSecond;
+	mClipDuration = animationClip->duration;
+	mTimer += deltaTime * animationClip->ticksPerSecond * mSpeed;
 	if (mTimer > animationClip->duration)
 		mTimer -= animationClip->duration;
 	UpdateBoneRecursive(mModel->mSkeleton.root, mBoneMatrices, *animationClip, mTimer);

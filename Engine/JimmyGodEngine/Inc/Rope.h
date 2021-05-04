@@ -32,9 +32,12 @@ namespace JimmyGod
 		float mRadius = 0.0f;
 
 		JimmyGod::Graphics::MeshPX mMesh;
+
 		JimmyGod::Graphics::MeshBuffer mMeshBuffer;
+
 		JimmyGod::Graphics::Sampler mSampler;
 		JimmyGod::Graphics::Texture mTexture;
+
 		JimmyGod::Graphics::ConstantBuffer mConstantBuffer;
 
 		JimmyGod::Graphics::PixelShader mPixelShader;

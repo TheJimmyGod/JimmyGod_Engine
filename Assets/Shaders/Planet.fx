@@ -64,11 +64,10 @@ struct VSCloudOutput
 	float2 texCoord : TEXCOORD1;
 };
 
-VSOutput VSEarth(VSInput input)
+VSOutput VSPlanet(VSInput input)
 {
 	VSOutput output;
-	float displacement = displacementMap.SampleLevel(textureSampler, input.texCoord, 0).x;
-	float3 localPosition = input.position + (input.normal * displacement * bumpMapWeight);
+	float3 localPosition = input.position + (input.normal * bumpMapWeight /** displacement * bumpMapWeight*/);
 	float3 worldPosition = mul(float4(localPosition, 1.0f), World).xyz;
 	float3 worldNormal = mul(input.normal, (float3x3)World);
 	float3 worldTangent = mul(input.tangent, (float3x3)World);
@@ -86,7 +85,7 @@ VSOutput VSEarth(VSInput input)
 //	Rasterizer
 //		|
 //		V
-float4 PSEarth(VSOutput input) : SV_TARGET
+float4 PSPlanet(VSOutput input) : SV_TARGET
 {
 	// Renormalize normals from vertex shader
 
@@ -98,65 +97,20 @@ float4 PSEarth(VSOutput input) : SV_TARGET
 	float3 dirToView = normalize(input.dirToView);
 
 	float3 normal = worldNormal;
-	if (normalMapWeight != 0.0f)
-	{
-		float3x3 TBNW = { worldTangent, worldBinormal, worldNormal };
-		float4 normalColor = normalMap.Sample(textureSampler, input.texCoord);
-		float3 normalSampled = (normalColor.xyz * 2.0f) - 1.0f;
-		normal = mul(normalSampled, TBNW);
-	}
-
 	float4 ambient = LightAmbient * MaterialAmbient;
 	
 	float diffuseRaw = dot(dirToLight, normal);
 	float diffuseIntensity = saturate(dot(dirToLight, normal)); // Saturate is comparison of size of number
-	float4 diffuse = diffuseIntensity * LightDiffuse * MaterialDiffuse;
+    float4 diffuse = diffuseIntensity * LightDiffuse * MaterialDiffuse;
 
 	float3 halfAngle = normalize(dirToLight + dirToView);
 	float specularBase = saturate(dot(halfAngle, normal));
 	float specularIntensity = pow(specularBase, MaterialPower);
-	float4 specular = specularIntensity * LightSpecular * MaterialSpecular;
+    float4 specular = specularIntensity * LightSpecular * MaterialSpecular;
 
 	float4 textureColor = diffuseMap.Sample(textureSampler, input.texCoord);
 	float specularFactor = specularMap.Sample(textureSampler, input.texCoord).r;
-	float4 nightColor = nightLightMap.Sample(textureSampler, input.texCoord);
 
-	//textureColor = lerp(textureColor, nightColor, dot(LightDirection, worldNormal));
-	float nightIntensity = saturate(-diffuseRaw);
-
-	float nightBlend = (diffuseRaw + 1.0f)/** 0.5f*/;
-
-    float4 color = nightBlend * (ambient + diffuse) * textureColor + (nightIntensity * nightColor) + specular * (specularMapWeight != 0.0f ? specularFactor : 1.0f);
+    float4 color = (ambient + diffuse) * textureColor + specular * 1.0f/** (specularMapWeight != 0.0f ? specularFactor : 1.0f)*/;
     return color;
-}
-
-VSCloudOutput VSCloud(VSInput input)
-{
-	VSCloudOutput output;
-	float3 localPosition = input.position + (input.normal * (0.025f + bumpMapWeight));
-	float3 worldNormal = mul(input.normal, (float3x3)World);
-
-	output.worldNormal = worldNormal;
-
-	output.position = mul(float4(localPosition, 1.0f), WVP);
-	output.dirToLight = -LightDirection;
-	output.texCoord = input.texCoord;
-	return output;
-}
-//		|
-//		V
-//	Rasterizer
-//		|
-//		V
-float4 PSCloud(VSCloudOutput input) : SV_TARGET
-{
-	float3 worldNormal = normalize(input.worldNormal);
-	float3 dirToLight = normalize(input.dirToLight);
-
-	float diffuseRaw = dot(dirToLight, worldNormal);
-	float diffuseIntensity = saturate(dot(dirToLight, worldNormal));
-	float4 diffuse = diffuseIntensity * LightDiffuse * MaterialDiffuse;
-
-	float4 textureColor = cloudMap.Sample(textureSampler, input.texCoord);
-	return textureColor * diffuse;
 }

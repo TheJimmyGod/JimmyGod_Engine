@@ -12,14 +12,14 @@ void Planet::Initialize(const std::filesystem::path & path, const Math::Vector3 
 	mMesh = MeshBuilder::CreateSphere(radius, rings, slices, false);
 	mMeshBuffer.Initialize(mMesh);
 	mTransformBuffer.Initialize();
-	mSettings.bumpMapWeight = { 0.2f };
+	mSettings.bumpMapWeight = { 0.25f };
 	mSettingsBuffer.Initialize();
 
 	mConstantBuffer.Initialize(sizeof(Matrix4));
 	mSampler.Initialize(Sampler::Filter::Point, Sampler::AddressMode::Clamp);
 
-	mVertexShader.Initialize("../../Assets/Shaders/Earth.fx", "VSEarth", Vertex::Format);
-	mPixelShader.Initialize("../../Assets/Shaders/Earth.fx", "PSEarth");
+	mVertexShader.Initialize("../../Assets/Shaders/Planet.fx", "VSPlanet", Vertex::Format);
+	mPixelShader.Initialize("../../Assets/Shaders/Planet.fx", "PSPlanet");
 }
 
 void Planet::Terminate()

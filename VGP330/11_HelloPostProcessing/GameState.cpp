@@ -13,7 +13,7 @@ void GameState::Initialize()
 {
 	GraphicsSystem::Get()->SetClearColor(Colors::Gray);
 
-	mCamera.SetPosition({ 0.0f,0.0f,-100.0f });
+	mCamera.SetPosition({ 0.0f,0.0f,-200.0f });
 	mCamera.SetDirection({ 0.0f,0.0f,1.0f });
 	mMesh = MeshBuilder::CreateSphere(50.0f,64,64);
 	mMeshBuffer.Initialize(mMesh);
@@ -62,30 +62,22 @@ void GameState::Initialize()
 
 	// Space
 	mSkyDome.Intialize("../../Assets/Textures/Space.jpg", 1000, 12, 360, {0.0f,0.0f,0.0f});
-
 	// Moon
-	mMoon.Initialize("../../Assets/Textures/Moon.jpg", Vector3{ 95.5f,0.0f,0.0f }, 15.0f, 64.0f, 64.0f);
-
+	mMoon.Initialize("../../Assets/Textures/Moon.jpg", Vector3{ 95.5f,0.0f,0.0f }, 15.0f, 12.0f, 36.0f);
 	// Mercury
-	mMercury.Initialize("../../Assets/Textures/Mercury.jpg", Vector3{ 130.0f,0.0f,0.0f }, 24.0f, 64.0f, 64.0f);
-
+	mMercury.Initialize("../../Assets/Textures/Mercury.jpg", Vector3{ 130.0f,0.0f,0.0f }, 24.0f, 12.0f, 36.0f);
 	// Venus
-	mVenus.Initialize("../../Assets/Textures/Venus.jpg", Vector3{ 170.0f,0.0f,0.0f }, 28.0f, 64.0f, 64.0f);
-
+	mVenus.Initialize("../../Assets/Textures/Venus.jpg", Vector3{ 170.0f,0.0f,0.0f }, 28.0f, 12.0f, 36.0f);
 	// Mars
-	mMars.Initialize("../../Assets/Textures/Mars.jpg", Vector3{ 200.0f,0.0f,0.0f }, 32.0f, 64.0f, 64.0f);
-
+	mMars.Initialize("../../Assets/Textures/Mars.jpg", Vector3{ 200.0f,0.0f,0.0f }, 32.0f, 12.0f, 36.0f);
 	// Jupitor
-	mJupiter.Initialize("../../Assets/Textures/Jupiter.jpg", Vector3{ 280.0f,0.0f,0.0f }, 62.0f, 64.0f, 64.0f);
-
+	mJupiter.Initialize("../../Assets/Textures/Jupiter.jpg", Vector3{ 280.0f,0.0f,0.0f }, 62.0f, 12.0f, 36.0f);
 	// Saturn
-	mSaturn.Initialize("../../Assets/Textures/Saturn.jpg", Vector3{ 360.0f,0.0f,0.0f }, 27.0f, 64.0f, 64.0f);
-
+	mSaturn.Initialize("../../Assets/Textures/Saturn.jpg", Vector3{ 360.0f,0.0f,0.0f }, 27.0f, 12.0f, 36.0f);
 	// Uranos
-	mUranos.Initialize("../../Assets/Textures/Uranos.jpg", Vector3{ 420.0f,0.0f,0.0f }, 25.0f, 64.0f, 64.0f);
-
+	mUranos.Initialize("../../Assets/Textures/Uranos.jpg", Vector3{ 420.0f,0.0f,0.0f }, 25.0f, 12.0f, 36.0f);
 	// Neptune
-	mNeptune.Initialize("../../Assets/Textures/Neptune.jpg", Vector3{ 480.0f,0.0f,0.0f }, 23.0f, 64.0f, 64.0f);
+	mNeptune.Initialize("../../Assets/Textures/Neptune.jpg", Vector3{ 480.0f,0.0f,0.0f }, 23.0f, 12.0f, 36.0f);
 }
 
 void GameState::Terminate()
@@ -141,13 +133,9 @@ void GameState::Update(float deltaTime)
 		mAccelation -= kMoveSpeed;
 	}
 	if (inputSystem->IsKeyDown(KeyCode::A))
-	{
 		mCamera.Strafe(-kMoveSpeed * deltaTime);
-	}
 	if (inputSystem->IsKeyDown(KeyCode::D))
-	{
 		mCamera.Strafe(kMoveSpeed * deltaTime);
-	}
 	mCloudRotation += 0.0001f;
 
 	mVelocity += mAccelation * deltaTime;
@@ -159,7 +147,6 @@ void GameState::Update(float deltaTime)
 		else
 			mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSNoProcessing");
 	}
-
 
 	mSkyDome.Update(mCamera);
 	mMoon.Update(deltaTime);
@@ -239,9 +226,7 @@ void GameState::DebugUI()
 		if (ImGui::Button("Radial Blur"))
 		{
 			if (ActiveGaussianBlur || ActiveGreyscale || ActiveNegative)
-			{
 				ActiveRadialBlur = false;
-			}
 			else
 			{
 				ActiveRadialBlur = !ActiveRadialBlur;
@@ -253,9 +238,7 @@ void GameState::DebugUI()
 		if (ImGui::Button("Gaussian"))
 		{
 			if (ActiveRadialBlur || ActiveGreyscale || ActiveNegative)
-			{
 				ActiveGaussianBlur = false;
-			}
 			else
 			{
 				ActiveGaussianBlur = !ActiveGaussianBlur;
@@ -268,9 +251,7 @@ void GameState::DebugUI()
 		if (ImGui::Button("GreyScale"))
 		{
 			if (ActiveRadialBlur || ActiveGaussianBlur || ActiveNegative)
-			{
 				ActiveGreyscale = false;
-			}
 			else
 			{
 				ActiveGreyscale = !ActiveGreyscale;
@@ -284,9 +265,7 @@ void GameState::DebugUI()
 		if (ImGui::Button("Negative"))
 		{
 			if (ActiveRadialBlur || ActiveGreyscale || ActiveGaussianBlur)
-			{
 				ActiveNegative = false;
-			}
 			else
 			{
 				ActiveNegative = !ActiveNegative;
@@ -323,7 +302,6 @@ void GameState::DrawScene()
 	mTransformBuffer.BindVS(0);
 	mTransformBuffer.BindPS(0);
 
-
 	mLightBuffer.Update(&mDirectionalLight);
 	mLightBuffer.BindVS(1);
 	mLightBuffer.BindPS(1);
@@ -346,9 +324,7 @@ void GameState::DrawScene()
 	mNightMap.BindPS(4);
 
 	BlendState::ClearState();
-
 	mMeshBuffer.Draw();
-
 	// --- Cloud
 	matRot = Matrix4::RotationX(mRotation.x) * Matrix4::RotationY(mRotation.y + mCloudRotation);
 	matWorld = matRot * matTrans;
@@ -383,7 +359,6 @@ void GameState::PostProcess()
 {
 	mPostProcessingVertexShader.Bind();
 	mPostProcessingPixelShader.Bind();
-
 	mSampler.BindPS();
 	mScreenQuadBuffer.Draw();
 }

@@ -13,6 +13,7 @@ namespace JimmyGod
 	void ShowCloth(const JimmyGod::Math::Vector3& pos);
 	void Render(const JimmyGod::Graphics::Camera& camera, int direction);
 	void DebugUI(bool debug = false);
+	void Clear() { mPhysicsWorld.Clear(true); }
 	void SetVelocity(const JimmyGod::Math::Vector3& vel);
 	void SetPosition(const JimmyGod::Math::Vector3& neck, const JimmyGod::Math::Vector3 & left, const JimmyGod::Math::Vector3 & right);
 

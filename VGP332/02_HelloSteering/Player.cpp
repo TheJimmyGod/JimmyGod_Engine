@@ -29,14 +29,6 @@ void Player::Load()
 	spriteInfo.looping = true;
 	mSmoke.Load(spriteInfo);
 
-	SpriteAnimationInfo spriteInfo_behavior;
-	spriteInfo_behavior.fileName = "Effect.png";
-	spriteInfo_behavior.columns = 5;
-	spriteInfo_behavior.rows = 6;
-	spriteInfo_behavior.frameCount = 30;
-	spriteInfo_behavior.framePerSecond = 30.0f;
-	spriteInfo_behavior.looping = false;
-
 	mSteeringModule->AddBehavior<WanderBehavior>("Wander")->SetActive(false);
 	mSteeringModule->AddBehavior<SeekBehavior>("Seek")->SetActive(false);
 	mSteeringModule->AddBehavior<FleeBehavior>("Flee")->SetActive(false);
@@ -70,13 +62,12 @@ void Player::Update(float deltaTime)
 
 	auto speed = Magnitude(Velocity);
 	if (speed > MaxSpeed)
-	{
 		Velocity = Velocity / speed * MaxSpeed;
-	}
+
 	mSmoke.Update(deltaTime);
 	mSmoke.SetPosition(Position);
 
-	if (speed > 150.0f)
+	if (speed > 100.0f)
 	{
 		if (isStarted == false)
 		{
@@ -105,10 +96,6 @@ void Player::Update(float deltaTime)
 		Position.y = (static_cast<float>(GS->GetBackBufferHeight()));
 	else if (Position.y > (static_cast<float>(GS->GetBackBufferHeight())))
 		Position.y = 0.0f;
-	float val = Distance(Position, Destination);
-	std::string str = std::to_string(val);
-	const char* text = str.c_str();
-	SpriteRenderManager::Get()->DrawScreenText(text, Position.x + 11.2f, Position.y - 13.6f, 12.5f, JimmyGod::Graphics::Colors::White);
 }
 
 void Player::Render()

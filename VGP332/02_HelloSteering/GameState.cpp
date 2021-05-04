@@ -117,6 +117,14 @@ void GameState::Processing(float deltaTime)
 				if (Distance(mSolider[mGeneral]->Position, nearest) < 20.0f)
 				{
 					ClearSingleEntity(entity.get());
+					for (auto& e : mSolider)
+					{
+						if (e == mSolider[mGeneral])
+							continue;
+						e.get()->GetSteeringModule()->GetBehavior<PursuitBehavior>("Pursuit")->SetActive(true);
+						e.get()->GetSteeringModule()->GetBehavior<SeparationBehavior>("Separation")->SetActive(true);
+						e.get()->GetSteeringModule()->GetBehavior<AlignmentBehavior>("Alignment")->SetActive(true);
+					}
 					isArrived = true;
 				}
 			}
@@ -125,7 +133,6 @@ void GameState::Processing(float deltaTime)
 				if (isArrived)
 				{
 					float distance = Distance(entity->Position, entity->threat->Position);
-					entity->MaxSpeed = 200.0f;
 					if (Distance(entity->Position, entity->threat->Position) < 75.0f)
 						ClearSingleEntity(entity.get());
 				}
@@ -267,6 +274,30 @@ void GameState::DebugUI()
 		mPlayer->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActivateDebugUI(mActive);
 		mPlayer->GetSteeringModule()->GetBehavior<WallAvoidBehvior>("Wall")->SetActivateDebugUI(mActive);
 	}
+	ImGui::Separator();
+	ImGui::TextColored(ImVec4(0.0f, 0.0f, 1.0f, 1.0f), "Player");
+	static float playerSpeed = 200.0f;
+	static float playerRadius = 32.0f;
+	static float playerMass = 1.0f;
+	ImGui::DragFloat("Speed##Player", &mPlayer->MaxSpeed, 1.0f, 100.0f, 500.0f);
+	ImGui::DragFloat("Radius##Player", &mPlayer->Radius, 1.0f, 18.0f, 64.0f);
+	ImGui::DragFloat("Mass##Player", &mPlayer->Mass, 1.0f, 1.0f, 10.0f);
+
+	ImGui::Separator();
+	ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Enemy");
+	static float enemySpeed = 200.0f;
+	static float enemyRadius = 32.0f;
+	static float enemyMass = 1.0f;
+	ImGui::DragFloat("Speed##Enemy", &enemySpeed, 1.0f, 100.0f, 500.0f);
+	ImGui::DragFloat("Radius##Enemy", &enemyRadius, 1.0f, 18.0f, 64.0f);
+	ImGui::DragFloat("Mass##Enemy", &enemyMass, 1.0f, 1.0f, 10.0f);
+	for (auto& entity : mSolider)
+	{
+		entity->MaxSpeed = enemySpeed;
+		entity->Radius = enemyRadius;
+		entity->Mass = enemyMass;
+	}
+	ImGui::Separator();
 	if (ImGui::CollapsingHeader("Player Option", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 
@@ -277,13 +308,12 @@ void GameState::DebugUI()
 		static bool mPlayerWander = false;
 		static bool mPlayerWallAvoid = false;
 
-		if (!mPlayerSeek && !mPlayerWander)
+		if (!mPlayerSeek && !mPlayerWander && !mPlayerArrive && !mPlayerFlee && !mPlayerWallAvoid && !mPlayerAvoid)
 			mPlayer->Velocity = Vector2::Zero;
 
 		if (ImGui::Checkbox("Player Arrive", &mPlayerArrive))
 		{
 			mPlayer->Velocity = Vector2::Zero;
-			mPlayer->MaxSpeed = 300.0f;
 			mPlayer->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActive(mPlayerArrive);
 			if (mPlayerArrive)
 			{
@@ -306,7 +336,6 @@ void GameState::DebugUI()
 		if (ImGui::Checkbox("Player Flee", &mPlayerFlee))
 		{
 			mPlayer->Velocity = Vector2::Zero;
-			mPlayer->MaxSpeed = 1000.0f;
 			mPlayer->GetSteeringModule()->GetBehavior<FleeBehavior>("Flee")->SetActive(mPlayerFlee);
 			if (mPlayerFlee)
 			{
@@ -328,7 +357,6 @@ void GameState::DebugUI()
 		if (ImGui::Checkbox("Player Seek", &mPlayerSeek))
 		{
 			mPlayer->Velocity = Vector2::Zero;
-			mPlayer->MaxSpeed = 300.0f;
 			mPlayer->GetSteeringModule()->GetBehavior<SeekBehavior>("Seek")->SetActive(mPlayerSeek);
 			if (mPlayerSeek)
 			{
@@ -349,7 +377,6 @@ void GameState::DebugUI()
 		if (ImGui::Checkbox("Player Wander", &mPlayerWander))
 		{
 			mPlayer->Velocity = Vector2::Zero;
-			mPlayer->MaxSpeed = 300.0f;
 			mPlayer->GetSteeringModule()->GetBehavior<WanderBehavior>("Wander")->SetActive(mPlayerWander);
 			if (mPlayerWander)
 			{
@@ -384,7 +411,7 @@ void GameState::DebugUI()
 			ImGui::EndTooltip();
 		}
 	}
-	ImGui::NewLine();
+	ImGui::Separator();
 
 	if (ImGui::CollapsingHeader("Enemy Command Option", ImGuiTreeNodeFlags_DefaultOpen))
 	{
@@ -437,10 +464,8 @@ void GameState::DebugUI()
 				Clear();
 				mOrder = Order::Gathering;
 				for (auto& entity : mSolider)
-				{
-					entity.get()->MaxSpeed = 200.0f;
 					entity.get()->SetOrder(true);
-				}
+
 				previous = Vector2::Zero;
 				nearest = Vector2::Zero;
 				float lastDistance = 0.0f;
@@ -468,9 +493,7 @@ void GameState::DebugUI()
 							nearest = entity.get()->Position;
 						}
 						else
-						{
 							previous = entity.get()->Position;
-						}
 					}
 				}
 
@@ -542,14 +565,10 @@ void GameState::DebugUI()
 				Clear();
 				mOrder = Order::Moving;
 				for (auto& entity : mSolider)
-				{
-					entity->MaxSpeed = 50.0f;
 					entity.get()->SetOrder(true);
-				}
 
 				size_t size = mSolider.size();
 				mGeneral = static_cast<size_t>(RandomInt(0, size - 1));
-				mSolider[mGeneral]->MaxSpeed = 500.0f;
 				for (auto& entity : mSolider)
 					entity->threat = mSolider[mGeneral].get();
 
@@ -578,13 +597,9 @@ void GameState::DebugUI()
 							isCloseAtObstacles = true;
 					}
 					if (isCloseAtObstacles)
-					{
 						continue;
-					}
 					if (Distance(nearest, previous) > 350.0f)
-					{
 						isCheck = true;
-					}
 				}
 
 				if (nearest.x < 100.0f)
@@ -608,10 +623,6 @@ void GameState::DebugUI()
 					if (entity == mSolider[mGeneral])
 						continue;
 					entity.get()->Destination = entity->threat->Destination;
-					entity.get()->MaxSpeed = 1.0f;
-					entity.get()->GetSteeringModule()->GetBehavior<PursuitBehavior>("Pursuit")->SetActive(true);
-					entity.get()->GetSteeringModule()->GetBehavior<SeparationBehavior>("Separation")->SetActive(true);
-					entity.get()->GetSteeringModule()->GetBehavior<AlignmentBehavior>("Alignment")->SetActive(true);
 				}
 			}
 			if (ImGui::IsItemHovered())
@@ -626,7 +637,6 @@ void GameState::DebugUI()
 				mOrder = Order::Wandering;
 				for (auto& entity : mSolider)
 				{
-					entity.get()->MaxSpeed = 50.0f;
 					entity.get()->SetOrder(true);
 					entity.get()->threat = mPlayer.get();
 				}
@@ -652,7 +662,6 @@ void GameState::DebugUI()
 				mOrder = Order::Ambush;
 				for (auto& entity : mSolider)
 				{
-					entity.get()->MaxSpeed = 200.0f;
 					entity.get()->SetOrder(true);
 					entity.get()->threat = mPlayer.get();
 				}

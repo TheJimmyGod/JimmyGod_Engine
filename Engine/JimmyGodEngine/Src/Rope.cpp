@@ -19,7 +19,6 @@ void JimmyGod::Rope::Initialize(const std::filesystem::path & path, float radius
 	mRadius = radius;
 	mLength = length;
 	mMesh = JimmyGod::Graphics::MeshBuilder::CreateSpherePX(mRadius);
-
 	mMeshBuffer.Initialize(mMesh, true);
 	std::filesystem::path texturePath = L"../../Assets/Shaders/DoTexturing.fx";
 	mVertexShader.Initialize(texturePath, JimmyGod::Graphics::VertexPX::Format);
@@ -40,6 +39,7 @@ void JimmyGod::Rope::Terminate()
 	mVertexShader.Terminate();
 	mMeshBuffer.Terminate();
 	mPhysicsWorld.Clear();
+
 	mFixed = nullptr;
 	delete mFixed;
 }
@@ -50,13 +50,17 @@ void JimmyGod::Rope::Update(float deltaTime, const Vector3& pos)
 	mPhysicsWorld.Update(deltaTime);
 	if (mTime > 0.0f)
 	{
-		if (mTime > 0.75f)
+		for (size_t i = 0; i < mParticles.size(); i++)
 		{
-			for (auto& p : mParticles)
-				p->SetVelocity(mVelocity * 1.5f);
-			mFixed->SetPosition(pos);
-			mParticles[0]->SetPosition(pos);
+			if (i == 0)
+			{
+				mFixed->SetPosition(pos);
+				mParticles[0]->SetPosition(pos);
+				continue;
+			}
+			mParticles[i]->SetVelocity(mVelocity * 1.5f);
 		}
+
 		mTime -= deltaTime;
 	}
 	else
@@ -113,9 +117,7 @@ void JimmyGod::Rope::ShowRope(const JimmyGod::Math::Vector3 & pos, const JimmyGo
 	for (size_t i = 0; i < mParticles.size(); ++i)
 	{
 		if (i != 0)
-		{
 			mPhysicsWorld.AddConstraint(new Spring(mParticles[i], mParticles[i - 1]));
-		}
 		else
 		{
 			auto f = new Fixed(mParticles[i]);
@@ -159,7 +161,5 @@ void JimmyGod::Rope::DebugUI(bool debug)
 	IsDebugUI = debug;
 
 	if (IsDebugUI == true)
-	{
 		mPhysicsWorld.DebugDraw();
-	}
 }
