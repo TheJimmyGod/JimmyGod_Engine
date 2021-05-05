@@ -11,7 +11,7 @@ namespace JimmyGod
 	void Terminate();
 	void Update(float deltaTime, int dir, bool isCloak = false);
 	void ShowCloth(const JimmyGod::Math::Vector3& pos);
-	void Render(const JimmyGod::Graphics::Camera& camera, int direction);
+	void Render(const JimmyGod::Graphics::Camera& camera);
 	void DebugUI(bool debug = false);
 	void Clear() { mPhysicsWorld.Clear(true); }
 	void SetVelocity(const JimmyGod::Math::Vector3& vel);

@@ -8,7 +8,6 @@ namespace JimmyGod::Graphics
 	public:
 		void Initialize(const Model& model);
 		void Terminate();
-
 		void ComputeBindPose();
 		void PlayAnimation(int index);
 		void BlendTo(int index, float duration);

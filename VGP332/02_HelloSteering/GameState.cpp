@@ -72,6 +72,7 @@ void GameState::Update(float deltaTime)
 void GameState::Render()
 {
 	mTilemap.Render();
+	mWorld.Render();
 	mWorld.DebugDraw();
 	mPlayer.get()->Render();
 
@@ -79,7 +80,6 @@ void GameState::Render()
 	{
 		entity->Render();
 	}
-	mWorld.Render();
 	if(mOrder == Order::None)
 		SpriteRenderManager::Get()->DrawScreenText("Order completed!", 100.0f, 100.0f, 20.0f, JimmyGod::Graphics::Colors::Red);
 }

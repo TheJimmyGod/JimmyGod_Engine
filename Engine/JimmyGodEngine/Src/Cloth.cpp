@@ -199,7 +199,7 @@ void Cloth::ShowCloth(const JimmyGod::Math::Vector3 & pos)
 	}
 }
 
-void Cloth::Render(const JimmyGod::Graphics::Camera & camera, int direction)
+void Cloth::Render(const JimmyGod::Graphics::Camera & camera)
 {
 	if (!IsDisplay) return;
 

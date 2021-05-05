@@ -4,7 +4,7 @@
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
 	JimmyGod::MainApp().AddState<GameState>("GameState");
-	JimmyGod::MainApp().Run({ "Hello SkeletonAnimation, JimmyGod",1280,720 });
+	JimmyGod::MainApp().Run({ "Hello Batman Simulator, JimmyGod",1280,720 });
 	return 0;
 }
 

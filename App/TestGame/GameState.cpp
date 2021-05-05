@@ -388,7 +388,7 @@ void GameState::Render()
 		for (auto& b : mModel.mSkeleton.bones)
 			DrawSkeleton(b.get(), mAnimator.GetBoneMatrices(), mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition(), 0.04f,rotation);
 	mBoneTransformBuffer.Update(&boneTransformData);
-	mCloak.Render(mCamera->GetActiveCamera(), static_cast<int>(mDirection));
+	mCloak.Render(mCamera->GetActiveCamera());
 	mSpark.Render(mCamera->GetActiveCamera());
 	mRope.Render(mCamera->GetActiveCamera());
 	mBomb.Render(mCamera->GetActiveCamera());

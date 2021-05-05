@@ -73,8 +73,8 @@ void GameState::Update(float deltaTime)
 	mPhysicsWorld.Update(deltaTime);
 	mTime += deltaTime;
 	
-	mCloth.Update(deltaTime);
-	mCloth2.Update(deltaTime);
+	mCloth.Update(deltaTime, 0, false);
+	mCloth2.Update(deltaTime, 0, false);
 }
 
 void GameState::Render()
