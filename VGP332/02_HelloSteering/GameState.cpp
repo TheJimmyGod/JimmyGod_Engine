@@ -415,8 +415,8 @@ void GameState::DebugUI()
 
 	if (ImGui::CollapsingHeader("Enemy Command Option", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		static bool mEnemyAvoid = false;
-		static bool mEnemyWallAvoid = false;
+		static bool mEnemyAvoid = true;
+		static bool mEnemyWallAvoid = true;
 		static bool mEnemyOverlap = false;
 		if (ImGui::Checkbox("Enemy Obstacle Avoidance", &mEnemyAvoid))
 		{

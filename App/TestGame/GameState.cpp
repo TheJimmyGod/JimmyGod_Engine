@@ -249,7 +249,6 @@ void GameState::Update(float deltaTime)
 	if (IsZero(accelation) == false)
 	{
 		velocity = accelation * deltaTime;
-
 	}
 	else
 	{
@@ -341,8 +340,8 @@ void GameState::Update(float deltaTime)
 		}
 	}
 
-	if (mCloak.IsActive())
-		mCloak.SetVelocity(accelation);
+	//if (mCloak.IsActive())
+	//	mCloak.SetVelocity(accelation);
 }
 
 void GameState::Render()
@@ -370,7 +369,6 @@ void GameState::Render()
 	mSettingsBuffer.BindPS(3);
 
 	mBoneTransformBuffer.BindVS(5);
-
 	auto matWorld = Matrix4::Scaling(0.04f) * rotation * Matrix4::Translation(mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition());
 
 	TransformData transformData;

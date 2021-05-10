@@ -233,7 +233,7 @@ void Cloth::SetVelocity(const Vector3 & vel)
 {
 	mVelocity = vel;
 	for (auto& p : mParticles)
-		p->SetVelocity(vel);
+		p->SetVelocity(mVelocity);
 }
 
 void Cloth::SetPosition(const JimmyGod::Math::Vector3& neck,const JimmyGod::Math::Vector3 & left, const JimmyGod::Math::Vector3 & right)
