@@ -63,7 +63,7 @@ void GameState::Initialize()
 	// Space
 	mSkyDome.Intialize("../../Assets/Textures/Space.jpg", 1000, 12, 360, {0.0f,0.0f,0.0f});
 	// Moon
-	mMoon.Initialize("../../Assets/Textures/Moon.jpg", Vector3{ 95.5f,0.0f,0.0f }, 15.0f, 12.0f, 36.0f);
+	mMoon.Initialize("../../Assets/Textures/Moon.jpg", Vector3{ 75.5f,0.0f,0.0f }, 15.0f, 12.0f, 36.0f);
 	// Mercury
 	mMercury.Initialize("../../Assets/Textures/Mercury.jpg", Vector3{ 130.0f,0.0f,0.0f }, 24.0f, 12.0f, 36.0f);
 	// Venus
@@ -138,15 +138,15 @@ void GameState::Update(float deltaTime)
 		mCamera.Strafe(kMoveSpeed * deltaTime);
 	mCloudRotation += 0.0001f;
 
-	mVelocity += mAccelation * deltaTime;
-	auto Speed = Magnitude(mVelocity);
-	if (ActiveRadialBlur)
-	{
-		if (Speed > 30.0f && Speed < 500.0f)
-			mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSRadialBlur");
-		else
-			mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSNoProcessing");
-	}
+	//mVelocity += mAccelation * deltaTime;
+	//auto Speed = Magnitude(mVelocity);
+	//if (ActiveRadialBlur)
+	//{
+	//	if (Speed > 30.0f && Speed < 500.0f)
+	//		mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSRadialBlur");
+	//	else
+	//		mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSNoProcessing");
+	//}
 
 	mSkyDome.Update(mCamera);
 	mMoon.Update(deltaTime);
@@ -232,6 +232,8 @@ void GameState::DebugUI()
 				ActiveRadialBlur = !ActiveRadialBlur;
 				if (!ActiveRadialBlur)
 					mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSNoProcessing");
+				else
+					mPostProcessingPixelShader.Initialize("../../Assets/Shaders/PostProcess.fx", "PSRadialBlur");
 			}
 
 		}
@@ -346,8 +348,8 @@ void GameState::DrawScene()
 
 	mMoon.Render(mCamera, 1.5f, 0.15f, matWorld);
 	mMercury.Render(mCamera, 2.1f, 0.2f, matWorld);
-	mVenus.Render(mCamera, 2.6f, 0.3f, matWorld);
-	mMars.Render(mCamera, 3.1f, 0.4f, matWorld);
+	mVenus.Render(mCamera, 2.6f, 0.25f, matWorld);
+	mMars.Render(mCamera, 3.1f, 0.3f, matWorld);
 	mJupiter.Render(mCamera, 3.6f, 0.5f, matWorld);
 	mSaturn.Render(mCamera, 4.1f, 0.3f, matWorld);
 	mUranos.Render(mCamera, 4.6f, 0.2f, matWorld);
