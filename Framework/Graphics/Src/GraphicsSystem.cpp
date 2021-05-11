@@ -10,7 +10,7 @@ namespace
 	Core::WindowMessageHandler sWindowMessageHandler;
 }
 
-LRESULT CALLBACK Graphics::GraphicsSystemMessageHandler(HWND window, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK GraphicsSystem::GraphicsSystemMessageHandler(HWND window, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (sGraphicsSystem)
 	{

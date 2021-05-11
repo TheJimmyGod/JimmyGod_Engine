@@ -36,7 +36,7 @@ namespace
 	}
 }
 
-LRESULT CALLBACK Input::InputSystemMessageHandler(HWND window, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK InputSystem::InputSystemMessageHandler(HWND window, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (sInputSystem)
 	{
