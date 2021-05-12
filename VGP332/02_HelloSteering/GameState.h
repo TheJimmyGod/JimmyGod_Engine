@@ -52,7 +52,7 @@ private:
 	float mTimer = 0.0f;
 	float mHideTimer = 0.0f;
 	float mOffset = 64.0f;
-	size_t mNumberOfArrive = 0;
+
 	size_t mGeneral = 0;
 	
 };

@@ -137,13 +137,16 @@ void GameState::Update(float deltaTime)
 	position = mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition();
 
 
-	mLeftShoulder = FindBone(mModel.mSkeleton, "mixamorig1:LeftShoulder");
-	mRightShoulder = FindBone(mModel.mSkeleton, "mixamorig1:RightShoulder");
-	mNeck = FindBone(mModel.mSkeleton, "mixamorig1:Spine");
+	mLeftShoulder = FindBone(mModel.mSkeleton, "mixamorig1:LeftArm_$AssimpFbx$_Translation");
+	mRightShoulder = FindBone(mModel.mSkeleton, "mixamorig1:RightArm_$AssimpFbx$_Translation");
+	mNeck = FindBone(mModel.mSkeleton, "mixamorig1:Neck");
 	if (mCloak.IsActive())
-		mCloak.SetPosition(position + GetTranslation(mNeck->offsetTransform * mAnimator.GetBoneMatrices()[mNeck->index]) * 0.04f,
-			position + GetTranslation(mLeftShoulder->offsetTransform * mAnimator.GetBoneMatrices()[mLeftShoulder->index]) * 0.04f,
-			position + GetTranslation(mRightShoulder->offsetTransform * mAnimator.GetBoneMatrices()[mRightShoulder->index]) * 0.04f);
+	{
+		mCloak.SetPosition(
+			position + Vector3{0.0f, 0.2f, 0.0f} + GetTranslation(mAnimator.GetBoneMatrices()[mNeck->index] * rotation) * 0.04f,
+			position + Vector3{0.0f, 0.2f, 0.0f} + GetTranslation(mAnimator.GetBoneMatrices()[mLeftShoulder->index] * rotation) * 0.04f,
+			position + Vector3{0.0f, 0.2f, 0.0f} + GetTranslation(mAnimator.GetBoneMatrices()[mRightShoulder->index] * rotation) * 0.04f);
+	}
 
 	if (mTime < 1.3f)
 	{
@@ -383,8 +386,8 @@ void GameState::Render()
 	if (!showSkeleton)
 		mModel.Render();
 	else
-		for (auto& b : mModel.mSkeleton.bones)
-			DrawSkeleton(b.get(), mAnimator.GetBoneMatrices(), mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition(), 0.04f,rotation);
+		DrawSkeleton(mModel.mSkeleton.root, mAnimator.GetBoneMatrices(), mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition(), 0.04f,rotation);
+
 	mBoneTransformBuffer.Update(&boneTransformData);
 	mCloak.Render(mCamera->GetActiveCamera());
 	mSpark.Render(mCamera->GetActiveCamera());

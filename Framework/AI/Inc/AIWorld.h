@@ -28,6 +28,8 @@ namespace JimmyGod::AI
 		void RegisterEntity(Entity* entity);
 		void UnregisterEntity(Entity* entity);
 
+		void Clear();
+
 		uint32_t GetNextId() 
 		{
 			ASSERT(mNextId < UINT32_MAX, "Run out of ids");
@@ -40,7 +42,7 @@ namespace JimmyGod::AI
 		EntityList GetEntities(const JimmyGod::Math::Circle& range, int typeId);
 		AgentList GetNeighborhood(const JimmyGod::Math::Circle& range, int typeId);
 
-		void DebugDraw() const;
+		void DebugDraw(bool avoidance) const;
 
 		const Obstacles& GetObstacles() const { return mObstacles; }
 		const Walls& GetWalls() const { return mWalls; }

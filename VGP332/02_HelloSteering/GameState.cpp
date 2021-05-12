@@ -7,6 +7,8 @@ using namespace JimmyGod::Graphics;
 using namespace JimmyGod::Math;
 using namespace JimmyGod::AI;
 
+static bool Avoidance = false;
+
 void GameState::Initialize()
 {
 	GraphicsSystem::Get()->SetClearColor(Colors::Black);
@@ -19,14 +21,7 @@ void GameState::Initialize()
 	mAI_Setting.partitionGridSize = { 100.0f };
 	mAI_Setting.worldSize.x = static_cast<float>(GS->GetBackBufferWidth());
 	mAI_Setting.worldSize.y = static_cast<float>(GS->GetBackBufferHeight());
-
-	mWorld.AddObstacles({ {150.0f,150.0f},50.0f });
-	mWorld.AddObstacles({ {300.0f,500.0f},80.0f });
-	mWorld.AddObstacles({ {700.0f,200.0f},50.0f });
-	mWorld.AddObstacles({ {1000.0f,300.0f},80.0f });
-	mWorld.AddWalls(LineSegment{ {380.0f,500.0f},{700.0f, 240.0f} }, true, -6.95f);
 	mWorld.Initialize(mAI_Setting);
-
 	mPlayer = std::make_unique<Player>(mWorld);
 	mPlayer->Load();
 	
@@ -72,8 +67,10 @@ void GameState::Update(float deltaTime)
 void GameState::Render()
 {
 	mTilemap.Render();
-	mWorld.Render();
-	mWorld.DebugDraw();
+	if (Avoidance)
+		mWorld.Render();
+	mWorld.DebugDraw(Avoidance);
+
 	mPlayer.get()->Render();
 
 	for (auto& entity : mSolider)
@@ -94,22 +91,13 @@ void GameState::Processing(float deltaTime)
 		break;
 	case Order::Gathering:
 	{
-		mNumberOfArrive = 0;
 		for (auto& entity : mSolider)
 			if (Distance(entity.get()->Position, entity.get()->Destination) < 5.0f)
 				ClearSingleEntity(entity.get());
-
-		for (auto& entity : mSolider)
-			if (entity.get()->GetOrder() == false)
-				mNumberOfArrive++;
-
-		if (mNumberOfArrive >= mSolider.size() || mTimer > 7.5f)
-			Clear();
 		break;
 	}
 	case Order::Moving:
 	{
-		mNumberOfArrive = 0;
 		for (auto& entity : mSolider)
 		{
 			if (entity == mSolider[mGeneral])
@@ -138,11 +126,6 @@ void GameState::Processing(float deltaTime)
 				}
 			}
 		}
-		for (auto& entity : mSolider)
-			if (entity.get()->GetOrder() == false)
-				mNumberOfArrive++;
-		if (mNumberOfArrive >= mSolider.size())
-			Clear();
 	}
 		break;
 	case Order::Ambush:
@@ -167,13 +150,9 @@ void GameState::Processing(float deltaTime)
 			for (auto& entity : mSolider)
 			{
 				entity->GetSteeringModule()->GetBehavior<PursuitBehavior>("Pursuit")->SetActive(true);
-				float distance = Distance(entity->Position, entity->threat->Position);
-				if (Distance(entity->Position, entity->threat->Position) < 30.0f)
+				if (Distance(entity->Position, entity->threat->Position) < 150.0f)
 					ClearSingleEntity(entity.get());
 			}
-			mHideTimer += deltaTime;
-			if (mHideTimer >= 10.0f)
-				Clear();
 		}
 		break;
 	}
@@ -252,6 +231,7 @@ void GameState::DebugUI()
 	SimpleDraw::Render(mCamera);
 	ImGui::Begin("AI Setting", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 	static bool mActive = false;
+	
 	if (ImGui::Checkbox("Debug UI", &mActive)) { 
 		isDisplaying = mActive;
 		for (auto& entity : mSolider)
@@ -270,9 +250,28 @@ void GameState::DebugUI()
 		mPlayer->GetSteeringModule()->GetBehavior<SeekBehavior>("Seek")->SetActivateDebugUI(mActive);
 		mPlayer->GetSteeringModule()->GetBehavior<WanderBehavior>("Wander")->SetActivateDebugUI(mActive);
 		mPlayer->GetSteeringModule()->GetBehavior<FleeBehavior>("Flee")->SetActivateDebugUI(mActive);
-		mPlayer->GetSteeringModule()->GetBehavior<AvoidObsBehavior>("Avoid")->SetActivateDebugUI(mActive);
 		mPlayer->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActivateDebugUI(mActive);
+		mPlayer->GetSteeringModule()->GetBehavior<AvoidObsBehavior>("Avoid")->SetActivateDebugUI(mActive);
 		mPlayer->GetSteeringModule()->GetBehavior<WallAvoidBehvior>("Wall")->SetActivateDebugUI(mActive);
+	}
+	if (ImGui::Checkbox("Enable avoidance", &Avoidance)) 
+	{
+		if (Avoidance)
+		{
+			auto GS = JimmyGod::Graphics::GraphicsSystem::Get();
+
+
+			mWorld.AddObstacles({ {150.0f,150.0f},50.0f });
+			mWorld.AddObstacles({ {300.0f,500.0f},80.0f });
+			mWorld.AddObstacles({ {700.0f,200.0f},50.0f });
+			mWorld.AddObstacles({ {1000.0f,300.0f},80.0f });
+			mWorld.AddWalls(LineSegment{ {380.0f,500.0f},{700.0f, 240.0f} }, true, -6.95f);
+
+		}
+		else
+		{
+			mWorld.Clear();
+		}
 	}
 	ImGui::Separator();
 	ImGui::TextColored(ImVec4(0.0f, 0.0f, 1.0f, 1.0f), "Player");
@@ -425,12 +424,6 @@ void GameState::DebugUI()
 				entity->GetSteeringModule()->GetBehavior<AvoidObsBehavior>("Avoid")->SetActive(mEnemyAvoid);
 			}
 		}
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::BeginTooltip();
-			ImGui::SetTooltip("Activate Obstacle Avoidance to avoid all obstacles");
-			ImGui::EndTooltip();
-		}
 		if (ImGui::Checkbox("Enemy Wall Avoidance", &mEnemyWallAvoid))
 		{
 			for (auto& entity : mSolider)
@@ -438,24 +431,12 @@ void GameState::DebugUI()
 				entity->GetSteeringModule()->GetBehavior<WallAvoidBehvior>("Wall")->SetActive(mEnemyWallAvoid);
 			}
 		}
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::BeginTooltip();
-			ImGui::SetTooltip("Activate Wall Avoidance to avoid all walls");
-			ImGui::EndTooltip();
-		}
 		if (ImGui::Checkbox("Enemy Zero Overlap", &mEnemyOverlap))
 		{
 			for (auto& entity : mSolider)
 			{
 				entity->GetSteeringModule()->GetBehavior<EnforceNonPenetrationConstraint>("Enforce")->SetActive(mEnemyOverlap);
 			}
-		}
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::BeginTooltip();
-			ImGui::SetTooltip("Activate Zero Overlap\n*Warning* Group behaviors cannot be worked while using");
-			ImGui::EndTooltip();
 		}
 		if (ImGui::CollapsingHeader("Group Command Option", ImGuiTreeNodeFlags_DefaultOpen))
 		{
@@ -551,7 +532,6 @@ void GameState::DebugUI()
 					entity.get()->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActive(true);
 					entity.get()->GetSteeringModule()->GetBehavior<SeparationBehavior>("Separation")->SetActive(true);
 					entity.get()->GetSteeringModule()->GetBehavior<CohesionBehavior>("Cohesion")->SetActive(true);
-
 				}
 			}
 			if (ImGui::IsItemHovered())
@@ -657,24 +637,32 @@ void GameState::DebugUI()
 			}
 			if (ImGui::Button("Ambush!"))
 			{
-				Clear();
-				isHided = false;
-				mOrder = Order::Ambush;
-				for (auto& entity : mSolider)
+				if (mWorld.GetObstacles().size() == 0)
 				{
-					entity.get()->SetOrder(true);
-					entity.get()->threat = mPlayer.get();
+
 				}
-
-				mTimer = 0.0f;
-				mHideTimer = 0.0f;
-				isProcessing = true;
-
-				for (auto& entity : mSolider)
+				else
 				{
-					entity->GetSteeringModule()->GetBehavior<HideBehavior>("Hide")->SetActive(true);
-					entity->GetSteeringModule()->GetBehavior<AlignmentBehavior>("Alignment")->SetActive(true);
+					Clear();
+					isHided = false;
+					mOrder = Order::Ambush;
+					for (auto& entity : mSolider)
+					{
+						entity.get()->SetOrder(true);
+						entity.get()->threat = mPlayer.get();
+					}
+
+					mTimer = 0.0f;
+					mHideTimer = 0.0f;
+					isProcessing = true;
+
+					for (auto& entity : mSolider)
+					{
+						entity->GetSteeringModule()->GetBehavior<HideBehavior>("Hide")->SetActive(true);
+						entity->GetSteeringModule()->GetBehavior<AlignmentBehavior>("Alignment")->SetActive(true);
+					}
 				}
+				
 			}
 			if (ImGui::IsItemHovered())
 			{

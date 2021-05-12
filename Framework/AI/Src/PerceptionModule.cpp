@@ -3,11 +3,11 @@
 
 using namespace JimmyGod::AI;
 
-PerceptionMoudle::PerceptionMoudle(Agent & agent, ImporatanceCalculator calculator)
+PerceptionModule::PerceptionModule(Agent & agent, ImporatanceCalculator calculator)
 	:mAgent(agent), mCalculator(std::move(calculator))
 {}
 
-void PerceptionMoudle::Update(float deltaTime)
+void PerceptionModule::Update(float deltaTime)
 {
 	for (auto&[name, sensor] : mSensors)
 	{

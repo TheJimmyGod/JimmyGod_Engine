@@ -50,11 +50,12 @@ void JimmyGod::Graphics::DrawSkeleton(Bone* bone, std::vector<Math::Matrix4>& bo
 		auto myPos = GetTranslation(myMatrix);
 		auto parentPos = GetTranslation(parentMatrix);
 
-		SimpleDraw::AddLine((modelPos) + myPos * scale, (modelPos) + parentPos * scale, Colors::Aqua);
-		SimpleDraw::AddSphere((modelPos)+myPos * scale, scale, Colors::Gold , 2, 2);
-		for (auto& child : bone->children)
-			DrawSkeleton(child, boneMatrices, modelPos, scale,rot);
+		SimpleDraw::AddLine((modelPos)+myPos * scale, (modelPos)+parentPos * scale, Colors::Aqua);
+		SimpleDraw::AddSphere((modelPos)+myPos * scale, scale, Colors::Gold, 2, 2);
 	}
+
+	for (auto& child : bone->children)
+		DrawSkeleton(child, boneMatrices, modelPos, scale,rot);
 }
 
 void JimmyGod::Graphics::UpdateBoneRecursive(Bone* bone, std::vector<Math::Matrix4>& boneMatrices)

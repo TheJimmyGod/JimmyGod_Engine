@@ -12,10 +12,10 @@ namespace JimmyGod::AI
 	//auto func = [32](bool b)-> float { return 4.2f; ... }; // Closure
 	/*struct Functor { int i = 32; float operator()(bool b) { return 4.2f; } };*/ // Rambda function is const capture
 
-	class PerceptionMoudle
+	class PerceptionModule
 	{
 	public:
-		PerceptionMoudle(Agent& agent, ImporatanceCalculator calculator);
+		PerceptionModule(Agent& agent, ImporatanceCalculator calculator);
 
 		template <class SensorType>
 		SensorType* AddSensor(std::string name);
@@ -35,11 +35,11 @@ namespace JimmyGod::AI
 		ImporatanceCalculator mCalculator;
 		SensorMap mSensors;
 		MemoryRecords mMemory;
-		float mMemorySpan = 0.0f; // how long does the aent remember things
+		float mMemorySpan = 0.0f; // how long does the agent remember things
 
 	};
 	template<class SensorType>
-	inline SensorType * PerceptionMoudle::AddSensor(std::string name)
+	inline SensorType * PerceptionModule::AddSensor(std::string name)
 	{
 		//Bad
 		//auto[iter, success] = mSensors.try_emplace(std::move(name), std::make_unique<SensorType>);
@@ -52,7 +52,7 @@ namespace JimmyGod::AI
 		return static_cast<SensorType*>(iter->second.get());
 	}
 	template<class SensorType>
-	inline SensorType * PerceptionMoudle::GetSensor(const std::string & name)
+	inline SensorType * PerceptionModule::GetSensor(const std::string & name)
 	{
 		auto iter = mSensors.find(name);
 		return iter != mSensors.end() ? static_cast<SensorType*>(iter->second.get()):nullptr;

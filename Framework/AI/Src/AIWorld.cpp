@@ -100,6 +100,12 @@ void AIWorld::UnregisterEntity(Entity * entity)
 	}
 }
 
+void AIWorld::Clear()
+{
+	mObstacles.clear();
+	mWalls.clear();
+}
+
 void AIWorld::AddObstacles(const JimmyGod::Math::Circle & obstacles)
 {
 	mObstacles.push_back(obstacles);
@@ -120,16 +126,27 @@ AgentList AIWorld::GetNeighborhood(const JimmyGod::Math::Circle & range, int typ
 	return GetElements<Agent>(mPartitionGrid, range, mSetting.partitionGridSize, typeId);
 }
 
-void AIWorld::DebugDraw() const
+void AIWorld::DebugDraw(bool avoidance) const
 {
-	for (auto& obstacle : mObstacles)
+	if (avoidance)
 	{
-		JimmyGod::Graphics::SimpleDraw::AddScreenCircle(Circle(obstacle.center, obstacle.radius), JimmyGod::Graphics::Colors::Cyan);
+		if (mObstacles.size() > 0)
+		{
+			for (auto& obstacle : mObstacles)
+			{
+				JimmyGod::Graphics::SimpleDraw::AddScreenCircle(Circle(obstacle.center, obstacle.radius), JimmyGod::Graphics::Colors::Cyan);
+			}
+		}
+		if (mWalls.size() > 0)
+		{
+			for (auto& wall : mWalls)
+			{
+				JimmyGod::Graphics::SimpleDraw::AddScreenLine(wall.line.from, wall.line.to, JimmyGod::Graphics::Colors::Cyan);
+			}
+		}
 	}
-	for (auto& wall : mWalls)
-	{
-		JimmyGod::Graphics::SimpleDraw::AddScreenLine(wall.line.from, wall.line.to, JimmyGod::Graphics::Colors::Cyan);
-	}
+
+
 	for (int x = 0; x < mPartitionGrid.GetColumns(); x++)
 	{
 		JimmyGod::Graphics::SimpleDraw::AddScreenLine({ x*mSetting.partitionGridSize,0 }, { x*mSetting.partitionGridSize, static_cast<float>(JimmyGod::Graphics::GraphicsSystem::Get()->GetBackBufferHeight()) }, JimmyGod::Graphics::Colors::White);
