@@ -77,8 +77,6 @@ void GameState::Render()
 	{
 		entity->Render();
 	}
-	if(mOrder == Order::None)
-		SpriteRenderManager::Get()->DrawScreenText("Order completed!", 100.0f, 100.0f, 20.0f, JimmyGod::Graphics::Colors::Red);
 }
 
 void GameState::Processing(float deltaTime)
@@ -231,7 +229,7 @@ void GameState::DebugUI()
 	SimpleDraw::Render(mCamera);
 	ImGui::Begin("AI Setting", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 	static bool mActive = false;
-	
+	static bool mPerception = false;
 	if (ImGui::Checkbox("Debug UI", &mActive)) { 
 		isDisplaying = mActive;
 		for (auto& entity : mSolider)
@@ -253,6 +251,13 @@ void GameState::DebugUI()
 		mPlayer->GetSteeringModule()->GetBehavior<ArriveBehavior>("Arrive")->SetActivateDebugUI(mActive);
 		mPlayer->GetSteeringModule()->GetBehavior<AvoidObsBehavior>("Avoid")->SetActivateDebugUI(mActive);
 		mPlayer->GetSteeringModule()->GetBehavior<WallAvoidBehvior>("Wall")->SetActivateDebugUI(mActive);
+	}
+	if (ImGui::Checkbox("Perception UI", &mPerception))
+	{
+		for (auto& entity : mSolider)
+		{
+			entity->SetDebug(mPerception);
+		}
 	}
 	if (ImGui::Checkbox("Enable avoidance", &Avoidance)) 
 	{

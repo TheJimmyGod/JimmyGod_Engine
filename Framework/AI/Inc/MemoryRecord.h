@@ -22,7 +22,7 @@ namespace JimmyGod::AI
 		}
 	};
 
-	using MemoryRecords = std::list<MemoryRecord>;
+	using MemoryRecords = std::list<MemoryRecord>; // Double linked list
 
 	MemoryRecord& FindOrCreate(MemoryRecords& records, uint32_t uniqueID);
 

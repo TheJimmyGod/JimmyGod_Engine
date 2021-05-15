@@ -25,14 +25,22 @@ namespace Steering
 		void SetOrder(bool order) { isOrdered = order; }
 		bool GetOrder() const { return isOrdered; }
 
+		void SetDebug(bool debug) { isDebug = debug; }
+
 	private:
 		std::unique_ptr<JimmyGod::AI::SteeringModule> mSteeringModule = nullptr;
+		std::unique_ptr<JimmyGod::AI::PerceptionModule> mPerceptionModule = nullptr;
 		JimmyGod::Graphics::TextureId mSoldierSprite;
+		JimmyGod::Graphics::TextureId mEmojiSprite;
 		JimmyGod::Math::Circle mCirclePos;
+		JimmyGod::Math::Vector2 PerceptedPos = JimmyGod::Math::Vector2::Zero;
+		JimmyGod::Math::Vector2 LastSeenPos = JimmyGod::Math::Vector2::Zero;
 		float mTimer = 0.0f;
+		float mEmojiTimer = 0.0f;
 		bool isOrdered = false;
 		bool isStarted = false;
-
+		bool isPercepted = false;
+		bool isDebug = false;
 		SpriteAnimation mSmoke;
 	};
 }

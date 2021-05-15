@@ -15,7 +15,7 @@ namespace JimmyGod::AI
 	class PerceptionModule
 	{
 	public:
-		PerceptionModule(Agent& agent, ImporatanceCalculator calculator);
+		explicit PerceptionModule(Agent& agent, ImporatanceCalculator calculator);
 
 		template <class SensorType>
 		SensorType* AddSensor(std::string name);

@@ -7,8 +7,6 @@ using namespace JimmyGod::AI;
 using namespace JimmyGod::Math;
 using namespace JimmyGod::Graphics;
 
-
-
 Soldier::Soldier(JimmyGod::AI::AIWorld & world)
 	:JimmyGod::AI::Agent(world, (uint32_t)1)
 {
@@ -16,7 +14,24 @@ Soldier::Soldier(JimmyGod::AI::AIWorld & world)
 
 void Soldier::Load()
 {
+	auto Calculator = [this](const AI::Agent& agent, AI::MemoryRecord& m)
+	{
+		float dist = 0.0f;
+		for (size_t i = 0; i < m.properties.size(); ++i)
+		{
+			Vector2 pos = std::get<Vector2>(m.properties["lastSeenPosition"]);
+			dist += Distance(agent.Position, pos);
+		}
+		if (m.properties.size() != 0)
+			m.importance = dist / m.properties.size();
+		else
+			m.importance = dist;
+		return m.importance;
+	};
+
 	mSteeringModule = std::make_unique<SteeringModule>(*this);
+
+	mPerceptionModule = std::make_unique<PerceptionModule>(*this, Calculator);
 
 	mSteeringModule->AddBehavior<SeekBehavior>("Seek")->SetActive(false);
 	mSteeringModule->AddBehavior<FleeBehavior>("Flee")->SetActive(false);
@@ -33,6 +48,9 @@ void Soldier::Load()
 	mSteeringModule->AddBehavior<CohesionBehavior>("Cohesion")->SetActive(false);
 	mSteeringModule->AddBehavior<EnforceNonPenetrationConstraint>("Enforce")->SetActive(false);
 
+	mPerceptionModule->SetMemorySpan(1.0f);
+	mPerceptionModule->AddSensor<VisualSensor>("VisualSense");
+
 	SpriteAnimationInfo spriteInfo;
 	spriteInfo.fileName = "SmokeSprite.png";
 	spriteInfo.columns = 8;
@@ -44,6 +62,7 @@ void Soldier::Load()
 	mSmoke.Load(spriteInfo);
 
 	mSoldierSprite = TextureManager::Get()->Load("zombie_idle.png");
+	mEmojiSprite = TextureManager::Get()->Load("EmojiTexture.png");
 	MaxSpeed = 200.0f;
 	Mass = 1.0f;
 	Radius = 32.0f;
@@ -52,15 +71,45 @@ void Soldier::Load()
 void Soldier::Unload()
 {
 	mSoldierSprite = 0;
+	mEmojiSprite = 0;
 	mSteeringModule.reset();
 }
 
 void Soldier::Update(float deltaTime)
 {
+	// auto& records = mPerceptionModule->GetMemoryRecords();
+// for(auto& r : records)
+// try until you find a good
+	if (isDebug)
+	{
+		mPerceptionModule->Update(deltaTime);
+		auto& records = mPerceptionModule->GetMemoryRecords();
+		for (auto& r : records)
+		{
+			const auto& val = std::get<JimmyGod::Math::Vector2>(r.properties.find("lastSeenPosition")->second);
+			isPercepted = true;
+			mEmojiTimer = 0.3f;
+			LastSeenPos = val;
+		}
+		if (!IsZero(LastSeenPos))
+		{
+			if (Distance(Position, LastSeenPos) < mPerceptionModule->GetSensor<VisualSensor>("VisualSense")->viewRange)
+				JimmyGod::Graphics::SimpleDraw::AddScreenLine(Position, LastSeenPos, JimmyGod::Graphics::Colors::Yellow);
+		}
+		if (mEmojiTimer > 0.0f)
+			mEmojiTimer -= deltaTime;
+		else
+		{
+			LastSeenPos = Vector2::Zero;
+			isPercepted = false;
+		}
+	}
+
+
 	auto GS = JimmyGod::Graphics::GraphicsSystem::Get();
 	// Update neighbors (exclude itself)
 	neighbors = world.GetNeighborhood({ Position, 100.0f }, (uint32_t)1);
-	std::remove_if(neighbors.begin(), neighbors.end(), [this](auto neighbor)
+	[[maybe_unused]] auto n = std::remove_if(neighbors.begin(), neighbors.end(), [this](auto neighbor)
 	{
 		return this == neighbor;
 	});
@@ -88,7 +137,7 @@ void Soldier::Update(float deltaTime)
 
 	mSmoke.Update(deltaTime);
 	mSmoke.SetPosition(Position);
-	if (speed > 100.0f)
+	if (speed > 120.0f)
 	{
 		if (isStarted == false)
 		{
@@ -126,4 +175,6 @@ void Soldier::Render()
 	const float angle = atan2(Heading.y, Heading.x) * Math::Constants::RadToDeg / 60.0f; // Texture frames
 
 	SpriteRenderManager::Get()->DrawSprite(mSoldierSprite, Position,angle);
+	if (isPercepted && isDebug)
+		SpriteRenderManager::Get()->DrawSprite(mEmojiSprite, Vector2{ Position.x + Radius /2.0f, Position.y - Radius});
 }

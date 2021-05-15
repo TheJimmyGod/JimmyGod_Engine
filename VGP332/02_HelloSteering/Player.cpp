@@ -50,9 +50,6 @@ void Player::Unload()
 
 void Player::Update(float deltaTime)
 {
-	// auto& records = mPerceptionModule->GetMemoryRecords();
-	// for(auto& r : records)
-	// try until you find a good 
 	auto GS = JimmyGod::Graphics::GraphicsSystem::Get();
 	auto Input = JimmyGod::Input::InputSystem::Get();
 	auto force = mSteeringModule->Calculate();

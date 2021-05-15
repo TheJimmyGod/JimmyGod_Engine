@@ -7,10 +7,9 @@ namespace JimmyGod::AI
 
 	class VisualSensor : public Sensor
 	{
-		float viewRange = 100.0f;
-		float viewAngle = 45.0f;
-
 	public:
+		float viewRange = 300.0f;
+		float viewAngle = 45.0f;
 		void Update(Agent& agent, MemoryRecords& memory, float deltaTime) override;
 	};
 }

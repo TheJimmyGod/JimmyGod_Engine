@@ -8,7 +8,7 @@ using namespace JimmyGod::AI;
 
 void VisualSensor::Update(Agent & agent, MemoryRecords & memory, float deltaTime)
 {
-	auto neighbors = agent.world.GetNeighborhood({ {agent.Position},agent.Radius }, agent.GetTypeId());
+	auto neighbors = agent.world.GetNeighborhood({ agent.Position, viewRange }, agent.GetTypeId());
 	for (auto& neighbor : neighbors)
 	{
 		if (JimmyGod::Math::Distance(neighbor->Position, agent.Position) > viewRange)
