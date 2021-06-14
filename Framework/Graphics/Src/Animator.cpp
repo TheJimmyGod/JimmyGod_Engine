@@ -43,7 +43,7 @@ void Animator::Update(float deltaTime)
 		mTimer -= animationClip->duration;
 	UpdateBoneRecursive(mModel->mSkeleton.root, mBoneMatrices, *animationClip, mTimer);
 
-	/*if (mBlendDuration > 0.0f)
+	if (mBlendDuration > 0.0f)
 	{
 		auto& blendClip = mModel->mAnimationSet.clips[mBlendIndex];
 		mBlendTimer += deltaTime * blendClip->ticksPerSecond;
@@ -62,14 +62,14 @@ void Animator::Update(float deltaTime)
 		{
 			mBlendWeight = mBlendTime / mBlendDuration;
 		}
-		std::vector<JimmyGod::Math::Matrix4> targetMatrices(boneMatrices.size());
+		std::vector<JimmyGod::Math::Matrix4> targetMatrices(mBoneMatrices.size());
 
 		UpdateBoneRecursive(mModel->mSkeleton.root, targetMatrices, *blendClip, mBlendTimer);
 
-		for (size_t i = 0; i < boneMatrices.size(); ++i)
+		for (size_t i = 0; i < mBoneMatrices.size(); ++i)
 		{
-			boneMatrices[i] = boneMatrices[i] * (1.0f - mBlendWeight) +
+			mBoneMatrices[i] = mBoneMatrices[i] * (1.0f - mBlendWeight) +
 				targetMatrices[i] * mBlendWeight;
 		}
-	}*/
+	}
 }

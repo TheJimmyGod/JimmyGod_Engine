@@ -16,22 +16,15 @@ void Soldier::Load()
 {
 	auto Calculator = [this](const AI::Agent& agent, AI::MemoryRecord& m)
 	{
-		float dist = 0.0f;
-		for (size_t i = 0; i < m.properties.size(); ++i)
-		{
-			Vector2 pos = std::get<Vector2>(m.properties["lastSeenPosition"]);
-			dist += Distance(agent.Position, pos);
-		}
-		if (m.properties.size() != 0)
-			m.importance = dist / m.properties.size();
-		else
-			m.importance = dist;
+		Vector2 pos = std::get<Vector2>(m.properties["lastSeenPosition"]);
+		float dist = Distance(agent.Position, pos);
+		m.importance = dist / agent.Radius;
 		return m.importance;
 	};
 
 	mSteeringModule = std::make_unique<SteeringModule>(*this);
-
 	mPerceptionModule = std::make_unique<PerceptionModule>(*this, Calculator);
+
 
 	mSteeringModule->AddBehavior<SeekBehavior>("Seek")->SetActive(false);
 	mSteeringModule->AddBehavior<FleeBehavior>("Flee")->SetActive(false);
@@ -48,7 +41,7 @@ void Soldier::Load()
 	mSteeringModule->AddBehavior<CohesionBehavior>("Cohesion")->SetActive(false);
 	mSteeringModule->AddBehavior<EnforceNonPenetrationConstraint>("Enforce")->SetActive(false);
 
-	mPerceptionModule->SetMemorySpan(1.0f);
+	mPerceptionModule->SetMemorySpan(0.25f);
 	mPerceptionModule->AddSensor<VisualSensor>("VisualSense");
 
 	SpriteAnimationInfo spriteInfo;
@@ -61,11 +54,11 @@ void Soldier::Load()
 
 	mSmoke.Load(spriteInfo);
 
-	mSoldierSprite = TextureManager::Get()->Load("zombie_idle.png");
+	mSoldierSprite = TextureManager::Get()->Load("Enemy_Sprite.png");
 	mEmojiSprite = TextureManager::Get()->Load("EmojiTexture.png");
 	MaxSpeed = 200.0f;
 	Mass = 1.0f;
-	Radius = 32.0f;
+	Radius = 20.0f;
 }
 
 void Soldier::Unload()
@@ -80,16 +73,31 @@ void Soldier::Update(float deltaTime)
 	// auto& records = mPerceptionModule->GetMemoryRecords();
 // for(auto& r : records)
 // try until you find a good
+
+	neighbors = world.GetNeighborhood({ Position, 100.0f }, (uint32_t)1);
+	[[maybe_unused]] auto n = std::remove_if(neighbors.begin(), neighbors.end(), [this](auto neighbor)
+	{
+		return this == neighbor;
+	});
+
 	if (isDebug)
 	{
 		mPerceptionModule->Update(deltaTime);
 		auto& records = mPerceptionModule->GetMemoryRecords();
+
 		for (auto& r : records)
 		{
 			const auto& val = std::get<JimmyGod::Math::Vector2>(r.properties.find("lastSeenPosition")->second);
-			isPercepted = true;
-			mEmojiTimer = 0.3f;
-			LastSeenPos = val;
+			if (r.importance < 3)
+			{
+				isPercepted = true;
+				mEmojiTimer = 0.3f;
+				LastSeenPos = val;
+			}
+			else
+			{
+				LastSeenPos = Vector2::Zero;
+			}
 		}
 		if (!IsZero(LastSeenPos))
 		{
@@ -108,11 +116,7 @@ void Soldier::Update(float deltaTime)
 
 	auto GS = JimmyGod::Graphics::GraphicsSystem::Get();
 	// Update neighbors (exclude itself)
-	neighbors = world.GetNeighborhood({ Position, 100.0f }, (uint32_t)1);
-	[[maybe_unused]] auto n = std::remove_if(neighbors.begin(), neighbors.end(), [this](auto neighbor)
-	{
-		return this == neighbor;
-	});
+
 
 	if (mTimer > 5.0f)
 	{

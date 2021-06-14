@@ -7,7 +7,7 @@ JimmyGod::Math::Vector2 FleeBehavior::Calculate(Agent & agent)
 {
 	if (IsActive())
 	{
-		const double PanicDistanceSq = 100.0f * 100.0f;
+		const double PanicDistanceSq = panicDistance * panicDistance;
 		if (JimmyGod::Math::DistanceSqr(agent.Position, agent.Destination) > PanicDistanceSq)
 			return JimmyGod::Math::Vector2{ 0,0 };
 		if (IsDebugUIActive())

@@ -8,6 +8,7 @@ static bool ActiveRadialBlur = false;
 static bool ActiveGaussianBlur = false;
 static bool ActiveGreyscale = false;
 static bool ActiveNegative = false;
+static bool cloudMap = true;
 
 void GameState::Initialize()
 {
@@ -214,6 +215,7 @@ void GameState::DebugUI()
 		static bool specularMap = true;
 		static bool normalMap = true;
 		ImGui::SliderFloat("Displacement", &mSettings.bumpMapWeight, 0.2f, 100.0f);
+		if(ImGui::Checkbox("Cloud Map", &cloudMap)){}
 		if (ImGui::Checkbox("Normal", &normalMap))
 		{
 			mSettings.normalMapWeight = normalMap ? 1.0f : 0.0f;
@@ -324,27 +326,31 @@ void GameState::DrawScene()
 	mEarthDisplacement.BindVS(2);
 	mNormalMap.BindPS(3);
 	mNightMap.BindPS(4);
+	mMeshBuffer.Draw();
 
 	BlendState::ClearState();
-	mMeshBuffer.Draw();
 	// --- Cloud
-	matRot = Matrix4::RotationX(mRotation.x) * Matrix4::RotationY(mRotation.y + mCloudRotation);
-	matWorld = matRot * matTrans;
+	if (cloudMap)
+	{
+		matRot = Matrix4::RotationX(mRotation.x) * Matrix4::RotationY(mRotation.y + mCloudRotation);
+		matWorld = matRot * matTrans;
 
-	transformData.world = Transpose(matWorld);
-	transformData.wvp = Transpose(matWorld * matView * matProj);
-	transformData.viewPosition = mCamera.GetPosition();
-	mTransformBuffer.Update(&transformData);
-	mTransformBuffer.BindVS(0);
-	mTransformBuffer.BindPS(0);
+		transformData.world = Transpose(matWorld);
+		transformData.wvp = Transpose(matWorld * matView * matProj);
+		transformData.viewPosition = mCamera.GetPosition();
+		mTransformBuffer.Update(&transformData);
+		mTransformBuffer.BindVS(0);
+		mTransformBuffer.BindPS(0);
 
-	mCloudPixelShader.Bind();
-	mCloudVertexShader.Bind();
+		mCloudPixelShader.Bind();
+		mCloudVertexShader.Bind();
 
-	mEarthCould.BindPS(5);
-	mEarthCould.BindVS(5);
-	mBlendState.Set();
-	mMeshBuffer.Draw();
+		mEarthCould.BindPS(5);
+		mEarthCould.BindVS(5);
+		mBlendState.Set();
+		mMeshBuffer.Draw();
+	}
+
 
 	mMoon.Render(mCamera, 1.5f, 0.15f, matWorld);
 	mMercury.Render(mCamera, 2.1f, 0.2f, matWorld);

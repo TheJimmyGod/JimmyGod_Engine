@@ -87,7 +87,7 @@ float4 PSRadialBlur(VSOutput input) : SV_Target
 
 float4 PSGaussian(VSOutput input) : SV_Target
 {
-    float PixelWidth = 1.0f / 1280;
+    float PixelWidth = 1.0f / (1280);
     float PixelHeight = 1.0f / 720;
 
     float4 Color = { 0, 0, 0, 0 };
