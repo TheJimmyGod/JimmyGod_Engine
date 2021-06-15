@@ -1,13 +1,13 @@
 # JimmyGod Engine
 ![This is main picture](https://github.com/TheJimmyGod/JimmyGod_Engine/blob/master/Images/JimmyGod-Engine.png)
 ### Contents
-1. Introduction
-2. Guide to use JimmyGod Engine
-3. Features
-4. Examples
-5. External Libraries
-6. License
-7. Acknowledgements
+1. [Introduction](https://github.com/TheJimmyGod/JimmyGod_Engine#introduction)
+2. [Guide to use JimmyGod Engine](https://github.com/TheJimmyGod/JimmyGod_Engine#guide-to-use-jimmygod-engine)
+3. [Features](https://github.com/TheJimmyGod/JimmyGod_Engine#features)
+4. [Examples](https://github.com/TheJimmyGod/JimmyGod_Engine#examples-1)
+5. [External Libraries](https://github.com/TheJimmyGod/JimmyGod_Engine#external-libraries)
+6. [License](https://github.com/TheJimmyGod/JimmyGod_Engine#license)
+7. [Acknowledgements](https://github.com/TheJimmyGod/JimmyGod_Engine#acknowledgement)
 
 ### **Introduction**
 **JimmyGod Engine** is the custom game engine in C++ language with Direct3D rendering. The name JimmyGod comes from my vision that it will be a high quality and popular game engine. The game engine was started in November 2019, and continues to be updated and improved. The game engine consists of various libraries:*Input, Math, Graphics, AI, Machine Learning, and Physics*. **The input library** has support for mouse and keyboard. **The graphics library** allows to easily use GPU shaders to render 3D models with support for dynamic lighting, shadows, post processing, and animation. **The math library** has support for 3D geometry and linear algebra components. Moving on, **the AI library** has pathfinding, steering, finite-state-machine for simulating autonomous agents. For **the machine learning library**, I implemented K-means, Genetic Algorithm, Neural network, and linear regression to solve various problems. For the physics part, it includes a Verlet particle system with constraints to model object dynamics.
