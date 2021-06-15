@@ -144,6 +144,6 @@ The project is based on Batman the super hero, displaying various animations by 
 
 
 ### **License**
-- Copylightⓒ 2021 JimmyGod 
+- Copylightⓒ 2021 JimmyGod [LICENSE](https://github.com/TheJimmyGod/JimmyGod_Engine/blob/master/LICENSE)
 ### **Acknowledgement**
 - Peter Chan
