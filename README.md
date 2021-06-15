@@ -94,6 +94,8 @@
   - ```Sphere```
   - ```Quad```
 - Implemented ```TextureManager``` and ```SpriteRenderManager``` guide to render each texture and sprite
+#### *Input*
+- Implemented ```Input System``` allows to use keyborad and mouse in game world
 #### *Machine Learning*
 - Implemented ```Machine Learning System``` allows to use machine learing features
 - Implemented ```Linear Regression``` and ```Logistic Regression``` support to track or predict between two variables or factors
