@@ -86,7 +86,7 @@
   - ```Matrial```
   - ```Sampler```
   - ```LightTypes```
-  - ```VertexTypes
+  - ```VertexTypes```
 - Implemented ```MeshBuilder``` supports to render a normal or textured mesh with:
   - ```Cube``` 
   - ```Cylinder```
