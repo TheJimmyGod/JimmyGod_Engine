@@ -14,6 +14,8 @@
 ### **Introduction**
 **JimmyGod Engine** is the custom game engine in C++ language with Direct3D rendering. The name JimmyGod comes from my vision that it will be a high quality and popular game engine. The game engine was started in November 2019, and continues to be updated and improved. The game engine consists of various libraries:*Input, Math, Graphics, AI, Machine Learning, and Physics*. **The input library** has support for mouse and keyboard. **The graphics library** allows to easily use GPU shaders to render 3D models with support for dynamic lighting, shadows, post processing, and animation. **The math library** has support for 3D geometry and linear algebra components. Moving on, **the AI library** has pathfinding, steering, finite-state-machine for simulating autonomous agents. For **the machine learning library**, I implemented K-means, Genetic Algorithm, Neural network, and linear regression to solve various problems. For the physics part, it includes a Verlet particle system with constraints to model object dynamics.
 
+---
+
 ### **Guide to use JimmyGod Engine**
 
 ##### **Requirement**
@@ -31,6 +33,9 @@
 ```C++
 #include <ImGui/Inc/imgui.h>
 ```
+
+---
+
 ### **Features**
 ![This is lists](https://github.com/TheJimmyGod/JimmyGod_Engine/blob/master/Images/Classcify.PNG)
 #### *Artificial Intelligence(AI)*
@@ -124,7 +129,10 @@
 #### *Physics*
 - Implemented ```Physics World``` allows to handle all physics particles and constraint in game world
 - Implemented ```Particle System``` supports to use verlet integration
-- Implemented ```Contraint``` enables to apply fixed or spring 
+- Implemented ```Contraint``` enables to apply fixed or spring
+
+---
+
 ### **Examples**
 #### AI
 ![image of animated picture](https://github.com/TheJimmyGod/JimmyGod_Engine/blob/master/Images/AI_project235511615830.gif)
@@ -139,6 +147,8 @@ The Graphics project is based on the Solar System, rendering lights and textures
 
 The project is based on Batman the super hero, displaying various animations by toggling buttons, and would utilize verlet integration as weapons.
 
+---
+
 ### **External Libraries**
 - [Assimp](https://github.com/assimp/assimp) for importing and extracting models
 - [ImGui](https://github.com/ocornut/imgui) for Debug User Interface
@@ -146,8 +156,12 @@ The project is based on Batman the super hero, displaying various animations by 
 - [FW1FontWrapper](https://github.com/gamelaster/FW1FontWrapper) for rendering fonts in Direct3D 11
 - [RapidJson](https://github.com/Tencent/rapidjson/) for serializing and deserializing Json files
 
+---
 
 ### **License**
 - Copylightⓒ 2021 JimmyGod [LICENSE](https://github.com/TheJimmyGod/JimmyGod_Engine/blob/master/LICENSE)
+
+---
+
 ### **Acknowledgement**
 - Peter Chan
