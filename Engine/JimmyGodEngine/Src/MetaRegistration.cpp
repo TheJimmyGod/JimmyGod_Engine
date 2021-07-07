@@ -7,6 +7,7 @@
 // Components
 #include "ColliderComponent.h"
 #include "TransformComponent.h"
+#include "ModelComponent.h"
 
 using namespace JimmyGod;
 
@@ -20,4 +21,5 @@ void JimmyGod::StaticMetaRegister()
 
 	META_REGISTER(ColliderComponent);
 	META_REGISTER(TransformComponent);
+	META_REGISTER(ModelComponent);
 }

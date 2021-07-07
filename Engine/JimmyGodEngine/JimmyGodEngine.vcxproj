@@ -167,6 +167,7 @@
     <ClInclude Include="Inc\GameObjectFactory.h" />
     <ClInclude Include="Inc\GameWorld.h" />
     <ClInclude Include="Inc\JimmyGodEngine.h" />
+    <ClInclude Include="Inc\ModelComponent.h" />
     <ClInclude Include="Inc\Planet.h" />
     <ClInclude Include="Inc\Rope.h" />
     <ClInclude Include="Inc\Service.h" />
@@ -189,6 +190,7 @@
     <ClCompile Include="Src\GameWorld.cpp" />
     <ClCompile Include="Src\JimmyGodEngine.cpp" />
     <ClCompile Include="Src\MetaRegistration.cpp" />
+    <ClCompile Include="Src\ModelComponent.cpp" />
     <ClCompile Include="Src\Planet.cpp" />
     <ClCompile Include="Src\Precompiled.cpp" />
     <ClCompile Include="Src\Rope.cpp" />

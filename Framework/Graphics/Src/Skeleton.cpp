@@ -26,7 +26,7 @@ Bone* JimmyGod::Graphics::FindBone(const Skeleton& skeleton, const char* boneNam
 	return nullptr;
 }
 
-void JimmyGod::Graphics::DrawSkeleton(Bone* bone, std::vector<Math::Matrix4>& boneMatrices,const Math::Vector3& modelPos, float scale, const Math::Matrix4& rot)
+void JimmyGod::Graphics::DrawSkeleton(Bone* bone, std::vector<Math::Matrix4>& boneMatrices,const Math::Vector3& modelPos, const Math::Vector3& scale, const Math::Matrix4& rot)
 {
 	if (bone == nullptr)
 		return;
@@ -51,7 +51,7 @@ void JimmyGod::Graphics::DrawSkeleton(Bone* bone, std::vector<Math::Matrix4>& bo
 		auto parentPos = GetTranslation(parentMatrix);
 
 		SimpleDraw::AddLine((modelPos)+myPos * scale, (modelPos)+parentPos * scale, Colors::Aqua);
-		SimpleDraw::AddSphere((modelPos)+myPos * scale, scale, Colors::Gold, 2, 2);
+		SimpleDraw::AddSphere((modelPos)+myPos * scale, 0.05f, Colors::Gold, 2, 2);
 	}
 
 	for (auto& child : bone->children)

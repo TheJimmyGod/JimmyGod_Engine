@@ -1,5 +1,7 @@
 #pragma once
 
+#include "GameObject.h"
+
 namespace JimmyGod
 {
 	class Cloth
@@ -7,16 +9,15 @@ namespace JimmyGod
 	public:
 		Cloth() = default;
 		~Cloth() = default;
-	void Initialize(const std::filesystem::path& path, uint32_t width, uint32_t height);
+	void Initialize(GameObject& gameObject, const std::filesystem::path& path, uint32_t width, uint32_t height);
 	void Terminate();
-	void Update(float deltaTime, int dir, bool isCloak = false);
-	void ShowCloth(const JimmyGod::Math::Vector3& pos);
+	void Update(float deltaTime, bool isCloak = false);
+	void ShowCloth();
 	void Render(const JimmyGod::Graphics::Camera& camera);
 	void DebugUI(bool debug = false);
 	void Clear() { mPhysicsWorld.Clear(true); }
 	void SetVelocity(const JimmyGod::Math::Vector3& vel);
-	void SetPosition(const JimmyGod::Math::Vector3& neck, const JimmyGod::Math::Vector3 & left, const JimmyGod::Math::Vector3 & right);
-
+	void SetPosition();
 	const JimmyGod::Math::Vector3& GetVelocity() { return mVelocity; }
 
 	void Active(bool act) { IsDisplay = act; }
@@ -50,5 +51,7 @@ private:
 	JimmyGod::Graphics::PixelShader mPixelShader;
 	JimmyGod::Graphics::VertexShader mVertexShader;
 	float mTime = 0.0f;
+
+	GameObject* mOwner;
 };
 }

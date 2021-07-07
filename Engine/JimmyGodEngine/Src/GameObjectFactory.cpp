@@ -4,6 +4,7 @@
 #include "Component.h"
 #include "TransformComponent.h"
 #include "ColliderComponent.h"
+#include "ModelComponent.h"
 
 using namespace JimmyGod;
 

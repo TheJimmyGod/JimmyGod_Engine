@@ -23,13 +23,14 @@ namespace JimmyGod
 		void Translate(Math::Vector3 vec);
 		const Math::Vector3& GetPosition() const;
 
-		void SetRotation(Math::Quaternion q);
-		const Math::Quaternion& GetRotation() const;
+		void SetRotation(float radian);
+		//const Math::Quaternion& GetRotation() const;
+		const Math::Matrix4& GetRotation() const;
 
 		void SetScale(Math::Vector3 vec);
 		const Math::Vector3& GetScale() const;
 
-		Math::Matrix4 GetTransform() const;
+		const Math::Matrix4& GetTransform() const;
 
 		Math::Vector3 Forward() const;
 		Math::Vector3 Up() const;
@@ -38,12 +39,11 @@ namespace JimmyGod
 		Vector3 pos = Vector3::Zero;
 		Vector3 scl = Vector3::One;
 		Quaternion rot = Quaternion::Zero;
-
-
+		Matrix4 rotation = Matrix4::Identity;
 	private:
 	
-		Matrix4 mat;
-
+		Matrix4 mat = Matrix4::Identity;
+		
 		bool isDebugUI = false;
 	};
 }

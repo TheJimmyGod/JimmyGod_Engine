@@ -33,6 +33,7 @@
 
 // Component Headers
 #include "ColliderComponent.h"
+#include "ModelComponent.h"
 #include "TransformComponent.h"
 
 namespace JimmyGod {

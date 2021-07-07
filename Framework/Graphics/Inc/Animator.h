@@ -47,7 +47,7 @@ namespace JimmyGod::Graphics
 			}
 		}
 
-		auto& GetBoneMatrices() { return mBoneMatrices; }
+		std::vector<JimmyGod::Math::Matrix4>& GetBoneMatrices() { return mBoneMatrices; }
 
 	private:
 		const Model* mModel;

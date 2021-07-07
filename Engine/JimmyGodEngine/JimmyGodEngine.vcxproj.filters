@@ -138,6 +138,9 @@
     <ClInclude Include="Inc\Rope.h">
       <Filter>Inc\Object</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\ModelComponent.h">
+      <Filter>Inc\Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\JimmyGodEngine.cpp">
@@ -196,6 +199,9 @@
     </ClCompile>
     <ClCompile Include="Src\Rope.cpp">
       <Filter>Src\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ModelComponent.cpp">
+      <Filter>Src\Component</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

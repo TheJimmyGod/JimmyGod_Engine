@@ -1,12 +1,14 @@
 #include "Precompiled.h"
 #include "Cloth.h"
 
+#include "TransformComponent.h"
+#include "ModelComponent.h"
 using namespace JimmyGod;
 using namespace JimmyGod::Graphics;
 using namespace JimmyGod::Physics;
 using namespace JimmyGod::Math;
 
-void Cloth::Initialize(const std::filesystem::path & path, uint32_t width, uint32_t height)
+void Cloth::Initialize(GameObject& gameObject, const std::filesystem::path & path, uint32_t width, uint32_t height)
 {
 	PhysicsWorld::Settings settings;
 	settings.gravity = { 0.0f,-9.8f,0.0f };
@@ -26,6 +28,8 @@ void Cloth::Initialize(const std::filesystem::path & path, uint32_t width, uint3
 		JimmyGod::Graphics::Sampler::AddressMode::Border);
 	mTexture.Initialize(path);
 	mConstantBuffer.Initialize(sizeof(Matrix4));
+
+	mOwner = &gameObject;
 }
 
 void Cloth::Terminate()
@@ -38,13 +42,14 @@ void Cloth::Terminate()
 	mMeshBuffer.Terminate();
 	mPhysicsWorld.Clear();
 	mRasterizerState.Terminate();
+
+	mOwner->Terminate();
 }
 
-void Cloth::Update(float deltaTime, int dir, bool isCloak)
+void Cloth::Update(float deltaTime, bool isCloak)
 {
 	if (!IsDisplay)return;
 	mPhysicsWorld.Update(deltaTime);
-
 
 	if (isCloak == true)
 	{
@@ -78,11 +83,15 @@ void Cloth::Update(float deltaTime, int dir, bool isCloak)
 			mMesh.vertices[i].position = mParticles[i]->position;
 		}
 	}
-
+	SetPosition();
 }
 
-void Cloth::ShowCloth(const JimmyGod::Math::Vector3 & pos)
+void Cloth::ShowCloth()
 {
+	const std::vector<Matrix4> boneMatrix = mOwner->GetComponent<ModelComponent>()->GetAnimator().GetBoneMatrices();
+	const Bone* mNeck = FindBone(mOwner->GetComponent<ModelComponent>()->GetModel().mSkeleton, "mixamorig1:Neck");
+	const Vector3 pos = mOwner->GetComponent<TransformComponent>()->GetPosition() + (GetTranslation(boneMatrix[mNeck->index]) * mOwner->GetComponent<TransformComponent>()->GetScale());
+
 	IsDisplay = true;
 	Vector3 offset = { 0.5f * mWidth + pos.x, 0.5f * mHeight + pos.y, pos.z };
 	mParticles.clear();
@@ -167,9 +176,17 @@ void Cloth::SetVelocity(const Vector3 & vel)
 		p->SetVelocity(mVelocity);
 }
 
-void Cloth::SetPosition(const JimmyGod::Math::Vector3& neck,const JimmyGod::Math::Vector3 & left, const JimmyGod::Math::Vector3 & right)
+void Cloth::SetPosition()
 {
-	mCenter = neck;
-	mLeft = left;
-	mRight = right;
+	const Vector3 position = mOwner->GetComponent<TransformComponent>()->GetPosition();
+	const Matrix4 rotation = mOwner->GetComponent<TransformComponent>()->GetRotation();
+	const std::vector<Matrix4> boneMatrix = mOwner->GetComponent<ModelComponent>()->GetAnimator().GetBoneMatrices();
+
+	const Bone* mLeftShoulder = FindBone(mOwner->GetComponent<ModelComponent>()->GetModel().mSkeleton, "mixamorig1:LeftArm_$AssimpFbx$_Translation");
+	const Bone* mRightShoulder = FindBone(mOwner->GetComponent<ModelComponent>()->GetModel().mSkeleton, "mixamorig1:RightArm_$AssimpFbx$_Translation");
+	const Bone* mNeck = FindBone(mOwner->GetComponent<ModelComponent>()->GetModel().mSkeleton, "mixamorig1:Neck");
+
+	mCenter = position + Vector3{ 0.0f, 0.2f, 0.0f } + GetTranslation(boneMatrix[mNeck->index] * rotation) * 0.04f;
+	mLeft = position + Vector3{ 0.0f, 0.2f, 0.0f } + GetTranslation(boneMatrix[mLeftShoulder->index] * rotation) * 0.04f;
+	mRight = position + Vector3{ 0.0f, 0.2f, 0.0f } + GetTranslation(boneMatrix[mRightShoulder->index] * rotation) * 0.04f;
 }
