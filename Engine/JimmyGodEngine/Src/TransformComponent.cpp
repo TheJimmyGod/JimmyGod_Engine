@@ -68,14 +68,19 @@ const Vector3 & TransformComponent::GetPosition() const
 
 void TransformComponent::SetRotation(float radian)
 {
-	//rot = Quaternion::RotationAxis(GetPosition(), radian * Constants::DegToRad);
+	rot = Quaternion::RotationAxis(Vector3::YAxis, radian * Constants::DegToRad);
 
-	rotation = Matrix4::RotationAxis(GetPosition().YAxis, radian * Constants::DegToRad);
+	//rotation = Matrix4::RotationAxis(GetPosition().YAxis, radian * Constants::DegToRad);
 }
 
-const Math::Matrix4 & TransformComponent::GetRotation() const
+void JimmyGod::TransformComponent::SetRotation(const Quaternion& q)
 {
-	return rotation;
+	rot = q;
+}
+
+const Math::Quaternion & TransformComponent::GetRotation() const
+{
+	return rot;
 }
 
 void TransformComponent::SetScale(Math::Vector3 vec)
@@ -92,7 +97,9 @@ const Math::Matrix4& TransformComponent::GetTransform() const
 {
 	//return Math::Matrix4::Transform(GetPosition(), GetRotation(), GetScale());
 
-	return Matrix4::Scaling(GetScale()) * rotation * Matrix4::Translation(GetPosition());
+	return Matrix4::Scaling(GetScale()) * Matrix4::RotationQuaternion(GetRotation()) * Matrix4::Translation(GetPosition());
+
+	//return Matrix4::Scaling(GetScale()) * rotation * Matrix4::Translation(GetPosition());
 }
 
 Math::Vector3 TransformComponent::Forward() const

@@ -6,17 +6,6 @@
 using namespace JimmyGod;
 using namespace JimmyGod::AI;
 
-enum class AStarTypes
-{
-	Euclidian,
-	Manhattan,
-	Chebyshev
-};
-
-enum class PathFind
-{
-	BFS,DFS,Dijkstra,AStar
-};
 
 class TileMap
 {

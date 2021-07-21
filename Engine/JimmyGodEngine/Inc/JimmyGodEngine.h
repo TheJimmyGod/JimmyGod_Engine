@@ -32,7 +32,9 @@
 #include "Service.h"
 
 // Component Headers
+#include "AgentComponent.h"
 #include "ColliderComponent.h"
+#include "GridComponent.h"
 #include "ModelComponent.h"
 #include "TransformComponent.h"
 

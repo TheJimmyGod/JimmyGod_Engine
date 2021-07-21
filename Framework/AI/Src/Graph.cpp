@@ -5,11 +5,15 @@
 using namespace JimmyGod;
 using namespace JimmyGod::AI;
 
-void Graph::Resize(int columns, int rows)
+void Graph::Resize(int columns, int rows, const JimmyGod::Math::Vector3& pos)
 {
 	mColumns = columns;
 	mRows = rows;
 	mNodes.resize(columns * rows); // <= It's better than mNodes.resize(mColumns * mRows); since Load-hit-store
+
+	Vector3 startPos = Vector3::Zero;
+	if (IsZero(pos) == false)
+		startPos = pos - (Vector3::XAxis * columns / 2) - (Vector3::ZAxis * rows / 2);
 
 	for (int y = 0; y < rows; y++)
 	{
@@ -19,15 +23,17 @@ void Graph::Resize(int columns, int rows)
 			int rowDirection[8] = { -1, -1, -1, 0, 0, 1, 1, 1 };
 			int colDirection[8] = { -1, 0, 1, -1, 1, -1, 0, 1 };
 			int index = GetIndex(present_Coord);
-
+			Vector3 point = Vector3::Zero;
+			if (IsZero(startPos) == false)
+				point = startPos + Vector3::XAxis * (x * 0.25f + 0.25f) + Vector3::ZAxis * (y * 0.25f + 0.25f);
+			mNodes[index].position = point;
 			for (int i = 0; i < 8; ++i)
 			{
-				if (GetNode({ x + rowDirection[i],y + colDirection[i] }))
+				if (GetNode(Coord{ x + rowDirection[i],y + colDirection[i] }))
 				{
 					mNodes[index].neighbors.push_back({ x + rowDirection[i],y + colDirection[i] });
 				}
 			}
-			// Homework : Connect neighbors to each node (up to 8, maybe less)
 		}
 	}
 }

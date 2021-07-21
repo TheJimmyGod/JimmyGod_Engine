@@ -33,7 +33,10 @@ namespace JimmyGod
 		void EnableDebug() { if (!isDebugUI) isDebugUI = true; else isDebugUI = false; }
 
 		JimmyGod::Graphics::Model& GetModel() { return mModel; }
+		const JimmyGod::Graphics::Model& GetModel() const { return mModel; }
+
 		JimmyGod::Graphics::Animator& GetAnimator() { return mAnimator; }
+		const JimmyGod::Graphics::Animator& GetAnimator() const { return mAnimator; }
 
 		std::string mPath;
 

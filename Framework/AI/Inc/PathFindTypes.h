@@ -23,12 +23,13 @@ namespace JimmyGod::AI
 		}
 	};
 
+
 	struct Node
 	{
 		using NodeID = size_t;
 		NodeID id;
 		std::vector<Coord> neighbors;
-
+		JimmyGod::Math::Vector3 position = JimmyGod::Math::Vector3::Zero;
 		constexpr bool operator== (const Node* other)
 		{
 			return id == other->id;
@@ -38,8 +39,18 @@ namespace JimmyGod::AI
 		{
 			return id != other->id;
 		}
-
 	};
 
+	enum class AStarTypes
+	{
+		Euclidian,
+		Manhattan,
+		Chebyshev
+	};
+
+	enum class PathFind
+	{
+		BFS, DFS, Dijkstra, AStar
+	};
 
 }

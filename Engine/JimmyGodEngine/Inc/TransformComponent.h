@@ -24,8 +24,9 @@ namespace JimmyGod
 		const Math::Vector3& GetPosition() const;
 
 		void SetRotation(float radian);
-		//const Math::Quaternion& GetRotation() const;
-		const Math::Matrix4& GetRotation() const;
+		void SetRotation(const Quaternion& q);
+		const Math::Quaternion& GetRotation() const;
+		//const Math::Matrix4& GetRotation() const;
 
 		void SetScale(Math::Vector3 vec);
 		const Math::Vector3& GetScale() const;

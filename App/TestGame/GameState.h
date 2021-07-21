@@ -86,4 +86,6 @@ private:
 	bool stopAnimation = false;
 
 	float fps = 0.0f;
+	float mRot = 0.0f;
+	
 };

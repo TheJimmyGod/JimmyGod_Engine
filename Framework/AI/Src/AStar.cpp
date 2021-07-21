@@ -72,7 +72,7 @@ Path AStar::Search(
 					auto it = openList.begin();
 					for (; it != openList.end(); it++)
 					{
-						int getIterIndex = graph.GetIndex({ it->x, it->y });
+						int getIterIndex = graph.GetIndex(Coord{ it->x, it->y });
 
 						if (f < g[getIterIndex] + h[getIterIndex])
 						{
@@ -92,7 +92,7 @@ Path AStar::Search(
 					auto it = openList.begin();
 					for (; it != openList.end(); it++)
 					{
-						int getIterIndex = graph.GetIndex({ it->x, it->y });
+						int getIterIndex = graph.GetIndex(Coord{ it->x, it->y });
 
 						if (f < g[getIterIndex] + h[getIterIndex])
 						{

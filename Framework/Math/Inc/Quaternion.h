@@ -86,19 +86,9 @@ namespace JimmyGod::Math
 			return result;
 		}
 
-		constexpr Quaternion operator= (const Quaternion& q) const
+		constexpr Quaternion Conjugate()
 		{
-			if (this == &q)
-			{
-				return *this;
-			}
-			else
-			{
-				return
-				{
-					q.x,q.y,q.z,q.w
-				};
-			}
+			return { -x,-y,-z,w };
 		}
 
 
@@ -109,9 +99,7 @@ namespace JimmyGod::Math
 			result.x = w * q.x + x * q.w + y * q.z - z * q.y;
 			result.y = w * q.y - x * q.z + y * q.w + z * q.x;
 			result.z = w * q.z + x * q.y - y * q.x + z * q.w;
-
-			*this = q;
-			return *this;
+			return result;
 		}
 
 		constexpr Quaternion operator*= (const Quaternion& q) const
@@ -121,9 +109,7 @@ namespace JimmyGod::Math
 			result.x = w * q.x + x * q.w + y * q.z - z * q.y;
 			result.y = w * q.y - x * q.z + y * q.w + z * q.x;
 			result.z = w * q.z + x * q.y - y * q.x + z * q.w;
-
-			*this = q;
-			return *this;
+			return result;
 		}
 
 		Quaternion& operator+= (const Quaternion& q)

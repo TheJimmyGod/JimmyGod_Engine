@@ -45,7 +45,7 @@ void ModelComponent::Render()
 		DrawSkeleton(mModel.mSkeleton.root, mAnimator.GetBoneMatrices(), 
 			mTransformComponent->GetPosition(), 
 			mTransformComponent->GetScale(), 
-			mTransformComponent->GetRotation());
+			Matrix4::RotationQuaternion(mTransformComponent->GetRotation()));
 
 	mBoneTransformBuffer.Update(&boneTransformData);
 }

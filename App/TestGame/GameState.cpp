@@ -125,7 +125,7 @@ void GameState::Update(float deltaTime)
 	}
 
 	position = mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition();
-	rotation = mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetRotation();
+	rotation = Matrix4::RotationQuaternion(mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetRotation());
 	mRightToe = FindBone(mWorld.Find("Jimmy").Get()->GetComponent<ModelComponent>()->GetModel().mSkeleton, "mixamorig1:RightFoot");
 	
 	mAnimator = &mWorld.Find("Jimmy").Get()->GetComponent<ModelComponent>()->GetAnimator();
@@ -164,9 +164,7 @@ void GameState::Update(float deltaTime)
 			mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.y += mGravity * deltaTime;
 			accelation.y += mGravity * deltaTime;
 			if (mCloak.IsActive())
-			{
 				mCloak.SetVelocity(-accelation);
-			}
 		}
 	}
 	else
@@ -220,7 +218,10 @@ void GameState::Update(float deltaTime)
 	if (mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->pos.y < 0.1f)
 	{
 		if (Magnitude(accelation) != 0.0f)
+		{
 			mWorld.Find("Jimmy").Get()->GetComponent<ModelComponent>()->PlayAnimation(1);
+			//mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->SetRotation(Quaternion::RotationFromTo(mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition(), accelation));
+		}
 		else
 			mWorld.Find("Jimmy").Get()->GetComponent<ModelComponent>()->PlayAnimation(0);
 		if (inputSystem->IsKeyPressed(KeyCode::Z))

@@ -73,8 +73,8 @@ void GameState::Update(float deltaTime)
 	mPhysicsWorld.Update(deltaTime);
 	mTime += deltaTime;
 	
-	mCloth.Update(deltaTime, 0, false);
-	mCloth2.Update(deltaTime, 0, false);
+	mCloth.Update(deltaTime);
+	mCloth2.Update(deltaTime);
 }
 
 void GameState::Render()
@@ -378,7 +378,7 @@ void GameState::DebugUI()
 		mPhysicsWorld.Clear(true);
 		mCloth.Active(true);
 		//mCloth2.Active(true);
-		mCloth.ShowCloth(Vector3{ 0.0f,10.0f,0.0f });
+		mCloth.ShowClothWithoutGameObject(Vector3{0.0f,10.0f,0.0f});
 		//mCloth2.ShowCloth(Vector3{ 20.0f,20.0f,0.0f });
 	}
 	ImGui::End();

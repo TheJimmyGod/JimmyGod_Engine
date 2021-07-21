@@ -12,6 +12,7 @@ META_DERIVED_BEGIN(ColliderComponent, Component)
 	META_FIELD_BEGIN
 		META_FIELD(center, "Center")
 		META_FIELD(extend, "Extend")
+		META_FIELD(radius, "Radius")
 	META_FIELD_END
 META_CLASS_END
 
@@ -50,8 +51,6 @@ const Math::AABB & ColliderComponent::GetAABB() const
 	if (!isActive)
 		return Math::AABB{};
 	auto translation = mTransformComponent->pos;
-
-	// This is incorrect if we have orientation as well
 	return {translation + center,extend};
 }
 
@@ -64,7 +63,7 @@ const Math::OBB & JimmyGod::ColliderComponent::GetOBB() const
 
 const Math::Sphere JimmyGod::ColliderComponent::GetSphere() const
 {
-	return Math::Sphere(center,mRadius);
+	return Math::Sphere(center,radius);
 }
 
 void JimmyGod::ColliderComponent::Active()

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.852
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31313.79
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTest", "UnitTest", "{774AE280-B01D-49D4-BF6C-4D9F2C66FD6A}"
 EndProject
@@ -107,9 +107,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestGame", "App\TestGame\Te
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Jsons", "Jsons", "{EBCEC24F-B987-485A-9ED6-A2A16820CF24}"
 	ProjectSection(SolutionItems) = preProject
-		Assets\Templates\fatBox.json = Assets\Templates\fatBox.json
+		Assets\Templates\Batman.json = Assets\Templates\Batman.json
+		Assets\Templates\Grid.json = Assets\Templates\Grid.json
 		Assets\Templates\longBox.json = Assets\Templates\longBox.json
-		Assets\Templates\tallBox.json = Assets\Templates\tallBox.json
 		Assets\Templates\Test.json = Assets\Templates\Test.json
 	EndProjectSection
 EndProject
@@ -140,6 +140,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02_HelloSteering", "VGP332\02_HelloSteering\02_HelloSteering.vcxproj", "{7E801DA4-FE42-4F91-A4BE-FEC8AD92CEC7}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Fighter_Ground", "App\Fighter_Ground\Fighter_Ground.vcxproj", "{A10AEDDE-1A9A-48D6-9D5D-E8FD6E5A2BD5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Jimmy_Com", "App\Jimmy_Com\Jimmy_Com.vcxproj", "{733004FB-D67E-4D69-8DCB-90AF509D8EDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -485,6 +487,14 @@ Global
 		{A10AEDDE-1A9A-48D6-9D5D-E8FD6E5A2BD5}.Release|x64.Build.0 = Release|x64
 		{A10AEDDE-1A9A-48D6-9D5D-E8FD6E5A2BD5}.Release|x86.ActiveCfg = Release|Win32
 		{A10AEDDE-1A9A-48D6-9D5D-E8FD6E5A2BD5}.Release|x86.Build.0 = Release|Win32
+		{733004FB-D67E-4D69-8DCB-90AF509D8EDC}.Debug|x64.ActiveCfg = Debug|x64
+		{733004FB-D67E-4D69-8DCB-90AF509D8EDC}.Debug|x64.Build.0 = Debug|x64
+		{733004FB-D67E-4D69-8DCB-90AF509D8EDC}.Debug|x86.ActiveCfg = Debug|Win32
+		{733004FB-D67E-4D69-8DCB-90AF509D8EDC}.Debug|x86.Build.0 = Debug|Win32
+		{733004FB-D67E-4D69-8DCB-90AF509D8EDC}.Release|x64.ActiveCfg = Release|x64
+		{733004FB-D67E-4D69-8DCB-90AF509D8EDC}.Release|x64.Build.0 = Release|x64
+		{733004FB-D67E-4D69-8DCB-90AF509D8EDC}.Release|x86.ActiveCfg = Release|Win32
+		{733004FB-D67E-4D69-8DCB-90AF509D8EDC}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -536,6 +546,7 @@ Global
 		{554348C6-E083-4A91-A921-87DE34E4C6EA} = {573FF73C-9489-4392-9656-75CD44089478}
 		{7E801DA4-FE42-4F91-A4BE-FEC8AD92CEC7} = {573FF73C-9489-4392-9656-75CD44089478}
 		{A10AEDDE-1A9A-48D6-9D5D-E8FD6E5A2BD5} = {A623C460-0198-4F9F-A6A6-F950B8A8672B}
+		{733004FB-D67E-4D69-8DCB-90AF509D8EDC} = {A623C460-0198-4F9F-A6A6-F950B8A8672B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F92E4EEF-27D5-486E-BE8A-0E975A93FEA2}

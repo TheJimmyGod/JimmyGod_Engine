@@ -31,11 +31,11 @@ namespace JimmyGod
 		const Vector3& GetMin() const;
 		const Vector3& GetMax() const;
 
-		Math::Vector3 center;
-		Math::Vector3 extend;
+		Math::Vector3 center = Math::Vector3::Zero;
+		Math::Vector3 extend = Math::Vector3::Zero;
+		float radius = 0.0f;
 	private:
 		Math::AABB mAABB;
-		float mRadius = 1.0f;
 		const TransformComponent* mTransformComponent = nullptr;
 
 		bool isDebugUI = false;
