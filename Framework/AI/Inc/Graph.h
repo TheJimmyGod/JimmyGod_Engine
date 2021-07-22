@@ -12,7 +12,7 @@ namespace JimmyGod::AI
 	{
 	public:
 		void Resize(int columns, int rows, const JimmyGod::Math::Vector3& pos = JimmyGod::Math::Vector3::Zero);
-
+		void Resize3D(float columns, float rows, float radius = 1.0f, const JimmyGod::Math::Vector3& pos = JimmyGod::Math::Vector3::Zero);
 		// Graph* me = this; (this) is a const pointer
 
 		inline Node* GetNode(Coord coord)

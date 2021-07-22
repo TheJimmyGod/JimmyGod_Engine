@@ -10,17 +10,21 @@ using namespace JimmyGod::Graphics;
 
 META_DERIVED_BEGIN(GridComponent, Component)
 	META_FIELD_BEGIN
-		META_FIELD(column, "Column")
-		META_FIELD(row, "Row")
+		META_FIELD(worldPos, "WorldPos")
+		META_FIELD(is3D, "Demension")
 		META_FIELD(tileSize,"TileSize")
+		META_FIELD(radius,"Radius")
 	META_FIELD_END
 META_CLASS_END
 
 void JimmyGod::GridComponent::Initialize()
 {
 	mTransformComponent = GetOwner().GetComponent<TransformComponent>();
-	mTiles.resize(column * row, 0);
-	mGraph.Resize(column, row, mTransformComponent->GetPosition());
+	if (is3D)
+		mGraph.Resize3D(worldPos.x, worldPos.y, radius, mTransformComponent->GetPosition());
+	else
+		mGraph.Resize(worldPos.x, worldPos.y);
+	mTiles.resize(mGraph.GetColumns() * mGraph.GetRows(), 0);
 	mNode = mGraph.GetNodes();
 }
 void JimmyGod::GridComponent::Terminate() 
@@ -35,9 +39,9 @@ void JimmyGod::GridComponent::DebugUI()
 		return;
 	if (mNode.empty())
 		return;
-	for (int y = 0; y < row; y++)
+	for (int y = 0; y < mGraph.GetRows(); y++)
 	{
-		for (int x = 0; x < column; x++)
+		for (int x = 0; x < mGraph.GetColumns(); x++)
 		{
 			const int index = GetIndex(x, y);
 			float halfSize = tileSize / 2.0f;
@@ -48,18 +52,43 @@ void JimmyGod::GridComponent::DebugUI()
 			};
 			if (mGraph.GetNode(AI::Coord{ x,y }))
 			{
-				for (size_t i = 0; i < mNode[index].neighbors.size(); i++)
-				{
-					JimmyGod::Graphics::SimpleDraw::AddScreenLine(Vector2(pos.x + halfSize, pos.y + halfSize), Vector2(
-						static_cast<float>(mNode[index].neighbors[i].x * tileSize + halfSize),
-						static_cast<float>(mNode[index].neighbors[i].y * tileSize + halfSize)), JimmyGod::Graphics::Colors::Red);
-				}
-				if(IsZero(mNode[index].position) == false)
-					JimmyGod::Graphics::SimpleDraw::AddSphere(mNode[index].position, 0.75f, Colors::Azure, 12, 12);
+				if(is3D)
+					JimmyGod::Graphics::SimpleDraw::AddSphere(mNode[index].position, 0.25f, Colors::Azure, 6, 6);
+				else
+					for (size_t i = 0; i < mNode[index].neighbors.size(); i++)
+					{
+						JimmyGod::Graphics::SimpleDraw::AddScreenLine(Vector2(pos.x + halfSize, pos.y + halfSize), Vector2(
+							static_cast<float>(mNode[index].neighbors[i].x * tileSize + halfSize),
+							static_cast<float>(mNode[index].neighbors[i].y * tileSize + halfSize)), JimmyGod::Graphics::Colors::Red);
+					}
 			}
 		}
 	}
+	if (is3D)
+		DisplayClosedListIn3D();
+	else
+		DisplayClosedListIn2D();
+}
 
+void JimmyGod::GridComponent::CreateGrid(int columns, int rows, int tileSizes)
+{
+	if (columns == 0 || rows == 0)
+		return;
+
+	mTiles.clear();
+	mGraph.clear();
+	mNode.clear();
+
+	if (is3D)
+		mGraph.Resize3D(worldPos.x, worldPos.y, radius, mTransformComponent->GetPosition());
+	else
+		mGraph.Resize(worldPos.x, worldPos.y);
+	mTiles.resize(mGraph.GetColumns() * mGraph.GetRows(), 0);
+	mNode = mGraph.GetNodes();
+}
+
+void JimmyGod::GridComponent::DisplayClosedListIn2D()
+{
 	switch (mPathFind)
 	{
 	case JimmyGod::AI::PathFind::BFS:
@@ -157,24 +186,13 @@ void JimmyGod::GridComponent::DebugUI()
 	}
 }
 
-void JimmyGod::GridComponent::CreateGrid(int columns, int rows, int tileSizes)
+void JimmyGod::GridComponent::DisplayClosedListIn3D()
 {
-	column = (columns == 0 ? column : columns);
-	row = (rows == 0 ? row : rows);
-	tileSize = (tileSizes == 0 ? tileSize : tileSizes);
-
-	mTiles.clear();
-	mGraph.clear();
-	mNode.clear();
-
-	mTiles.resize(column * row, 0);
-	mGraph.Resize(column, row, mTransformComponent->GetPosition());
-	mNode = mGraph.GetNodes();
 }
 
 int JimmyGod::GridComponent::GetIndex(int x, int y) const
 {
-	return x + (y * column);
+	return x + (y * mGraph.GetColumns());
 }
 
 void JimmyGod::GridComponent::FindPath(const AI::Coord& from, const AI::Coord& to, AI::Path& path)

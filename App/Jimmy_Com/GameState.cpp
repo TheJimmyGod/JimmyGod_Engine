@@ -21,6 +21,7 @@ void GameState::Initialize()
 	camera.SetPosition({ 0.0f, 7.5f, -20.0f });
 	camera.SetLookAt({ 0.0f, 0.0f, 0.0f });
 	mWorld.Create("../../Assets/Templates/Batman.json", "Jimmy");
+	mWorld.Create("../../Assets/Templates/Grid.json", "Grid");
 
 	mVertexShader.Initialize("../../Assets/Shaders/Standard.fx", BoneVertex::Format);
 	mPixelShader.Initialize("../../Assets/Shaders/Standard.fx");
@@ -160,5 +161,6 @@ void GameState::DebugUI()
 				mWorld.Find("Jimmy").Get()->GetComponent<ColliderComponent>()->Active();
 		}
 	}
+	mWorld.Find("Grid").Get()->GetComponent<GridComponent>()->DebugUI();
 	ImGui::End();
 }

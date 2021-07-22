@@ -144,9 +144,6 @@
     <ClInclude Include="Inc\AgentComponent.h">
       <Filter>Inc\Component</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\GridService.h">
-      <Filter>Inc\Services</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\GridComponent.h">
       <Filter>Inc\Component</Filter>
     </ClInclude>
@@ -214,9 +211,6 @@
     </ClCompile>
     <ClCompile Include="Src\AgentComponent.cpp">
       <Filter>Src\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\GridService.cpp">
-      <Filter>Src\Services</Filter>
     </ClCompile>
     <ClCompile Include="Src\GridComponent.cpp">
       <Filter>Src\Component</Filter>

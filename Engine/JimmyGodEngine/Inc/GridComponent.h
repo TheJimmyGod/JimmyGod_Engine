@@ -4,6 +4,8 @@
 
 namespace JimmyGod
 {
+	class TransformComponent;
+
 	class GridComponent final : public Component
 	{
 	public:
@@ -17,15 +19,18 @@ namespace JimmyGod
 		void DebugUI() override;
 
 		void CreateGrid(int columns, int rows, int tileSizes);
+		void DisplayClosedListIn2D();
+		void DisplayClosedListIn3D();
 		int GetIndex(int x, int y) const;
 
 		void FindPath(const AI::Coord& from, const AI::Coord& to, AI::Path& path);
 		void SetPathFind(const char* name);
 
-		int column = 0;
-		int row = 0;
-		int tileSize = 0;
-		bool is2D = true;
+
+		JimmyGod::Math::Vector2 worldPos = JimmyGod::Math::Vector2::Zero;
+		bool is3D= true;
+		float tileSize = 0.0f;
+		float radius = 0.0f;
 
 	private:
 		bool isDebugUI = true;

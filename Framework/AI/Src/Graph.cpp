@@ -7,25 +7,49 @@ using namespace JimmyGod::AI;
 
 void Graph::Resize(int columns, int rows, const JimmyGod::Math::Vector3& pos)
 {
-	mColumns = columns;
-	mRows = rows;
-	mNodes.resize(columns * rows); // <= It's better than mNodes.resize(mColumns * mRows); since Load-hit-store
+	mColumns = static_cast<int>(columns);
+	mRows = static_cast<int>(rows);
+	mNodes.resize(mColumns * mRows); // <= It's better than mNodes.resize(mColumns * mRows); since Load-hit-store;
 
-	Vector3 startPos = Vector3::Zero;
-	if (IsZero(pos) == false)
-		startPos = pos - (Vector3::XAxis * columns / 2) - (Vector3::ZAxis * rows / 2);
-
-	for (int y = 0; y < rows; y++)
+	for (int y = 0; y < mRows; y++)
 	{
-		for (int x = 0; x < columns; x++)
+		for (int x = 0; x < mColumns; x++)
 		{
 			JimmyGod::AI::Coord present_Coord = { x, y };
 			int rowDirection[8] = { -1, -1, -1, 0, 0, 1, 1, 1 };
 			int colDirection[8] = { -1, 0, 1, -1, 1, -1, 0, 1 };
 			int index = GetIndex(present_Coord);
-			Vector3 point = Vector3::Zero;
-			if (IsZero(startPos) == false)
-				point = startPos + Vector3::XAxis * (x * 0.25f + 0.25f) + Vector3::ZAxis * (y * 0.25f + 0.25f);
+
+			for (int i = 0; i < 8; ++i)
+			{
+				if (GetNode(Coord{ x + rowDirection[i],y + colDirection[i] }))
+				{
+					mNodes[index].neighbors.push_back({ x + rowDirection[i],y + colDirection[i] });
+				}
+			}
+		}
+	}
+}
+
+void Graph::Resize3D(float columns, float rows, float radius, const JimmyGod::Math::Vector3& pos)
+{
+	float nodeDistance = radius * 2.0f;
+	mColumns = static_cast<int>(roundf(columns / nodeDistance));
+	mRows = static_cast<int>(roundf(rows / nodeDistance));
+	mNodes.resize(mColumns * mRows); // <= It's better than mNodes.resize(mColumns * mRows); since Load-hit-store
+
+	Vector3 startPos = pos - (Vector3::XAxis * columns / 2) - (Vector3::ZAxis * rows / 2);
+
+	for (int y = 0; y < mRows; y++)
+	{
+		for (int x = 0; x < mColumns; x++)
+		{
+			JimmyGod::AI::Coord present_Coord = { x, y };
+			int rowDirection[8] = { -1, -1, -1, 0, 0, 1, 1, 1 };
+			int colDirection[8] = { -1, 0, 1, -1, 1, -1, 0, 1 };
+			int index = GetIndex(present_Coord);
+			Vector3 point = startPos + (Vector3::XAxis * (x * nodeDistance + radius) + Vector3::ZAxis * (y * nodeDistance + radius));
+
 			mNodes[index].position = point;
 			for (int i = 0; i < 8; ++i)
 			{
