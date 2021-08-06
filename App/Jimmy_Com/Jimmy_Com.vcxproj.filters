@@ -6,5 +6,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="Unit.h" />
+    <ClInclude Include="Flag.h" />
+    <ClInclude Include="Soldier.h" />
+    <ClInclude Include="Mutant.h" />
   </ItemGroup>
 </Project>

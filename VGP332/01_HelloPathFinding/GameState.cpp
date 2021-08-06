@@ -89,7 +89,7 @@ void GameState::DebugUI()
 				if (tile == 0)
 					return false;
 				return true;
-			});
+			}, 5.0f);
 		}
 		if (ImGui::Button("Reset BFS"))
 		{

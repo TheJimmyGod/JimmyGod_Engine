@@ -13,12 +13,13 @@ void JimmyGod::AI::BFS::Reset()
 	parent.clear();
 }
 
-Path BFS::Search(const Graph & graph, Coord start, Coord end, std::function<bool(Coord)> isBlocked)
+Path BFS::Search(const Graph & graph, Coord start, Coord end, std::function<bool(Coord)> isBlocked, float maxDistance = 5.0f)
 {
 	Reset();
 	parent.resize(graph.GetColumns() * graph.GetRows());
 	opened.resize(graph.GetColumns()* graph.GetRows());
 	closed.resize(graph.GetColumns()* graph.GetRows());
+	g.resize(graph.GetColumns() * graph.GetRows());
 
 	// Add Start to the open list
 	openList.push_back(start);
@@ -43,9 +44,11 @@ Path BFS::Search(const Graph & graph, Coord start, Coord end, std::function<bool
 			{
 				int index = graph.GetIndex(neighbor);
 				//isBlocked = [&](Coord coord) {return graph.GetNode(coord); };
-				if (!opened[index] && !isBlocked(neighbor))
+				float gCost = g[index] + 1;
+				if (!opened[index] && !isBlocked(neighbor) && g[index] < maxDistance)
 				{
 					openList.push_back(neighbor);
+					g[index] = gCost;
 					opened[index] = true;
 					parent[index] = current;
 				}

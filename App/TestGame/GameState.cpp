@@ -36,7 +36,7 @@ void GameState::Initialize()
 	camera.SetFarPlane(1750.0f);
 	camera.SetPosition({ 0.0f, 7.5f, -20.0f });
 	camera.SetLookAt({ 0.0f, 0.0f, 0.0f });
-	mWorld.Create("../../Assets/Templates/tallBox.json", "Jimmy");
+	mWorld.Create("../../Assets/Templates/Batman.json", "Jimmy");
 
 	mVertexShader.Initialize("../../Assets/Shaders/Standard.fx", BoneVertex::Format);
 	mPixelShader.Initialize("../../Assets/Shaders/Standard.fx");

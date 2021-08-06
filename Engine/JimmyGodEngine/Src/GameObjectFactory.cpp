@@ -5,6 +5,7 @@
 #include "TransformComponent.h"
 #include "ColliderComponent.h"
 #include "ModelComponent.h"
+#include "AgentComponent.h"
 #include "GridComponent.h"
 
 using namespace JimmyGod;

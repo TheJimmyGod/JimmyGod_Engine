@@ -1,5 +1,5 @@
 #include "GameState.h"
-
+#include <iostream>
 #include <ImGui/Inc/imgui.h>
 
 using namespace JimmyGod;
@@ -18,7 +18,7 @@ void GameState::Initialize()
 
 	camera.SetNearPlane(0.1f);
 	camera.SetFarPlane(1750.0f);
-	camera.SetPosition({ 0.0f, 7.5f, -20.0f });
+	camera.SetPosition({ 0.0f, 70.0f, -1.0f });
 	camera.SetLookAt({ 0.0f, 0.0f, 0.0f });
 	mWorld.Create("../../Assets/Templates/Batman.json", "Jimmy");
 	mWorld.Create("../../Assets/Templates/Grid.json", "Grid");
@@ -56,9 +56,11 @@ void GameState::Initialize()
 	settings.drag = 0.3f;
 	settings.iterations = 1;
 
+	Jimmy = mWorld.Find("Jimmy").Get();
+	Grid = mWorld.Find("Grid").Get();
 	mPhysicsWorld.Initialize(settings);
-	mPhysicsWorld.AddOBB(mWorld.Find("Jimmy").Get()->GetComponent<ColliderComponent>()->GetOBB());
-
+	mPhysicsWorld.AddOBB(Jimmy->GetComponent<ColliderComponent>()->GetOBB());
+	Grid->GetComponent<GridComponent>()->ObjectPosition(Jimmy->GetComponent<TransformComponent>()->GetPosition());
 }
 
 void GameState::Terminate()
@@ -79,6 +81,7 @@ void GameState::Update(float deltaTime)
 	auto inputSystem = InputSystem::Get();
 
 	auto& camera = mCamera->GetActiveCamera();
+
 	const float kMoveSpeed = inputSystem->IsKeyDown(KeyCode::LSHIFT) ? 100.0f : 10.0f;
 	const float kTurnSpeed = 1.0f;
 
@@ -86,27 +89,38 @@ void GameState::Update(float deltaTime)
 	mWorld.Update(deltaTime);
 	mPhysicsWorld.Update(deltaTime);
 
-	if (inputSystem->IsMouseDown(MouseButton::RBUTTON))
+	float column = static_cast<float>(JimmyGod::Input::InputSystem::Get()->GetMouseScreenX());
+	float row = static_cast<float>(JimmyGod::Input::InputSystem::Get()->GetMouseScreenY());
+	Ray ray = camera.ScreenPointToWorldRay(column, row);
+
+	Vector3 v = ray.GetPoint(80.0f);
+
+	if (inputSystem->IsMouseDown(MouseButton::LBUTTON))
 	{
-		camera.Yaw(inputSystem->GetMouseMoveX() * kTurnSpeed * deltaTime);
-		camera.Pitch(inputSystem->GetMouseMoveY() * kTurnSpeed * deltaTime);
+		destiniation = Grid->GetComponent<GridComponent>()->GetGraph().GetCoordinate(Vector3{ v.x,0.0f,v.z });
+		bool check = Grid->GetComponent<GridComponent>()->CheckMaximumAndMinimumGird(destiniation);
+		if(check)
+			Grid->GetComponent<GridComponent>()->ObjectPosition(Vector3{ v.x,0.0f,v.z });
 	}
-	if (inputSystem->IsKeyDown(KeyCode::W))
+
+	if (inputSystem->IsKeyDown(KeyCode::SPACE))
 	{
-		camera.Walk(kMoveSpeed * deltaTime);
+		current = Grid->GetComponent<GridComponent>()->GetGraph().GetCoordinate(
+			Jimmy->GetComponent<AgentComponent>()->GetPosition());
+		Grid->GetComponent<GridComponent>()->FindPath(current,
+			destiniation, Jimmy->GetComponent<AgentComponent>()->mArea,
+			Jimmy->GetComponent<AgentComponent>()->mPath);
+		if (Jimmy->GetComponent<AgentComponent>()->mPath.size() > 0)
+			Jimmy->GetComponent<AgentComponent>()->ChangeState("Move");
 	}
-	if (inputSystem->IsKeyDown(KeyCode::S))
+
+	if (Jimmy->GetComponent<AgentComponent>()->GetSpeed() > 0.1f)
 	{
-		camera.Walk(-kMoveSpeed * deltaTime);
+		Jimmy->GetComponent<ModelComponent>()->PlayAnimation(1);
+		Grid->GetComponent<GridComponent>()->ObjectPosition(Jimmy->GetComponent<TransformComponent>()->GetPosition());
 	}
-	if (inputSystem->IsKeyDown(KeyCode::D))
-	{
-		camera.Strafe(kMoveSpeed * deltaTime);
-	}
-	if (inputSystem->IsKeyDown(KeyCode::A))
-	{
-		camera.Strafe(-kMoveSpeed * deltaTime);
-	}
+	else
+		Jimmy->GetComponent<ModelComponent>()->PlayAnimation(0);
 }
 
 void GameState::Render()
@@ -132,7 +146,7 @@ void GameState::Render()
 	mSettingsBuffer.Update(&mSettings);
 	mSettingsBuffer.BindVS(3);
 	mSettingsBuffer.BindPS(3);
-	auto matWorld = mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetTransform();
+	auto matWorld = Jimmy->GetComponent<TransformComponent>()->GetTransform();
 
 	TransformData transformData;
 	transformData.world = Transpose(matWorld);
@@ -140,9 +154,9 @@ void GameState::Render()
 	transformData.viewPosition = mCamera->GetActiveCamera().GetPosition();
 	mTransformBuffer.Update(&transformData);
 
-	mWorld.Find("Jimmy").Get()->GetComponent<ModelComponent>()->Render();
+	Jimmy->GetComponent<ModelComponent>()->Render();
 
-	SimpleDraw::AddGroundPlane(100.0f, 2.0f, Colors::Magenta);
+	SimpleDraw::AddGroundPlane(80.0f, 2.0f, Colors::Black);
 	SimpleDraw::Render(mCamera->GetActiveCamera());
 }
 
@@ -158,9 +172,15 @@ void GameState::DebugUI()
 		if (ImGui::CollapsingHeader("Debug UI Option", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			if (ImGui::Checkbox("OBB Debug UI active/inactive", &OBBcollision))
-				mWorld.Find("Jimmy").Get()->GetComponent<ColliderComponent>()->Active();
+				Jimmy->GetComponent<ColliderComponent>()->Active();
 		}
 	}
-	mWorld.Find("Grid").Get()->GetComponent<GridComponent>()->DebugUI();
+	
+	if(Jimmy->GetComponent<AgentComponent>()->GetSpeed() == 0)
+		Grid->GetComponent<GridComponent>()->DisplayAreaCube(
+			Jimmy->GetComponent<AgentComponent>()->mArea, 
+			Jimmy->GetComponent<AgentComponent>()->GetPosition());
+
+	Grid->GetComponent<GridComponent>()->DebugUI();
 	ImGui::End();
 }

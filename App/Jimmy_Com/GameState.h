@@ -58,8 +58,18 @@ private:
 	std::vector<JimmyGod::Physics::Particle*> particles;
 	
 private:
+
+	bool isActive = false;
+
 	float mTime = 0.0f;
 	const float mGravity = -9.8f;
 
 	float fps = 0.0f;
+
+private:
+	GameObject* Jimmy = nullptr;
+	GameObject* Grid = nullptr;
+
+	JimmyGod::AI::Coord destiniation = {0,0};
+	JimmyGod::AI::Coord current = { 0,0 };
 };

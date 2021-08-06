@@ -414,6 +414,52 @@ bool JimmyGod::Math::Intersect(const Circle& c, const LineSegment& l, Vector2* c
 	return true;
 }
 
+bool JimmyGod::Math::Intersect(const Ray& ray, const Sphere& sphere, float& distance)
+{
+	Vector3 originToCenter = sphere.center - ray.origin;
+	float originToCenterDist = Magnitude(originToCenter);
+	// Check if sphere is behind the origin
+	const float d = Dot(originToCenter, ray.direction);
+	if (d < 0.0f)
+	{
+		// Check if origin is inside sphere
+		if (originToCenterDist > sphere.radius)
+		{
+			// No intersection
+			return false;
+		}
+		else
+		{
+			Vector3 centerOnRay = ray.origin + ray.direction * d;
+			float side = sqrt(Sqr(sphere.radius) - MagnitudeSqr(sphere.center - centerOnRay));
+			distance = side - Magnitude(centerOnRay - ray.origin);
+			return true;
+		}
+	}
+	// Center of sphere projects on the ray
+	Vector3 centerOnRay = ray.GetPoint(d);
+	// Check if projected center is inside sphere
+	float centerToRayDist = Magnitude(sphere.center - centerOnRay);
+	if (centerToRayDist > sphere.radius)
+	{
+		// No intersection
+		return false;
+	}
+	float side = sqrt(Sqr(sphere.radius) - Sqr(centerToRayDist));
+	if (originToCenterDist > sphere.radius)
+	{
+		// Origin is outside sphere
+		distance = Magnitude(centerOnRay - ray.origin) - side;
+	}
+	else
+	{
+		// Origin is inside sphere
+		distance = Magnitude(centerOnRay - ray.origin) + side;
+	}
+	return true;
+}
+
+
 bool JimmyGod::Math::Intersect(const LineSegment& l, const Circle& c)
 {
 	return Intersect(c, l);

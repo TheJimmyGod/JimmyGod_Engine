@@ -2,6 +2,18 @@
 
 namespace JimmyGod::AI
 {
+	enum Direction
+	{
+		North,
+		South,
+		East,
+		West,
+		NorthEast,
+		NorthWest,
+		SouthEast,
+		SouthWest
+	};
+
 	struct Coord
 	{
 		int x = -1;
@@ -30,6 +42,8 @@ namespace JimmyGod::AI
 		NodeID id;
 		std::vector<Coord> neighbors;
 		JimmyGod::Math::Vector3 position = JimmyGod::Math::Vector3::Zero;
+		bool walkable = true;
+
 		constexpr bool operator== (const Node* other)
 		{
 			return id == other->id;
@@ -38,6 +52,11 @@ namespace JimmyGod::AI
 		constexpr bool operator!= (const Node* other)
 		{
 			return id != other->id;
+		}
+
+		constexpr bool GetWalkable() const
+		{
+			return walkable;
 		}
 	};
 

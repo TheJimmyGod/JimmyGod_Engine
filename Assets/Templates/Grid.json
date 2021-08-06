@@ -21,13 +21,10 @@
         }
       },
       "GridComponent": {
-        "WorldPos": {
-          "x": 50,
-          "y": 50
-        },
+        "WorldPos": { "x": 80, "y": 80 },
         "Demension": true,
-        "TileSize": 32,
-        "Radius":  1.0
+        "TileSize2D": 32,
+        "TileRadius3D": 1.0
       }
     }
   }

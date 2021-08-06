@@ -33,6 +33,12 @@
         },
         "Radius": 1.0
       },
+      "AgentComponent": {
+        "Speed": 12.0,
+        "Weight": 1.0,
+        "Radius": 12.0,
+        "Area": 6
+      },
       "ModelComponent": {
         "Path": "../../Assets/Models/Batman/Idle.model"
       }

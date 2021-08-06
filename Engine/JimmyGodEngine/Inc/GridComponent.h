@@ -16,25 +16,41 @@ namespace JimmyGod
 
 		void Initialize() override;
 		void Terminate() override;
+		void Update(float deltaTime) override;
 		void DebugUI() override;
+
+		void ObjectPosition(const Math::Vector3 pos);
+		const AI::Coord GetObjectCoordinate() const { return mCurrentCoordinate; }
 
 		void CreateGrid(int columns, int rows, int tileSizes);
 		void DisplayClosedListIn2D();
 		void DisplayClosedListIn3D();
+		void DisplayAreaCube(int area, const Math::Vector3& pos);
 		int GetIndex(int x, int y) const;
 
-		void FindPath(const AI::Coord& from, const AI::Coord& to, AI::Path& path);
+		void FindPath(const AI::Coord& from, const AI::Coord& to, float maxDistance,std::vector<Math::Vector3>& newPath);
 		void SetPathFind(const char* name);
 
+		bool CheckMaximumAndMinimumGird(const AI::Coord& coord) const;
+
+		const int GetColumns() const { return mGraph.GetColumns(); }
+		const int GetRows() const { return mGraph.GetRows(); }
+
+		const AI::Graph& GetGraph() const { return mGraph; }
 
 		JimmyGod::Math::Vector2 worldPos = JimmyGod::Math::Vector2::Zero;
 		bool is3D= true;
-		float tileSize = 0.0f;
-		float radius = 0.0f;
+		float tileSize2D = 0.0f;
+		float tileRadius3D = 0.0f;
 
 	private:
-		bool isDebugUI = true;
+		bool isDebugUI = false;
 		bool isActive = true;
+
+		int maxY = 0;
+		int minX = 0;
+		int minY = 0;
+		int maxX = 0;
 
 		AI::PathFind mPathFind = AI::PathFind::AStar;
 		AI::AStarTypes mAStarType = AI::AStarTypes::Manhattan;
@@ -45,6 +61,9 @@ namespace JimmyGod
 		AI::DFS mDFS;
 		std::vector<AI::Node> mNode;
 		std::vector<int> mTiles;
+
+		AI::Coord mCurrentCoordinate;
+		JimmyGod::Graphics::TextureId mTextureIds[10];
 		const TransformComponent* mTransformComponent = nullptr;
 	};
 }
