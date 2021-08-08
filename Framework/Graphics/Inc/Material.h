@@ -2,8 +2,10 @@
 
 #include "Colors.h"
 
+
 namespace JimmyGod::Graphics
 {
+	
 	struct Material
 	{
 		Color ambient;

@@ -7,6 +7,8 @@ namespace JimmyGod
 {
 	class TransformComponent;
 	class ColliderComponent;
+	class ModelComponent;
+
 	class AIWorld;
 
 	class AgentComponent final : public Component
@@ -22,6 +24,11 @@ namespace JimmyGod
 		void DebugUI() override;
 
 		void ChangeState(std::string stateName) { mStateMachine->ChangeState(stateName);}
+
+		void Dead()
+		{
+			isActive = false;
+		}
 		void Stop() 
 		{ 
 			mSpeed = 0.0f;
@@ -32,15 +39,18 @@ namespace JimmyGod
 		const JimmyGod::Math::Vector3& GetPosition() const;
 		const float GetSpeed() const;
 
+		const TransformComponent& GetTransformComponent() const { return *mTransformComponent; }
+		const ColliderComponent& GetColliderComponent() const { return *mColliderComponent; }
+		ColliderComponent& GetColliderComponent() { return *mColliderComponent; }
+		const ModelComponent& GetModelComponent() const { return *mModelComponent; }
+		ModelComponent& GetModelComponent() { return *mModelComponent; }
+
 		float mMovementSpeed = 0.0f;
 		float mMass = 0.0f;
 		float mRadius = 0.0f;
 		int mArea = 0;
-
-		TransformComponent* GetTransformComponent();
-
 		std::vector<Math::Vector3> mPath;
-		/*Math::Vector3 mDestination = Math::Vector3::Zero;*/
+
 	private:
 		std::unique_ptr<JimmyGod::AI::StateMachine<AgentComponent>> mStateMachine;
 	private:
@@ -49,7 +59,8 @@ namespace JimmyGod
 		float mSpeed = 0.0f;
 
 		TransformComponent* mTransformComponent = nullptr;
-		const ColliderComponent* mColliderComponent = nullptr;
+		ColliderComponent* mColliderComponent = nullptr;
+		ModelComponent* mModelComponent = nullptr;
 	};
 
 	class Idle : public JimmyGod::AI::State<AgentComponent>

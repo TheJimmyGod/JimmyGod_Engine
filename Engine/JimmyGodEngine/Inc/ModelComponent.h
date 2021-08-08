@@ -17,29 +17,20 @@ namespace JimmyGod
 		void Render() override;
 		void DebugUI() override;
 
-		void PlayAnimation(int index)
-		{
-			mAnimator.PlayAnimation(index);
-		}
-		void SetAnimationSpeed(float value)
-		{
-			mAnimator.SetSpeed(value);
-		}
-		void SetAnimationTime(float value)
-		{
-			mAnimator.SetTime(value);
-		}
+		void PlayAnimation(int index) { mAnimator.PlayAnimation(index); }
+		void SetAnimationSpeed(float value) { mAnimator.SetSpeed(value); }
+		void SetAnimationTime(float value) { mAnimator.SetTime(value); }
 
 		void EnableDebug() { if (!isDebugUI) isDebugUI = true; else isDebugUI = false; }
 
 		JimmyGod::Graphics::Model& GetModel() { return mModel; }
 		const JimmyGod::Graphics::Model& GetModel() const { return mModel; }
 
-		JimmyGod::Graphics::Animator& GetAnimator() { return mAnimator; }
+		auto& GetBoneMatrices() { return mAnimator.GetBoneMatrices(); }
 		const JimmyGod::Graphics::Animator& GetAnimator() const { return mAnimator; }
 
 		std::string mPath;
-
+		void Active(bool active) { isActive = active; }
 	private:
 		JimmyGod::Graphics::Model mModel;
 		JimmyGod::Graphics::Animator mAnimator;
@@ -55,5 +46,6 @@ namespace JimmyGod
 		BoneTransformBuffer mBoneTransformBuffer;
 
 		bool isDebugUI = false;
+		bool isActive = true;
 	};
 }

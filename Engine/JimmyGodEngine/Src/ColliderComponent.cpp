@@ -66,13 +66,6 @@ const Math::Sphere JimmyGod::ColliderComponent::GetSphere() const
 	return Math::Sphere(center,radius);
 }
 
-void JimmyGod::ColliderComponent::Active()
-{
-	isActive = !isActive;
-	if (!isActive)
-		isDebugUI = false;
-}
-
 bool JimmyGod::ColliderComponent::CheckAABBCollider(const Math::AABB & a, const Math::AABB & b)
 {
 	Vector3 AABBForA1 = a.center + a.center + a.extend;

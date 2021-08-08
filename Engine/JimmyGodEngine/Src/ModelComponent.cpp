@@ -30,24 +30,28 @@ void ModelComponent::Terminate()
 
 void ModelComponent::Update(float deltaTime)
 {
-	mAnimator.Update(deltaTime);
+	if(isActive)
+		mAnimator.Update(deltaTime);
 }
 
 void ModelComponent::Render()
 {
-	mBoneTransformBuffer.BindVS(5);
-	BoneTransformData boneTransformData{};
-	for (size_t i = 0; i < mAnimator.GetBoneMatrices().size(); ++i)
-		boneTransformData.BoneTransforms[i] = Transpose(mModel.mSkeleton.bones[i]->offsetTransform * mAnimator.GetBoneMatrices()[i]);
-	if (!isDebugUI)
-		mModel.Render();
-	else
-		DrawSkeleton(mModel.mSkeleton.root, mAnimator.GetBoneMatrices(), 
-			mTransformComponent->GetPosition(), 
-			mTransformComponent->GetScale(), 
-			Matrix4::RotationQuaternion(mTransformComponent->GetRotation()));
+	if (isActive)
+	{
+		mBoneTransformBuffer.BindVS(5);
+		BoneTransformData boneTransformData{};
+		for (size_t i = 0; i < mAnimator.GetBoneMatrices().size(); ++i)
+			boneTransformData.BoneTransforms[i] = Transpose(mModel.mSkeleton.bones[i]->offsetTransform * mAnimator.GetBoneMatrices()[i]);
+		if (!isDebugUI)
+			mModel.Render();
+		else
+			DrawSkeleton(mModel.mSkeleton.root, mAnimator.GetBoneMatrices(),
+				mTransformComponent->GetPosition(),
+				mTransformComponent->GetScale(),
+				Matrix4::RotationQuaternion(mTransformComponent->GetRotation()));
 
-	mBoneTransformBuffer.Update(&boneTransformData);
+		mBoneTransformBuffer.Update(&boneTransformData);
+	}
 }
 
 void ModelComponent::DebugUI()

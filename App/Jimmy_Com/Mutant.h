@@ -5,12 +5,12 @@
 class Mutant : public Unit
 {
 public:
-	Mutant() : Unit(mName,mFlag,mHealth,mMaxHelath,mDamage,mDefence,mRange)
+	Mutant(std::string name, Flag flag, float health, float dmg, float def, float range) :
+		Unit(name, flag, health, dmg, def, range)
 	{}
 
 	~Mutant() = default;
 
 	void TakeDamage(float val) override;
-	void Move(const JimmyGod::Math::Vector3& pos) override;
-	void Attack() override;
+	void Attack(Unit& unit) override;
 };

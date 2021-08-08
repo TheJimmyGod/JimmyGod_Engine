@@ -16,7 +16,7 @@ namespace JimmyGod
 		void DebugUI() override;
 
 		void EnableDebug() { if (!isDebugUI) isDebugUI = true; else isDebugUI = false; }
-
+		void Active(bool active) { isActive = active; }
 		void SetLookAt(const Math::Vector3& from, const Math::Vector3& to, const Math::Vector3& worldUp = Math::Vector3::YAxis);
 
 		void SetPosition(Math::Vector3 vec);
@@ -40,11 +40,11 @@ namespace JimmyGod
 		Vector3 pos = Vector3::Zero;
 		Vector3 scl = Vector3::One;
 		Quaternion rot = Quaternion::Zero;
-		Matrix4 rotation = Matrix4::Identity;
 	private:
 	
 		Matrix4 mat = Matrix4::Identity;
 		
 		bool isDebugUI = false;
+		bool isActive = false;
 	};
 }

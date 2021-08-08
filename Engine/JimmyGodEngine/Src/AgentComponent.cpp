@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "TransformComponent.h"
 #include "ColliderComponent.h"
+#include "ModelComponent.h"
 
 using namespace JimmyGod;
 using namespace JimmyGod::Math;
@@ -23,6 +24,7 @@ void JimmyGod::AgentComponent::Initialize()
 {
 	mTransformComponent = GetOwner().GetComponent<TransformComponent>();
 	mColliderComponent = GetOwner().GetComponent<ColliderComponent>();
+	mModelComponent = GetOwner().GetComponent<ModelComponent>();
 
 	mStateMachine = std::make_unique<StateMachine<AgentComponent>>(*this);
 	mStateMachine->AddState<Idle>("Idle");
@@ -52,8 +54,8 @@ void JimmyGod::AgentComponent::Movement(const Vector3& pos)
 {
 	mSpeed = Magnitude(pos);
 
-	GetTransformComponent()->rot = Quaternion::RotationLook(GetTransformComponent()->pos - pos);
-	GetTransformComponent()->pos = pos;
+	mTransformComponent->rot = Quaternion::RotationLook(GetTransformComponent().pos - pos);
+	mTransformComponent->pos = pos;
 }
 
 const JimmyGod::Math::Vector3& JimmyGod::AgentComponent::GetPosition() const
@@ -64,9 +66,4 @@ const JimmyGod::Math::Vector3& JimmyGod::AgentComponent::GetPosition() const
 const float JimmyGod::AgentComponent::GetSpeed() const
 {
 	return mSpeed;
-}
-
-TransformComponent* JimmyGod::AgentComponent::GetTransformComponent()
-{
-	return mTransformComponent;
 }

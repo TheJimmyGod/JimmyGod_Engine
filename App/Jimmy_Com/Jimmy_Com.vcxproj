@@ -148,11 +148,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="GridManager.cpp" />
+    <ClCompile Include="Unit.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Flag.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="GridManager.h" />
     <ClInclude Include="Mutant.h" />
     <ClInclude Include="Soldier.h" />
     <ClInclude Include="Unit.h" />

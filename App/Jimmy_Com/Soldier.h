@@ -5,12 +5,27 @@
 class Soldier: public Unit
 {
 public:
-	Soldier() : Unit(mName, mFlag, mHealth, mMaxHelath, mDamage, mDefence, mRange)
-	{}
+	Soldier(std::string name, Flag flag, float health, float dmg, float def, float range) : 
+		Unit(name, flag, health, dmg, def, range)
+	{
+		isDead = false;
+	}
 
 	~Soldier() = default;
 
-	void TakeDamage(float val) override;
-	void Move(const JimmyGod::Math::Vector3& pos) override;
-	void Attack() override;
+	void TakeDamage(float val) override
+	{
+		mHealth -= val;
+		if (mHealth < 0.0f)
+		{
+			isDead = true;
+			// TODO: Dead animation
+			mGameObject->GetComponent<AgentComponent>()->Dead();
+		}
+	}
+	void Attack(Unit& unit) override
+	{
+		if (Distance(GetAgent().GetPosition(), unit.GetAgent().GetPosition()) < mRange)
+			unit.TakeDamage(mDamage);
+	}
 };

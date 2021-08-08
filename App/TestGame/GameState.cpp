@@ -127,9 +127,7 @@ void GameState::Update(float deltaTime)
 	position = mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetPosition();
 	rotation = Matrix4::RotationQuaternion(mWorld.Find("Jimmy").Get()->GetComponent<TransformComponent>()->GetRotation());
 	mRightToe = FindBone(mWorld.Find("Jimmy").Get()->GetComponent<ModelComponent>()->GetModel().mSkeleton, "mixamorig1:RightFoot");
-	
-	mAnimator = &mWorld.Find("Jimmy").Get()->GetComponent<ModelComponent>()->GetAnimator();
-	
+
 	if (mCloak.IsActive())
 		mCloak.SetPosition();
 
@@ -138,7 +136,7 @@ void GameState::Update(float deltaTime)
 		mWorld.Find("Jimmy").Get()->GetComponent<ModelComponent>()->SetAnimationSpeed(0.5f);
 		if (isKicked == true)
 		{
-			mSpark.ShowSpark(position + GetTranslation(mAnimator->GetBoneMatrices()[mRightToe->index] * rotation) * 0.04f, velocity,3.0f);
+			mSpark.ShowSpark(position + GetTranslation(mWorld.Find("Jimmy").Get()->GetComponent<ModelComponent>()->GetBoneMatrices()[mRightToe->index] * rotation) * 0.04f, velocity,3.0f);
 			isKicked = false;
 		}
 
@@ -331,7 +329,7 @@ void GameState::DebugUI()
 			if (ImGui::Checkbox("Show DebugUI of particles", &showDebugUI))
 			{}
 			if (ImGui::Checkbox("OBB Debug UI active/inactive", &OBBcollision))
-				mWorld.Find("Jimmy").Get()->GetComponent<ColliderComponent>()->Active();
+				mWorld.Find("Jimmy").Get()->GetComponent<ColliderComponent>()->Active(OBBcollision);
 		}
 
 		if (ImGui::CollapsingHeader("Batman Weapon Option", ImGuiTreeNodeFlags_DefaultOpen))

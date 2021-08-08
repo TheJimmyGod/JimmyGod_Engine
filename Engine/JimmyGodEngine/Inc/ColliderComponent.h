@@ -24,7 +24,7 @@ namespace JimmyGod
 		const Math::OBB& GetOBB() const;
 		const Math::Sphere GetSphere()const;
 
-		void Active();
+		void Active(bool active) { isActive = active; }
 
 		bool CheckAABBCollider(const Math::AABB& a, const Math::AABB& b);
 

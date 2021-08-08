@@ -3,6 +3,8 @@
   <ItemGroup>
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="WinMain.cpp" />
+    <ClCompile Include="Unit.cpp" />
+    <ClCompile Include="GridManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameState.h" />
@@ -10,5 +12,6 @@
     <ClInclude Include="Flag.h" />
     <ClInclude Include="Soldier.h" />
     <ClInclude Include="Mutant.h" />
+    <ClInclude Include="GridManager.h" />
   </ItemGroup>
 </Project>

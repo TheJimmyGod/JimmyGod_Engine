@@ -112,7 +112,7 @@ void Cloth::Update(float deltaTime, bool isCloak)
 
 void Cloth::ShowCloth()
 {
-	const std::vector<Matrix4> boneMatrix = mOwner->GetComponent<ModelComponent>()->GetAnimator().GetBoneMatrices();
+	const std::vector<Matrix4> boneMatrix = mOwner->GetComponent<ModelComponent>()->GetBoneMatrices();
 	const Bone* mNeck = FindBone(mOwner->GetComponent<ModelComponent>()->GetModel().mSkeleton, "mixamorig1:Neck");
 	const Vector3 pos = mOwner->GetComponent<TransformComponent>()->GetPosition() + (GetTranslation(boneMatrix[mNeck->index]) * mOwner->GetComponent<TransformComponent>()->GetScale());
 
@@ -253,7 +253,7 @@ void Cloth::SetPosition()
 {
 	const Vector3 position = mOwner->GetComponent<TransformComponent>()->GetPosition();
 	const Matrix4 rotation = Matrix4::RotationQuaternion(mOwner->GetComponent<TransformComponent>()->GetRotation());
-	const std::vector<Matrix4> boneMatrix = mOwner->GetComponent<ModelComponent>()->GetAnimator().GetBoneMatrices();
+	const std::vector<Matrix4> boneMatrix = mOwner->GetComponent<ModelComponent>()->GetBoneMatrices();
 
 	const Bone* mLeftShoulder = FindBone(mOwner->GetComponent<ModelComponent>()->GetModel().mSkeleton, "mixamorig1:LeftArm_$AssimpFbx$_Translation");
 	const Bone* mRightShoulder = FindBone(mOwner->GetComponent<ModelComponent>()->GetModel().mSkeleton, "mixamorig1:RightArm_$AssimpFbx$_Translation");

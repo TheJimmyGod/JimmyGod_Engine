@@ -13,6 +13,7 @@ public:
 	void DebugUI() override;
 
 private:
+
 	struct TransformData
 	{
 		JimmyGod::Math::Matrix4 world;
@@ -20,10 +21,6 @@ private:
 		JimmyGod::Math::Vector3 viewPosition;
 		float padding;
 	};
-	using TransformBuffer = JimmyGod::Graphics::TypedConstantBuffer<TransformData>;
-	TransformBuffer mTransformBuffer;
-	JimmyGod::GameWorld mWorld;
-	JimmyGod::CameraService* mCamera = nullptr;
 
 	struct SettingsData
 	{
@@ -36,9 +33,26 @@ private:
 		float depthBias = 0.0f;
 		float padding;
 	};
-	using LightBuffer = JimmyGod::Graphics::TypedConstantBuffer<JimmyGod::Graphics::DirectionalLight>;
-	using MaterialBuffer = JimmyGod::Graphics::TypedConstantBuffer<JimmyGod::Graphics::Material>;
-	using SettingsBuffer = JimmyGod::Graphics::TypedConstantBuffer<SettingsData>;
+	struct PostProcessSettingsData
+	{
+		float screenWidth = 0.0f;
+		float screenHeight = 0.0f;
+		float time = 0.0f;
+		float padding;
+	};
+
+	using TransformBuffer = TypedConstantBuffer<TransformData>;
+	using LightBuffer = TypedConstantBuffer<JimmyGod::Graphics::DirectionalLight>;
+	using MaterialBuffer = TypedConstantBuffer<JimmyGod::Graphics::Material>;
+	using SettingsBuffer = TypedConstantBuffer<SettingsData>;
+	using PostProcessingSettingsBuffer = TypedConstantBuffer<PostProcessSettingsData>;
+	using DepthMapConstantBuffer = TypedConstantBuffer<JimmyGod::Math::Matrix4>;
+	using ShadowConstantBuffer = TypedConstantBuffer<JimmyGod::Math::Matrix4>;
+
+	TransformBuffer mTransformBuffer;
+	JimmyGod::GameWorld mWorld;
+	JimmyGod::CameraService* mCamera = nullptr;
+
 	LightBuffer mLightBuffer;
 	MaterialBuffer mMaterialBuffer;
 	SettingsBuffer mSettingsBuffer;
@@ -53,7 +67,6 @@ private:
 
 	JimmyGod::Graphics::DirectionalLight mDirectionalLight;
 	SettingsData mSettings;
-	JimmyGod::Graphics::Animator* mAnimator = nullptr;
 
 	JimmyGod::Graphics::Bone* mLeftShoulder = nullptr;
 	JimmyGod::Graphics::Bone* mRightShoulder = nullptr;

@@ -1,4 +1,7 @@
 #include "GameState.h"
+#include "Unit.h"
+#include "Soldier.h"
+#include "GridManager.h"
 #include <iostream>
 #include <ImGui/Inc/imgui.h>
 
@@ -20,13 +23,15 @@ void GameState::Initialize()
 	camera.SetFarPlane(1750.0f);
 	camera.SetPosition({ 0.0f, 70.0f, -1.0f });
 	camera.SetLookAt({ 0.0f, 0.0f, 0.0f });
-	mWorld.Create("../../Assets/Templates/Batman.json", "Jimmy");
-	mWorld.Create("../../Assets/Templates/Grid.json", "Grid");
+
+	Johny = new Soldier("Johny",Flag::Ally,100.0f,10.0f,1.0f,5.0f);
+	Johny->Initialize(&mWorld, "../../Assets/Templates/Batman.json");
+	
+	GridManager::StaticInitialize(&mWorld);
 
 	mVertexShader.Initialize("../../Assets/Shaders/Standard.fx", BoneVertex::Format);
 	mPixelShader.Initialize("../../Assets/Shaders/Standard.fx");
 
-	mTransformBuffer.Initialize();
 	mLightBuffer.Initialize();
 	mMaterialBuffer.Initialize();
 	mSettingsBuffer.Initialize();
@@ -56,20 +61,20 @@ void GameState::Initialize()
 	settings.drag = 0.3f;
 	settings.iterations = 1;
 
-	Jimmy = mWorld.Find("Jimmy").Get();
-	Grid = mWorld.Find("Grid").Get();
 	mPhysicsWorld.Initialize(settings);
-	mPhysicsWorld.AddOBB(Jimmy->GetComponent<ColliderComponent>()->GetOBB());
-	Grid->GetComponent<GridComponent>()->ObjectPosition(Jimmy->GetComponent<TransformComponent>()->GetPosition());
+	mPhysicsWorld.AddOBB(Johny->GetAgent().GetColliderComponent().GetOBB());
+	GridManager::Get()->GetGird().ObjectPosition(Johny->GetAgent().GetPosition());
 }
 
 void GameState::Terminate()
 {
+	Johny->Terminate();
+	GridManager::StaticTerminate();
+
 	mWorld.Terminate();
 	mSampler.Terminate();
 	mPixelShader.Terminate();
 	mVertexShader.Terminate();
-	mTransformBuffer.Terminate();
 	mLightBuffer.Terminate();
 	mMaterialBuffer.Terminate();
 	mSettingsBuffer.Terminate();
@@ -97,30 +102,22 @@ void GameState::Update(float deltaTime)
 
 	if (inputSystem->IsMouseDown(MouseButton::LBUTTON))
 	{
-		destiniation = Grid->GetComponent<GridComponent>()->GetGraph().GetCoordinate(Vector3{ v.x,0.0f,v.z });
-		bool check = Grid->GetComponent<GridComponent>()->CheckMaximumAndMinimumGird(destiniation);
+		destiniation = GridManager::Get()->GetGraph().GetCoordinate(Vector3{ v.x,0.0f,v.z });
+		bool check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(destiniation);
 		if(check)
-			Grid->GetComponent<GridComponent>()->ObjectPosition(Vector3{ v.x,0.0f,v.z });
+			GridManager::Get()->GetGird().ObjectPosition(Vector3{ v.x,0.0f,v.z });
 	}
 
 	if (inputSystem->IsKeyDown(KeyCode::SPACE))
 	{
-		current = Grid->GetComponent<GridComponent>()->GetGraph().GetCoordinate(
-			Jimmy->GetComponent<AgentComponent>()->GetPosition());
-		Grid->GetComponent<GridComponent>()->FindPath(current,
-			destiniation, Jimmy->GetComponent<AgentComponent>()->mArea,
-			Jimmy->GetComponent<AgentComponent>()->mPath);
-		if (Jimmy->GetComponent<AgentComponent>()->mPath.size() > 0)
-			Jimmy->GetComponent<AgentComponent>()->ChangeState("Move");
+		current = GridManager::Get()->GetGraph().GetCoordinate(
+			Johny->GetAgent().GetPosition());
+		GridManager::Get()->GetGird().FindPath(current, destiniation, Johny->GetAgent().mArea, Johny->GetAgent().mPath);
+		if (Johny->GetAgent().mPath.size() > 0)
+			Johny->GetAgent().ChangeState("Move");
 	}
 
-	if (Jimmy->GetComponent<AgentComponent>()->GetSpeed() > 0.1f)
-	{
-		Jimmy->GetComponent<ModelComponent>()->PlayAnimation(1);
-		Grid->GetComponent<GridComponent>()->ObjectPosition(Jimmy->GetComponent<TransformComponent>()->GetPosition());
-	}
-	else
-		Jimmy->GetComponent<ModelComponent>()->PlayAnimation(0);
+	Johny->Update(deltaTime);
 }
 
 void GameState::Render()
@@ -133,7 +130,6 @@ void GameState::Render()
 
 	mVertexShader.Bind();
 	mPixelShader.Bind();
-	mTransformBuffer.BindVS(0);
 
 	mLightBuffer.Update(&mDirectionalLight);
 	mLightBuffer.BindVS(1);
@@ -146,15 +142,8 @@ void GameState::Render()
 	mSettingsBuffer.Update(&mSettings);
 	mSettingsBuffer.BindVS(3);
 	mSettingsBuffer.BindPS(3);
-	auto matWorld = Jimmy->GetComponent<TransformComponent>()->GetTransform();
 
-	TransformData transformData;
-	transformData.world = Transpose(matWorld);
-	transformData.wvp = Transpose(matWorld * matView * matProj);
-	transformData.viewPosition = mCamera->GetActiveCamera().GetPosition();
-	mTransformBuffer.Update(&transformData);
-
-	Jimmy->GetComponent<ModelComponent>()->Render();
+	Johny->Render(mCamera->GetActiveCamera());
 
 	SimpleDraw::AddGroundPlane(80.0f, 2.0f, Colors::Black);
 	SimpleDraw::Render(mCamera->GetActiveCamera());
@@ -172,15 +161,15 @@ void GameState::DebugUI()
 		if (ImGui::CollapsingHeader("Debug UI Option", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			if (ImGui::Checkbox("OBB Debug UI active/inactive", &OBBcollision))
-				Jimmy->GetComponent<ColliderComponent>()->Active();
+				Johny->GetAgent().GetColliderComponent().Active(false);
 		}
 	}
 	
-	if(Jimmy->GetComponent<AgentComponent>()->GetSpeed() == 0)
-		Grid->GetComponent<GridComponent>()->DisplayAreaCube(
-			Jimmy->GetComponent<AgentComponent>()->mArea, 
-			Jimmy->GetComponent<AgentComponent>()->GetPosition());
+	//if(Jimmy->GetComponent<AgentComponent>()->GetSpeed() == 0)
+	//	Grid->GetComponent<GridComponent>()->DisplayAreaCube(
+	//		Jimmy->GetComponent<AgentComponent>()->mArea, 
+	//		Jimmy->GetComponent<AgentComponent>()->GetPosition());
 
-	Grid->GetComponent<GridComponent>()->DebugUI();
+	GridManager::Get()->GetGird().DebugUI();
 	ImGui::End();
 }
