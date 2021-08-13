@@ -171,6 +171,7 @@
     <ClInclude Include="Inc\JimmyGodEngine.h" />
     <ClInclude Include="Inc\ModelComponent.h" />
     <ClInclude Include="Inc\Planet.h" />
+    <ClInclude Include="Inc\RenderService.h" />
     <ClInclude Include="Inc\Rope.h" />
     <ClInclude Include="Inc\Service.h" />
     <ClInclude Include="Inc\SkyDome.h" />
@@ -197,6 +198,7 @@
     <ClCompile Include="Src\ModelComponent.cpp" />
     <ClCompile Include="Src\Planet.cpp" />
     <ClCompile Include="Src\Precompiled.cpp" />
+    <ClCompile Include="Src\RenderService.cpp" />
     <ClCompile Include="Src\Rope.cpp" />
     <ClCompile Include="Src\Service.cpp" />
     <ClCompile Include="Src\SkyDome.cpp" />

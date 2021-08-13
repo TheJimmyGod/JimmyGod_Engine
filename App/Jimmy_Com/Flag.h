@@ -6,3 +6,9 @@ enum class Flag
 	Neutral,
 	Enemy,
 };
+
+enum class UnitType
+{
+	Soldier,
+	Mutant
+};

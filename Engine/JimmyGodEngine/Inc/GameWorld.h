@@ -48,6 +48,7 @@ namespace JimmyGod
 
 		GameObjectHandle Create(const std::filesystem::path& templateFileName, std::string name);
 		GameObjectHandle Find(const std::string& name);
+		const std::vector<GameObject*>& GetGameObjects() const { return mUpdateList; }
 		void Destroy(GameObjectHandle handle);
 
 		void Update(float deltaTime);

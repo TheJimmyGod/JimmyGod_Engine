@@ -1,0 +1,45 @@
+{
+  "GameObject": {
+    "Components": {
+      "TransformComponent": {
+        "Position": {
+          "x": 3.25,
+          "y": 0,
+          "z": 7.25
+        },
+        "Rotation": {
+          "xDegree": 0,
+          "yDegree": 0,
+          "zDegree": 0
+        },
+        "Scale": {
+          "x": 0.04,
+          "y": 0.04,
+          "z": 0.04
+        }
+      },
+      "ColliderComponent": {
+        "Center": {
+          "x": 0,
+          "y": 3,
+          "z": 0
+        },
+        "Extend": {
+          "x": 1,
+          "y": 3,
+          "z": 1
+        },
+        "Radius": 1.0
+      },
+      "AgentComponent": {
+        "Speed": 12.0,
+        "Weight": 1.0,
+        "Radius": 12.0,
+        "Area": 5
+      },
+      "ModelComponent": {
+        "Path": "../../Assets/Models/Mutant/Mutant.model"
+      }
+    }
+  }
+} 

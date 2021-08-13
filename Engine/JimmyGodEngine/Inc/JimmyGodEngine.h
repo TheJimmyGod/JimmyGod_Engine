@@ -12,6 +12,7 @@
 
 // Service headers
 #include "CameraService.h"
+#include "RenderService.h"
 
 // Terrain headers
 #include "Terrain.h"

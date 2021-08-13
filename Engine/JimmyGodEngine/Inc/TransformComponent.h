@@ -25,6 +25,7 @@ namespace JimmyGod
 
 		void SetRotation(float radian);
 		void SetRotation(const Quaternion& q);
+		void SetRotation(const Vector3& v);
 		const Math::Quaternion& GetRotation() const;
 		//const Math::Matrix4& GetRotation() const;
 

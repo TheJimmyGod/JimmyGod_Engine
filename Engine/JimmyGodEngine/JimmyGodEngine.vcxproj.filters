@@ -147,6 +147,9 @@
     <ClInclude Include="Inc\GridComponent.h">
       <Filter>Inc\Component</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\RenderService.h">
+      <Filter>Inc\Services</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\JimmyGodEngine.cpp">
@@ -214,6 +217,9 @@
     </ClCompile>
     <ClCompile Include="Src\GridComponent.cpp">
       <Filter>Src\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\RenderService.cpp">
+      <Filter>Src\Services</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

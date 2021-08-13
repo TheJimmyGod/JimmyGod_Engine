@@ -78,6 +78,11 @@ void JimmyGod::TransformComponent::SetRotation(const Quaternion& q)
 	rot = q;
 }
 
+void JimmyGod::TransformComponent::SetRotation(const Vector3& v)
+{
+	rot = Quaternion::RotationLook(v);
+}
+
 const Math::Quaternion & TransformComponent::GetRotation() const
 {
 	return rot;

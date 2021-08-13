@@ -39,6 +39,6 @@ namespace JimmyGod
 		const TransformComponent* mTransformComponent = nullptr;
 
 		bool isDebugUI = false;
-		bool isActive = true;
+		bool isActive = false;
 	};
 }

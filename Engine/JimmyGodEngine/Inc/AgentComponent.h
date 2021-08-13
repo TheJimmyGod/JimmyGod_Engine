@@ -32,6 +32,7 @@ namespace JimmyGod
 		void Stop() 
 		{ 
 			mSpeed = 0.0f;
+			mPath.clear();
 			ChangeState("Idle"); 
 		}
 		void Movement(const Vector3& pos);
@@ -40,7 +41,8 @@ namespace JimmyGod
 		const float GetSpeed() const;
 
 		const TransformComponent& GetTransformComponent() const { return *mTransformComponent; }
-		const ColliderComponent& GetColliderComponent() const { return *mColliderComponent; }
+		TransformComponent& GetTransformComponent() { return *mTransformComponent; }
+ 		const ColliderComponent& GetColliderComponent() const { return *mColliderComponent; }
 		ColliderComponent& GetColliderComponent() { return *mColliderComponent; }
 		const ModelComponent& GetModelComponent() const { return *mModelComponent; }
 		ModelComponent& GetModelComponent() { return *mModelComponent; }
@@ -48,7 +50,7 @@ namespace JimmyGod
 		float mMovementSpeed = 0.0f;
 		float mMass = 0.0f;
 		float mRadius = 0.0f;
-		int mArea = 0;
+		float mArea = 0.0f;
 		std::vector<Math::Vector3> mPath;
 
 	private:

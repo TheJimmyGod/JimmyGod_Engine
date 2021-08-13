@@ -37,7 +37,7 @@
         "Speed": 12.0,
         "Weight": 1.0,
         "Radius": 12.0,
-        "Area": 6
+        "Area": 8
       },
       "ModelComponent": {
         "Path": "../../Assets/Models/Batman/Idle.model"

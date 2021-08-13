@@ -195,7 +195,6 @@ void JimmyGod::GridComponent::DisplayAreaCube(int area, const Vector3& pos)
 	minX = Max(c.x - area+1,1);
 	maxY = Min(c.y + area, mGraph.GetRows() - 1);
 	maxX = Min(c.x + area, mGraph.GetColumns() - 1);
-
 	for (int y = minY; y < maxY; y++)
 	{
 		for (int x = minX; x < maxX; x++)
@@ -204,7 +203,10 @@ void JimmyGod::GridComponent::DisplayAreaCube(int area, const Vector3& pos)
 			if (mGraph.GetNode(AI::Coord{ x,y }))
 			{
 				if (is3D)
-					JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(mNode[index].position, 1.0f), Colors::Green);
+				{
+					if(mNode[index].GetWalkable())
+						JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(mNode[index].position, 1.0f), Colors::Green);
+				}
 			}
 		}
 	}
