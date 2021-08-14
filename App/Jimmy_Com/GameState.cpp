@@ -4,6 +4,7 @@
 #include "Soldier.h"
 #include "Mutant.h"
 #include "GridManager.h"
+#include "GameManager.h"
 #include <iostream>
 #include <ImGui/Inc/imgui.h>
 
@@ -16,7 +17,6 @@ using namespace JimmyGod::Physics;
 void GameState::Initialize()
 {
 	GraphicsSystem::Get()->SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
-
 	mCamera = mWorld.AddService<CameraService>();
 	mRender = mWorld.AddService<RenderService>();
 	mWorld.Initialize(100);
@@ -44,9 +44,6 @@ void GameState::Initialize()
 	settings.iterations = 1;
 
 	mPhysicsWorld.Initialize(settings);
-	mPhysicsWorld.AddOBB(Johny->GetAgent().GetColliderComponent().GetOBB());
-	mPhysicsWorld.AddOBB(Zone->GetAgent().GetColliderComponent().GetOBB());
-	GridManager::Get()->GetGird().ObjectPosition(Johny->GetAgent().GetPosition());
 
 	unit = Johny;
 }
@@ -79,42 +76,31 @@ void GameState::Update(float deltaTime)
 	mWorld.Update(deltaTime);
 	mPhysicsWorld.Update(deltaTime);
 
-	float column = static_cast<float>(inputSystem->GetMouseScreenX());
-	float row = static_cast<float>(inputSystem->GetMouseScreenY());
+	int column = inputSystem->GetMouseScreenX();
+	int row = inputSystem->GetMouseScreenY();
 	Ray ray = camera.ScreenPointToWorldRay(column, row);
 
-	Vector3 v = ray.GetPoint(80.0f);
 	if (inputSystem->IsMousePressed(MouseButton::LBUTTON))
 	{
-		AI::Coord position = GridManager::Get()->GetCoordinate(Vector3{ v.x,0.0f,v.z });
-		bool check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(position);
-		if (check)
+		for (auto& node : GridManager::Get()->GetGraph().GetNodes())
 		{
-			destiniation = position;
-			GridManager::Get()->GetGird().ObjectPosition(Vector3{ v.x,0.0f,v.z });
+			if (Intersect(ray, node.collider, dist))
+			{
+				bool check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node.coordinate);
+				if (check)
+				{
+					destiniation = node.coordinate;
+					GridManager::Get()->GetGird().ObjectPosition(node.position);
+				}
+				break;
+			}
 		}
 	}
 
 	if (inputSystem->IsKeyDown(KeyCode::SPACE))
 	{
 		isActive = true;
-		switch (mTurn)
-		{
-		case Flag::Ally:
-		{
-			current = GridManager::Get()->GetGraph().GetCoordinate(Johny->GetAgent().GetPosition());
-			GridManager::Get()->GetGird().FindPath(current, destiniation, Johny->GetAgent().mArea, Johny->GetAgent().mPath);
-			if (Johny->GetAgent().mPath.size() > 0) Johny->GetAgent().ChangeState("Move");
-		} break;
-		case Flag::Neutral: break;
-		case Flag::Enemy:
-		{
-			current = GridManager::Get()->GetGraph().GetCoordinate(Zone->GetAgent().GetPosition());
-			GridManager::Get()->GetGird().FindPath(current, destiniation, Zone->GetAgent().mArea, Zone->GetAgent().mPath);
-			if (Zone->GetAgent().mPath.size() > 0) Zone->GetAgent().ChangeState("Move");
-		} break;
-		default: break;
-		}
+		unit->Move(destiniation);
 	}
 
 	if (unit != nullptr)
@@ -133,6 +119,7 @@ void GameState::Update(float deltaTime)
 				unit = Johny;
 			}
 			GridManager::Get()->GetGird().ObjectPosition(unit->GetAgent().GetPosition());
+			destiniation = GridManager::Get()->GetGraph().GetNode(unit->GetAgent().GetPosition())->coordinate;
 		}
 	}
 

@@ -13,6 +13,8 @@ public:
 	virtual const AgentComponent& GetAgent() const = 0;
 	virtual AgentComponent& GetAgent() = 0;
 
+	virtual const JimmyGod::Math::Sphere& GetSphereCollider() const = 0;
+
 	virtual void Move(const JimmyGod::AI::Coord& pos) = 0;
 	virtual void Attack(Unit& unit) = 0;
 	virtual void TakeDamage(float val) = 0;

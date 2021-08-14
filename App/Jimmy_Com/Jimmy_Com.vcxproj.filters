@@ -5,6 +5,7 @@
     <ClCompile Include="WinMain.cpp" />
     <ClCompile Include="GridManager.cpp" />
     <ClCompile Include="CharacterModule.cpp" />
+    <ClCompile Include="GameManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameState.h" />

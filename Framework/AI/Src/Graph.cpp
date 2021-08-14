@@ -60,6 +60,8 @@ void Graph::Resize3D(float columns, float rows, float radius, const JimmyGod::Ma
 			
 			mNodes[index].position = point;
 			mNodes[index].walkable = true;
+			mNodes[index].collider = { mNodes[index].position,radius };
+			mNodes[index].coordinate = present_Coord;
 			for (int i = 0; i < 8; ++i)
 			{
 				if (GetNode(Coord{ x + rowDirection[i],y + colDirection[i] }))

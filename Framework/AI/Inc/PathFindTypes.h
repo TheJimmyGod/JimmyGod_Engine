@@ -42,6 +42,8 @@ namespace JimmyGod::AI
 		NodeID id;
 		std::vector<Coord> neighbors;
 		JimmyGod::Math::Vector3 position = JimmyGod::Math::Vector3::Zero;
+		JimmyGod::Math::Sphere collider;
+		Coord coordinate;
 		bool walkable = true;
 
 		constexpr bool operator== (const Node* other)

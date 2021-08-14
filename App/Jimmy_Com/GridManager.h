@@ -16,8 +16,6 @@ public:
 	const GridComponent& GetGrid() const { return *mGrid->GetComponent<GridComponent>(); }
 	GridComponent& GetGird() { return *mGrid->GetComponent<GridComponent>(); }
 	const AI::Graph& GetGraph() const { return mGrid->GetComponent<GridComponent>()->GetGraph(); }
-
-	const AI::Coord& GetCoordinate(const JimmyGod::Math::Vector3& pos) const { return mGrid->GetComponent<GridComponent>()->GetGraph().GetCoordinate(pos); }
 private:
 	JimmyGod::GameObject* mGrid = nullptr;
 };

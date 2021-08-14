@@ -113,7 +113,7 @@ void JimmyGod::GridComponent::DebugUI()
 
 void JimmyGod::GridComponent::ObjectPosition(const Math::Vector3 pos)
 {
-	mCurrentCoordinate = mGraph.GetCoordinate(pos);
+	mCurrentCoordinate = mGraph.GetNode(pos)->coordinate;
 }
 
 void JimmyGod::GridComponent::CreateGrid(int columns, int rows, int tileSize2Ds)
@@ -190,7 +190,7 @@ void JimmyGod::GridComponent::DisplayClosedListIn3D()
 
 void JimmyGod::GridComponent::DisplayAreaCube(int area, const Vector3& pos)
 {
-	AI::Coord c = mGraph.GetCoordinate(pos);
+	AI::Coord c = mGraph.GetNode(pos)->coordinate;
 	minY = Max(c.y - area+1,1);
 	minX = Max(c.x - area+1,1);
 	maxY = Min(c.y + area, mGraph.GetRows() - 1);

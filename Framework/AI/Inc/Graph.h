@@ -15,18 +15,6 @@ namespace JimmyGod::AI
 		void Resize3D(float columns, float rows, float radius = 1.0f, const JimmyGod::Math::Vector3& pos = JimmyGod::Math::Vector3::Zero);
 		// Graph* me = this; (this) is a const pointer
 
-		inline const Coord& GetCoordinate(const JimmyGod::Math::Vector3& pos) const
-		{
-			float persentX = static_cast<float>((pos.x + worldPos.x / 2) / worldPos.x);
-			float persentY = static_cast<float>((pos.z + worldPos.y / 2) / worldPos.y);
-			persentX = Math::Clamp(persentX, 0.0f, 1.0f);
-			persentY = Math::Clamp(persentY, 0.0f, 1.0f);
-
-			int x = static_cast<int>(roundf(static_cast<float>((GetColumns() - 1)) * persentX));
-			int y = static_cast<int>(roundf(static_cast<float>((GetRows() - 1)) * persentY));
-			return Coord{ x, y };
-		}
-
 		inline Node* GetNode(Coord coord)
 		{
 			return const_cast<Node*>(static_cast<const Graph*>(this)->GetNode(coord));

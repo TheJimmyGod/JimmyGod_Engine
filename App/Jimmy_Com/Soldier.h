@@ -23,6 +23,11 @@ public:
 	AgentComponent& GetAgent() override { return *mGameObject->GetComponent<AgentComponent>(); }
 	const AgentComponent& GetAgent() const override { return *mGameObject->GetComponent<AgentComponent>(); }
 
+	const JimmyGod::Math::Sphere& GetSphereCollider() const override
+	{
+		return mGameObject->GetComponent<ColliderComponent>()->GetSphere();
+	}
+
 	void Initialize(JimmyGod::GameWorld* gameWorld) override
 	{
 		ASSERT(gameWorld != nullptr, "The Game World does not exist!");
@@ -45,7 +50,7 @@ public:
 		{
 			isDead = true;
 			// TODO: Dead animation
-			mGameObject->GetComponent<AgentComponent>()->Dead();
+			GetAgent().Dead();
 			mModuleActive = false;
 		}
 	}
@@ -62,12 +67,9 @@ public:
 	{
 		if (GridManager::Get() == nullptr) return;
 		JimmyGod::AI::Coord destiniation = pos;
-		JimmyGod::AI::Coord current = GridManager::Get()->GetGraph().GetCoordinate(
-			mGameObject->GetComponent<AgentComponent>()->GetPosition());
-		GridManager::Get()->GetGird().FindPath(current,
-			destiniation, mGameObject->GetComponent<AgentComponent>()->mArea,
-			mGameObject->GetComponent<AgentComponent>()->mPath);
-		if (mGameObject->GetComponent<AgentComponent>()->mPath.size() > 0)
-			mGameObject->GetComponent<AgentComponent>()->ChangeState("Move");
+		JimmyGod::AI::Coord current = GridManager::Get()->GetGraph().GetNode(GetAgent().GetPosition())->coordinate;
+		GridManager::Get()->GetGird().FindPath(current, destiniation, GetAgent().mArea, GetAgent().mPath);
+		if (GetAgent().mPath.size() > 0)
+			GetAgent().ChangeState("Move");
 	}
 };

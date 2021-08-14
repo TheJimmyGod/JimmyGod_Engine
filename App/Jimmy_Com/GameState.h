@@ -30,6 +30,7 @@ private:
 	float mTime = 0.0f;
 	const float mGravity = -9.8f;
 	float fps = 0.0f;
+	float dist = 0.0f;
 
 private:
 	Soldier* Johny = nullptr;
@@ -41,4 +42,5 @@ private:
 
 	Unit* unit = nullptr;
 	Unit* target = nullptr;
+
 };
