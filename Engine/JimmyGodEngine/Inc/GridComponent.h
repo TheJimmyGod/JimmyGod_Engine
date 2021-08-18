@@ -25,7 +25,7 @@ namespace JimmyGod
 		void CreateGrid(int columns, int rows, int tileSizes);
 		void DisplayClosedListIn2D();
 		void DisplayClosedListIn3D();
-		void DisplayAreaCube(int area, const Math::Vector3& pos);
+		void DisplayAreaCube(int area, const Math::Vector3& pos, const JimmyGod::Graphics::Color& color);
 		int GetIndex(int x, int y) const;
 
 		void FindPath(const AI::Coord& from, const AI::Coord& to, float maxDistance,std::vector<Math::Vector3>& newPath);

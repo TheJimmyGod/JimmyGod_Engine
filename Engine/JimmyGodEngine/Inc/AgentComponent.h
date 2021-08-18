@@ -49,7 +49,6 @@ namespace JimmyGod
 
 		float mMovementSpeed = 0.0f;
 		float mMass = 0.0f;
-		float mRadius = 0.0f;
 		float mArea = 0.0f;
 		std::vector<Math::Vector3> mPath;
 

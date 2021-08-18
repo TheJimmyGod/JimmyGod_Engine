@@ -188,7 +188,7 @@ void JimmyGod::GridComponent::DisplayClosedListIn3D()
 {
 }
 
-void JimmyGod::GridComponent::DisplayAreaCube(int area, const Vector3& pos)
+void JimmyGod::GridComponent::DisplayAreaCube(int area, const Vector3& pos, const JimmyGod::Graphics::Color& color)
 {
 	AI::Coord c = mGraph.GetNode(pos)->coordinate;
 	minY = Max(c.y - area+1,1);
@@ -205,7 +205,7 @@ void JimmyGod::GridComponent::DisplayAreaCube(int area, const Vector3& pos)
 				if (is3D)
 				{
 					if(mNode[index].GetWalkable())
-						JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(mNode[index].position, 1.0f), Colors::Green);
+						JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(mNode[index].position, 1.0f), color);
 				}
 			}
 		}

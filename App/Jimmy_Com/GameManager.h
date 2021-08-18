@@ -21,35 +21,41 @@ public:
 	void DebugUI();
 	void Spawn(const JimmyGod::Math::Vector3& pos, const char* name, UnitType type, Flag flag);
 
-	bool RayCast(const JimmyGod::Math::Ray& mousePoint, 
-		const JimmyGod::Math::Vector3& target, float maxDistance , Flag layerMask);
-	const Unit* GetTarget(const JimmyGod::Math::Vector3& pos) const;
-
-	Soldier* GetSoldier(size_t index) { return mSoliders[index]; }
+	std::unique_ptr<Soldier>& GetSoldier(size_t index) { return mSoliders[index]; }
 	const size_t GetSoldierCount() const { return mSoliders.size(); }
-	Mutant* GetMutant(size_t index) { return mMutants[index]; }
+	std::unique_ptr<Mutant>& GetMutant(size_t index) { return mMutants[index]; }
 	const size_t GetMutantCount() const { return mMutants.size(); }
 
 	const JimmyGod::GameWorld& GetGameWorld() const { return mWorld; }
+	JimmyGod::GameWorld& GetGameWorld() { return mWorld; }
 private:
 
 	JimmyGod::GameWorld mWorld;
 	JimmyGod::CameraService* mCamera = nullptr;
 	JimmyGod::RenderService* mRender = nullptr;
 
-	std::vector<Soldier*> mSoliders;
-	std::vector<Mutant*> mMutants;
-	std::map<std::string, Unit*> mPending;
+	std::vector<std::unique_ptr<Soldier>> mSoliders;
+	std::vector<std::unique_ptr<Mutant>> mMutants;
+
 	Flag mCurrentState = Flag::Ally;
 	bool GameOver = false;
-	bool isProgressing = false;
-
-	bool moveState = false;
-	bool actionState = false;
+	bool mActive = false;
 
 	int mMouseX = 0;
 	int mMouseY = 0;
 
 	int mNextUnit;
 	Ray mRay;	
+
+	AI::Coord mDestination = { 0,0 };
+
+	Unit* mUnit = nullptr;
+	Unit* mTarget = nullptr;
+
+	const JimmyGod::Graphics::Color GetColor(Flag flag) const;
+	bool RayCast(const JimmyGod::Math::Ray& mousePoint,
+		const Unit& collider, float maxDistance, Flag layerMask);
+	bool RayCast(const JimmyGod::Math::Ray& mousePoint,
+		const JimmyGod::Math::Sphere& collider, float maxDistance);
+	bool TurnProcess();
 };

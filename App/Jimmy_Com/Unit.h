@@ -20,10 +20,15 @@ public:
 	virtual void TakeDamage(float val) = 0;
 
 	const Flag& GetFlag() const { return mFlag; }
-	
+	const Unit& GetUnit() const { return *this; };
+	Unit& GetUnit() { return *this; }
+
+	bool GetAct() const { return isActed; }
+	void SetAct(bool act) { isActed = act; }
 protected:
 	int mLevel = 1;
 	int mEXP = 0;
+	int mChance = 2;
 
 	float mHealth = 0.0f;
 	float mMaxHelath = 0.0f;
@@ -33,4 +38,5 @@ protected:
 	Flag mFlag = Flag::Neutral;
 	std::string mName;
 	bool isDead = true;
+	bool isActed = false;
 };

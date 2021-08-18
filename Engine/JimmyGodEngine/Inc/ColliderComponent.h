@@ -22,7 +22,7 @@ namespace JimmyGod
 		void SetAABB(const Math::AABB& aabb);
 		const Math::AABB& GetAABB() const;
 		const Math::OBB& GetOBB() const;
-		const Math::Sphere GetSphere()const;
+		const Math::Sphere& GetSphere()const;
 
 		void Active(bool active) { isActive = active; }
 
@@ -38,6 +38,7 @@ namespace JimmyGod
 		Math::AABB mAABB;
 		const TransformComponent* mTransformComponent = nullptr;
 
+		Math::Sphere mSphere;
 		bool isDebugUI = false;
 		bool isActive = false;
 	};

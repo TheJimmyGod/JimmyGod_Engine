@@ -27,6 +27,7 @@ void JimmyGod::ColliderComponent::Terminate()
 
 void JimmyGod::ColliderComponent::Update(float deltaTime)
 {
+	mSphere = { mTransformComponent->GetPosition(),radius };
 }
 
 void JimmyGod::ColliderComponent::Render()
@@ -61,9 +62,9 @@ const Math::OBB & JimmyGod::ColliderComponent::GetOBB() const
 	return Math::OBB(/*center,extend, Quaternion::Identity*/);
 }
 
-const Math::Sphere JimmyGod::ColliderComponent::GetSphere() const
+const Math::Sphere& JimmyGod::ColliderComponent::GetSphere() const
 {
-	return Math::Sphere(center,radius);
+	return mSphere;
 }
 
 bool JimmyGod::ColliderComponent::CheckAABBCollider(const Math::AABB & a, const Math::AABB & b)

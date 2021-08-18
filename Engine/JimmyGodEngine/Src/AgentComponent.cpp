@@ -15,7 +15,6 @@ META_DERIVED_BEGIN(AgentComponent, Component)
 	META_FIELD_BEGIN
 		META_FIELD(mMovementSpeed,"Speed")
 		META_FIELD(mMass, "Weight")
-		META_FIELD(mRadius, "Radius")
 		META_FIELD(mArea,"Area")
 	META_FIELD_END
 META_CLASS_END

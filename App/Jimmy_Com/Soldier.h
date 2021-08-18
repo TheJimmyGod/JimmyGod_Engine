@@ -28,6 +28,8 @@ public:
 		return mGameObject->GetComponent<ColliderComponent>()->GetSphere();
 	}
 
+
+
 	void Initialize(JimmyGod::GameWorld* gameWorld) override
 	{
 		ASSERT(gameWorld != nullptr, "The Game World does not exist!");
