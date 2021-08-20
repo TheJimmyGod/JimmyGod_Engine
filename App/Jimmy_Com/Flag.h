@@ -12,3 +12,11 @@ enum class UnitType
 	Soldier,
 	Mutant
 };
+
+enum class Status
+{
+	Move,
+	Attack,
+	Standby,
+	TurnOver
+};

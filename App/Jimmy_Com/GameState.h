@@ -20,6 +20,9 @@ private:
 	JimmyGod::Physics::PhysicsWorld mPhysicsWorld;
 	std::vector<JimmyGod::Physics::Particle*> particles;
 	
+	JimmyGod::Spark mSpark;
+	bool SparkEffect = false;
+	bool mAttack = false;
 private:
 	float fps = 0.0f;
 };

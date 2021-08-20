@@ -56,7 +56,7 @@ void GameManager::Terminate()
 {
 	mRender->Terminate();
 	mWorld.Terminate();
-	for (auto& unit : mSoliders)
+	for (auto& unit : mSoldiers)
 	{
 		unit->Terminate();
 		unit.reset();
@@ -82,11 +82,11 @@ void GameManager::Update(float deltaTime)
 
 	mRay = camera.ScreenPointToWorldRay(mMouseX, mMouseY);
 
-	if (inputSystem->IsMousePressed(MouseButton::LBUTTON))
+	if (inputSystem->IsMousePressed(MouseButton::LBUTTON) && !isAttacking)
 	{
-		for (auto& gameObject : mSoliders)
+		for (auto& gameObject : mSoldiers)
 		{
-			if (RayCast(mRay, gameObject->GetUnit(), 0.0f, mCurrentState) && gameObject->GetAct() == false)
+			if (RayCast(mRay, gameObject->GetUnit(), 0.0f, mCurrentState) && gameObject->GetStatus() == Status::Standby)
 			{
 				mUnit = &gameObject->GetUnit();
 				GridManager::Get()->GetGird().ObjectPosition(mUnit->GetAgent().GetPosition());
@@ -96,7 +96,7 @@ void GameManager::Update(float deltaTime)
 
 		for (auto& gameObject : mMutants)
 		{
-			if (RayCast(mRay, gameObject->GetUnit(), 0.0f, mCurrentState) && gameObject->GetAct() == false)
+			if (RayCast(mRay, gameObject->GetUnit(), 0.0f, mCurrentState) && gameObject->GetStatus() == Status::Standby)
 			{
 				mUnit = &gameObject->GetUnit();
 				GridManager::Get()->GetGird().ObjectPosition(mUnit->GetAgent().GetPosition());
@@ -105,46 +105,140 @@ void GameManager::Update(float deltaTime)
 		}
 	}
 
-	if(inputSystem->IsMousePressed(MouseButton::LBUTTON) && mUnit)
+	if(inputSystem->IsMousePressed(MouseButton::LBUTTON) && mUnit && !isAttacking)
 	{
-		for (auto& node : GridManager::Get()->GetGraph().GetNodes())
+		for (auto& gameObject : mSoldiers)
 		{
-			if (RayCast(mRay, node.collider, 0.0f))
+			if (&gameObject->GetUnit() == mUnit)
+				continue;
+			if (RayCast(mRay, gameObject->GetUnit(), 0.0f, Flag::Ally))
 			{
-				bool check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node.coordinate);
+
+				auto node = GridManager::Get()->GetGraph().GetNode(gameObject->GetAgent().GetPosition());
+				bool check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node->coordinate);
 				if (check)
 				{
-					mDestination = node.coordinate;
-					GridManager::Get()->GetGird().ObjectPosition(node.position);
+					mTarget = (gameObject->GetFlag() != mUnit->GetFlag() ? &gameObject->GetUnit() : nullptr);
+					GridManager::Get()->GetGird().ObjectPosition(mUnit->GetAgent().GetPosition());
+					break;
 				}
-				break;
+			}
+			else
+				mTarget = nullptr;
+		}
+
+		for (auto& gameObject : mMutants)
+		{
+			if (&gameObject->GetUnit() == mUnit)
+				continue;
+			if (RayCast(mRay, gameObject->GetUnit(), 0.0f, Flag::Enemy))
+			{
+				auto node = GridManager::Get()->GetGraph().GetNode(gameObject->GetAgent().GetPosition());
+				bool check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node->coordinate);
+				if (check)
+				{
+					mTarget = (gameObject->GetFlag() != mUnit->GetFlag() ? &gameObject->GetUnit() : nullptr);
+					GridManager::Get()->GetGird().ObjectPosition(mUnit->GetAgent().GetPosition());
+					break;
+				}
+			}
+			else
+				mTarget = nullptr;
+		}
+
+		if (!mTarget)
+		{
+			for (auto& node : GridManager::Get()->GetGraph().GetNodes())
+			{
+				if (RayCast(mRay, node.collider, 0.0f))
+				{
+					bool check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node.coordinate);
+					if (check)
+					{
+						mDestination = node.coordinate;
+						GridManager::Get()->GetGird().ObjectPosition(node.position);
+						break;
+					}
+				}
 			}
 		}
+
 	}
 
 	if (inputSystem->IsKeyDown(KeyCode::SPACE) && mUnit)
 	{
-		mActive = true;
-		mUnit->Move(mDestination);
+		if (mTarget && mUnit->GetStatus() == Status::Standby)
+		{
+			mAttackActive = true;
+			mUnit->SetStatus(Status::Attack);
+		}
+		else if (!mTarget && mUnit->GetStatus() == Status::Standby)
+		{
+			mMoveActive = true;
+			mUnit->SetStatus(Status::Move);
+			mUnit->Move(mDestination);
+		}
+		else if (mTarget && mUnit->GetStatus() == Status::Move)
+		{
+			mAttackActive = true;
+			mUnit->SetStatus(Status::Attack);
+		}
+		else
+			return;
+
 	}
 
 	if (mUnit)
 	{
-		if (mActive == true && mUnit->GetAgent().mPath.size() == 0)
+		switch (mUnit->GetStatus())
 		{
-			mActive = false;
-			GridManager::Get()->GetGird().ObjectPosition(mUnit->GetAgent().GetPosition());
-			mDestination = GridManager::Get()->GetGraph().GetNode(mUnit->GetAgent().GetPosition())->coordinate;
+		case Status::Move:
+		{
+			if (mUnit->GetAgent().mPath.size() == 0 && mMoveActive)
+			{
+				mMoveActive = false;
+				GridManager::Get()->GetGird().ObjectPosition(mUnit->GetAgent().GetPosition());
+				mDestination = GridManager::Get()->GetGraph().GetNode(mUnit->GetAgent().GetPosition())->coordinate;
+				mUnit->SetStatus(Status::TurnOver);
+				mUnit = nullptr;
+				mTarget = nullptr;
+			}
+		}
+			break;
+		case Status::Attack:
+		{
+			if (mAttackActive)
+			{
+				mUnit->mTime = 2.5f;
+				mUnit->GetAgent().GetTransformComponent().SetRotation(mUnit->GetAgent().GetPosition() -
+					mTarget->GetAgent().GetPosition());
+				mAttackActive = false;
+				mUnit->GetAgent().GetModelComponent().SetAnimationTime(0.0f);
+				mUnit->SetProcess(true);
+				isAttacking = mUnit->GetProcess();
+			}
+			else
+			{
+				if (mUnit->AttackUpdate(deltaTime))
+				{
+					mUnit->SetProcess(false);
+					isAttacking = mUnit->GetProcess();
+					if(mTarget != nullptr)
+						mUnit->Attack(*mTarget);
+					mUnit->GetAgent().GetModelComponent().SetAnimationSpeed(1.0f);
+					mTarget = nullptr;
+					mUnit->SetStatus(Status::TurnOver);
+					mUnit = nullptr;
+				}
+			}
+		}
+			break;
+		default:
+			break;
 		}
 	}
 
-	if (inputSystem->IsKeyPressed(KeyCode::ENTER))
-	{
-		mUnit->SetAct(true);
-		mUnit = nullptr;
-	}
-
-	for (auto& unit : mSoliders)
+	for (auto& unit : mSoldiers)
 		unit->Update(deltaTime);
 	for (auto& unit : mMutants)
 		unit->Update(deltaTime);
@@ -158,7 +252,7 @@ void GameManager::Render()
 
 	mRender->Render();
 
-	for (auto& unit : mSoliders)
+	for (auto& unit : mSoldiers)
 	{
 		unit->Render(mCamera->GetActiveCamera());
 	}
@@ -176,10 +270,37 @@ void GameManager::DebugUI()
 	mWorld.DebugUI();
 	if (mUnit != nullptr)
 	{
-		if (mUnit->GetAgent().GetSpeed() == 0)
+		if (mUnit->GetAgent().GetSpeed() == 0 && mUnit->GetStatus() == Status::Standby)
 			GridManager::Get()->GetGird().DisplayAreaCube(
 				mUnit->GetAgent().mArea,
 				mUnit->GetAgent().GetPosition(), GetColor(mCurrentState));
+		if (mUnit->GetStatus() != Status::TurnOver)
+		{
+			for (auto& unit : mSoldiers)
+			{
+				if (unit->GetFlag() != Flag::Enemy)
+					continue;
+
+				auto node = GridManager::Get()->GetGraph().GetNode(unit->GetAgent().GetPosition());
+				bool check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node->coordinate);
+				if (check)
+					JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(node->position, 1.0f), Colors::OrangeRed);
+				else
+					continue;
+			}
+			for (auto& unit : mMutants)
+			{
+				if (unit->GetFlag() != Flag::Enemy)
+					continue;
+
+				auto node = GridManager::Get()->GetGraph().GetNode(unit->GetAgent().GetPosition());
+				bool check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node->coordinate);
+				if (check)
+					JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(node->position, 1.0f), Colors::OrangeRed);
+				else
+					continue;
+			}
+		}
 	}
 	GridManager::Get()->GetGird().DebugUI();
 }
@@ -190,7 +311,7 @@ void GameManager::Spawn(const JimmyGod::Math::Vector3& pos, const char* name, Un
 	{
 	case UnitType::Soldier:
 	{
-		auto& newUnit = mSoliders.emplace_back(new Soldier(name, flag));
+		auto& newUnit = mSoldiers.emplace_back(new Soldier(name, flag));
 		newUnit->Initialize(&mWorld);
 		newUnit->GetAgent().GetTransformComponent().SetPosition(pos);
 	} break;
@@ -235,13 +356,13 @@ bool GameManager::RayCast(const JimmyGod::Math::Ray& mousePoint, const JimmyGod:
 
 bool GameManager::TurnProcess()
 {
-	for (auto& unit : mSoliders)
+	for (auto& unit : mSoldiers)
 	{
-		if (unit->GetFlag() == mCurrentState && unit->GetAct() == false) return false;
+		if (unit->GetFlag() == mCurrentState && unit->GetStatus() != Status::TurnOver) return false;
 	}
 	for (auto& unit : mMutants)
 	{
-		if (unit->GetFlag() == mCurrentState && unit->GetAct() == false) return false;
+		if (unit->GetFlag() == mCurrentState && unit->GetStatus() != Status::TurnOver) return false;
 	}
 
 	switch (mCurrentState)
@@ -259,10 +380,10 @@ bool GameManager::TurnProcess()
 		break;
 	}
 
-	for (auto& unit : mSoliders)
-		unit->SetAct(false);
+	for (auto& unit : mSoldiers)
+		unit->SetStatus(Status::Standby);
 	for (auto& unit : mMutants)
-		unit->SetAct(false);
+		unit->SetStatus(Status::Standby);
 
 	return true;
 }

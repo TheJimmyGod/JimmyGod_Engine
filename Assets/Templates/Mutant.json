@@ -29,7 +29,7 @@
           "y": 3,
           "z": 1
         },
-        "Radius": 20.0
+        "Radius": 2.0
       },
       "AgentComponent": {
         "Speed": 12.0,

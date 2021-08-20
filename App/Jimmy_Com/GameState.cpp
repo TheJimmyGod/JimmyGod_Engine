@@ -32,6 +32,7 @@ void GameState::Initialize()
 	settings.iterations = 1;
 
 	mPhysicsWorld.Initialize(settings);
+	mSpark.Initialize("../../Assets/Textures/Neptune.jpg", 40, 0.2f);
 }
 
 void GameState::Terminate()
@@ -39,6 +40,7 @@ void GameState::Terminate()
 	GameManager::StaticTerminate();
 	GridManager::StaticTerminate();
 
+	mSpark.Terminate();
 	mPhysicsWorld.Clear();
 }
 
@@ -46,12 +48,55 @@ void GameState::Update(float deltaTime)
 {
 	fps = 1.0f / deltaTime;
 	GameManager::Get()->Update(deltaTime);
+	mSpark.Update(deltaTime);
+	if (GameManager::Get()->SelectedUnit() && GameManager::Get()->SelectedTarget())
+	{
+		auto unit = GameManager::Get()->SelectedUnit();
+		auto target = GameManager::Get()->SelectedTarget();
+		float time = unit->mTime;
+		if ((time >= 1.5f && time < 1.6f) && !mAttack)
+		{
+			mAttack = true;
+			if (unit->GetUnitType() == UnitType::Soldier)
+			{
+				unit->GetAgent().GetModelComponent().SetAnimationSpeed(1.1f);
+				unit->GetAgent().GetModelComponent().PlayAnimation(4);
+				unit->GetAgent().GetModelComponent().SetAnimationTime(0.0f);
+			}
+			else
+			{
+				unit->GetAgent().GetModelComponent().SetAnimationSpeed(1.1f);
+				unit->GetAgent().GetModelComponent().PlayAnimation(2);
+				unit->GetAgent().GetModelComponent().SetAnimationTime(0.0f);
+			}
+
+		}
+		else if (time >= 0.5f && time < 0.6f && !SparkEffect)
+		{
+			SparkEffect = true;
+			Bone* toe = nullptr;
+			if (unit->GetUnitType() == UnitType::Soldier)
+				toe = FindBone(unit->GetAgent().GetModelComponent().GetModel().mSkeleton, "mixamorig1:RightFoot");
+			else
+				toe = FindBone(unit->GetAgent().GetModelComponent().GetModel().mSkeleton, "Mutant:RightHandPinky3");
+			mSpark.ShowSpark(unit->GetAgent().GetPosition() + GetTranslation(unit->GetAgent().GetModelComponent().GetBoneMatrices()[toe->index]
+				* Matrix4::RotationQuaternion(unit->GetAgent().GetTransformComponent().GetRotation())) * 0.04f, target->GetAgent().GetPosition() - unit->GetAgent().GetPosition(), 2.2f);
+		}
+	}
+	else
+	{
+		mAttack = false;
+		SparkEffect = false;
+	}
+
+
 	mPhysicsWorld.Update(deltaTime);
 }
 
 void GameState::Render()
 {
 	GameManager::Get()->Render();
+	mSpark.Render(GameManager::Get()->GetGameWorld().GetService<CameraService>()->GetActiveCamera());
 }
 
 void GameState::DebugUI()

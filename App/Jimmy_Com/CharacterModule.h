@@ -15,7 +15,6 @@ public:
 	virtual void Terminate();
 	virtual void Update(float deltaTime);
 	virtual void Render(const JimmyGod::Graphics::Camera& camera);
-
 protected:
 	struct TransformData
 	{
@@ -30,5 +29,6 @@ protected:
 
 	JimmyGod::GameObject* mGameObject = nullptr;
 	bool mModuleActive = false;
+	bool mAnimationProcess = false;
 	float mTime = 0.0f;
 };

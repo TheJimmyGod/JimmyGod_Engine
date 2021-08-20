@@ -21,10 +21,15 @@ public:
 	void DebugUI();
 	void Spawn(const JimmyGod::Math::Vector3& pos, const char* name, UnitType type, Flag flag);
 
-	std::unique_ptr<Soldier>& GetSoldier(size_t index) { return mSoliders[index]; }
-	const size_t GetSoldierCount() const { return mSoliders.size(); }
+	std::unique_ptr<Soldier>& GetSoldier(size_t index) { return mSoldiers[index]; }
+	const size_t GetSoldierCount() const { return mSoldiers.size(); }
 	std::unique_ptr<Mutant>& GetMutant(size_t index) { return mMutants[index]; }
 	const size_t GetMutantCount() const { return mMutants.size(); }
+
+	const Unit* SelectedUnit() const { return mUnit; }
+	Unit* SelectedUnit() { return mUnit; }
+	const Unit* SelectedTarget() const { return mTarget; }
+	Unit* SelectedTarget() { return mTarget; }
 
 	const JimmyGod::GameWorld& GetGameWorld() const { return mWorld; }
 	JimmyGod::GameWorld& GetGameWorld() { return mWorld; }
@@ -34,17 +39,19 @@ private:
 	JimmyGod::CameraService* mCamera = nullptr;
 	JimmyGod::RenderService* mRender = nullptr;
 
-	std::vector<std::unique_ptr<Soldier>> mSoliders;
+	std::vector<std::unique_ptr<Soldier>> mSoldiers;
 	std::vector<std::unique_ptr<Mutant>> mMutants;
 
 	Flag mCurrentState = Flag::Ally;
 	bool GameOver = false;
-	bool mActive = false;
+	bool mMoveActive = false;
+	bool mAttackActive = false;
+	bool isAttacking = false;
 
 	int mMouseX = 0;
 	int mMouseY = 0;
 
-	int mNextUnit;
+	int mNextUnit = 0;
 	Ray mRay;	
 
 	AI::Coord mDestination = { 0,0 };

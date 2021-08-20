@@ -18,15 +18,19 @@ void CharacterModule::Update(float deltaTime)
 		if(mTime <= 0.0f) mGameObject->GetComponent<ModelComponent>()->SetAnimationSpeed(1.0f);
 		return;
 	}
-	if (mGameObject->GetComponent<AgentComponent>()->GetSpeed() > 0.1f)
-		mGameObject->GetComponent<ModelComponent>()->PlayAnimation(1);
-	else
-		mGameObject->GetComponent<ModelComponent>()->PlayAnimation(0);
+	if (!mAnimationProcess)
+	{
+		if (mGameObject->GetComponent<AgentComponent>()->GetSpeed() > 0.1f)
+			mGameObject->GetComponent<ModelComponent>()->PlayAnimation(1);
+		else
+			mGameObject->GetComponent<ModelComponent>()->PlayAnimation(0);
+	}
 }
 
 void CharacterModule::Render(const JimmyGod::Graphics::Camera& camera)
 {
 	if (mModuleActive == false) return;
+
 	auto matView = camera.GetViewMatrix();
 	auto matProj = camera.GetPerspectiveMatrix();
 	auto matWorld = mGameObject->GetComponent<TransformComponent>()->GetTransform();
@@ -36,6 +40,5 @@ void CharacterModule::Render(const JimmyGod::Graphics::Camera& camera)
 	transformData.wvp = Transpose(matWorld * matView * matProj);
 	transformData.viewPosition = camera.GetPosition();
 	mTransformBuffer.Update(&transformData);
-
 	mGameObject->GetComponent<ModelComponent>()->Render();
 }
