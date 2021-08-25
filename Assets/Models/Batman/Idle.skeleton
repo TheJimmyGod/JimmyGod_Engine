@@ -68,7 +68,7 @@ ChildIndices: 5
 0.000000 1.000000 -0.000000 0.000000
 -0.000000 0.000000 1.000000 -0.000000
 0.000000 -155.045166 -5.312857 1.000000
-Name: mixamorig1:Head
+Name: Head
 Index: 5
 ParentIndex: 4
 ChildCount: 1
@@ -371,7 +371,7 @@ ChildIndices: 132
 0.093735 0.001470 0.995596 0.000000
 -0.983133 -0.157600 0.092794 -0.000000
 0.119524 -42.919300 -147.667191 1.000000
-Name: mixamorig1:RightHand
+Name: RightHand
 Index: 28
 ParentIndex: 134
 ChildCount: 5

@@ -3,6 +3,7 @@
 #include "Unit.h"
 #include "CharacterModule.h"
 #include "GridManager.h"
+#include "UIManager.h"
 
 class Soldier: public CharacterModule, public Unit
 {
@@ -42,8 +43,16 @@ public:
 
 	void TakeDamage(float val) override
 	{
-		if(val - mDefence > 0.0f)
-			mHealth -= val - mDefence;
+		if (isDead)
+			return;
+		if (val - mDefence > 0.0f)
+		{
+			float tookDmg = val - mDefence;
+			mHealth -= tookDmg;
+
+			std::string str = std::to_string(static_cast<int>(tookDmg));
+			UIManager::Get()->RenderText(str.c_str(), GetAgent().GetPosition(), 50.0f, 1.0f, Colors::Red);
+		}
 		if (mHealth < 0.0f)
 		{
 			isDead = true;
@@ -54,8 +63,7 @@ public:
 	}
 	void Attack(Unit& unit) override
 	{
-		if (Distance(GetAgent().GetPosition(), unit.GetAgent().GetPosition()) < mRange)
-			unit.TakeDamage(mDamage);
+		unit.TakeDamage(mDamage);
 		// TODO: Make bullet
 	}
 };

@@ -31,7 +31,7 @@ namespace JimmyGod::Graphics
 
 		Vector2 ConvertToScreenPosition(const Vector2& worldPos) const;
 		Vector2 ConvertToWorldPosition(const Vector2& screenPos) const;
-
+		Vector2 ConvertTo2DSpace(const Vector3& worldPos) const;
 		void SetViewPosition(const Vector2& pos) { mViewPosition = pos; }
 
 		void Draw(TextureId textureId, const Vector2& worldPos) const;

@@ -7,6 +7,7 @@
     <ClCompile Include="CharacterModule.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="Unit.cpp" />
+    <ClCompile Include="UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameState.h" />
@@ -17,5 +18,6 @@
     <ClInclude Include="GridManager.h" />
     <ClInclude Include="CharacterModule.h" />
     <ClInclude Include="GameManager.h" />
+    <ClInclude Include="UIManager.h" />
   </ItemGroup>
 </Project>

@@ -232,7 +232,7 @@ ChildIndices: 16
 0.000000 1.000000 -0.000000 0.000000
 -0.000000 -0.000000 1.000000 -0.000000
 83.026550 -143.053650 3.660476 1.000000
-Name: Mutant:RightHand
+Name: RightHand
 Index: 18
 ParentIndex: 19
 ChildCount: 3
@@ -325,7 +325,7 @@ ChildIndices: 23
 0.000000 1.000000 -0.000000 0.000000
 -0.000000 -0.000000 1.000000 -0.000000
 -9.513011 -145.433655 -0.121022 1.000000
-Name: Mutant:Head
+Name: Head
 Index: 25
 ParentIndex: 26
 ChildCount: 1

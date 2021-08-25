@@ -91,6 +91,21 @@ Vector2 Camera::ConvertToWorldPosition(const Vector2& screenPos) const
 	return Vector2(worldWidth,worldHeight);
 }
 
+Vector2 Camera::ConvertTo2DSpace(const Vector3& worldPos) const
+{
+	const auto width = GraphicsSystem::Get()->GetBackBufferWidth();
+	const auto height = GraphicsSystem::Get()->GetBackBufferHeight();
+
+	Vector3 pos = worldPos;
+	pos = TransformCoord(pos, GetViewMatrix());
+	pos = TransformCoord(pos, GetPerspectiveMatrix());
+
+	pos.x = width * (pos.x + 1.0f) / 2.0f;
+	pos.y = height * (1.0f - ((pos.y + 1.0f) / 2.0f));
+
+	return Vector2(pos.x, pos.y);
+}
+
 void Camera::Draw(TextureId textureId, const Vector2& worldPos) const
 {
 	auto screenPos = ConvertToScreenPosition(worldPos);

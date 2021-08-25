@@ -17,7 +17,6 @@ void GridManager::StaticTerminate()
 {
 	if (sInstance != nullptr)
 	{
-		sInstance->Terminate();
 		sInstance.reset();
 	}
 }
@@ -30,9 +29,4 @@ GridManager* GridManager::Get()
 void GridManager::Initialize(JimmyGod::GameWorld* gameWorld)
 {
 	mGrid = gameWorld->Find("Grid").Get();
-}
-
-void GridManager::Terminate()
-{
-	mGrid->Terminate();
 }

@@ -66,6 +66,16 @@ void GameManager::Terminate()
 		unit->Terminate();
 		unit.reset();
 	}
+	for (auto& item : mAlly)
+		item.reset();
+	for (auto& item : mEnemy)
+		item.reset();
+
+	mSoldiers.clear();
+	mMutants.clear();
+
+	mAlly.clear();
+	mEnemy.clear();
 }
 
 void GameManager::Update(float deltaTime)
@@ -84,9 +94,9 @@ void GameManager::Update(float deltaTime)
 
 	if (inputSystem->IsMousePressed(MouseButton::LBUTTON) && !isAttacking)
 	{
-		for (auto& gameObject : mSoldiers)
+		for (auto& gameObject : mAlly)
 		{
-			if (RayCast(mRay, gameObject->GetUnit(), 0.0f, mCurrentState) && gameObject->GetStatus() == Status::Standby)
+			if (RayCast(mRay, gameObject->GetUnit(), mMaxDistance, mCurrentState) && gameObject->GetStatus() == Status::Standby)
 			{
 				mUnit = &gameObject->GetUnit();
 				GridManager::Get()->GetGird().ObjectPosition(mUnit->GetAgent().GetPosition());
@@ -94,9 +104,9 @@ void GameManager::Update(float deltaTime)
 			}
 		}
 
-		for (auto& gameObject : mMutants)
+		for (auto& gameObject : mEnemy)
 		{
-			if (RayCast(mRay, gameObject->GetUnit(), 0.0f, mCurrentState) && gameObject->GetStatus() == Status::Standby)
+			if (RayCast(mRay, gameObject->GetUnit(), mMaxDistance, mCurrentState) && gameObject->GetStatus() == Status::Standby)
 			{
 				mUnit = &gameObject->GetUnit();
 				GridManager::Get()->GetGird().ObjectPosition(mUnit->GetAgent().GetPosition());
@@ -107,19 +117,19 @@ void GameManager::Update(float deltaTime)
 
 	if(inputSystem->IsMousePressed(MouseButton::LBUTTON) && mUnit && !isAttacking)
 	{
-		for (auto& gameObject : mSoldiers)
+		for (auto& gameObject : mAlly)
 		{
 			if (&gameObject->GetUnit() == mUnit)
 				continue;
-			if (RayCast(mRay, gameObject->GetUnit(), 0.0f, Flag::Ally))
+			if (RayCast(mRay, gameObject->GetUnit(), mMaxDistance, Flag::Ally))
 			{
-
 				auto node = GridManager::Get()->GetGraph().GetNode(gameObject->GetAgent().GetPosition());
 				bool check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node->coordinate);
 				if (check)
 				{
 					mTarget = (gameObject->GetFlag() != mUnit->GetFlag() ? &gameObject->GetUnit() : nullptr);
-					GridManager::Get()->GetGird().ObjectPosition(mUnit->GetAgent().GetPosition());
+					if(mTarget)
+						GridManager::Get()->GetGird().ObjectPosition(mTarget->GetAgent().GetPosition());
 					break;
 				}
 			}
@@ -127,18 +137,19 @@ void GameManager::Update(float deltaTime)
 				mTarget = nullptr;
 		}
 
-		for (auto& gameObject : mMutants)
+		for (auto& gameObject : mEnemy)
 		{
 			if (&gameObject->GetUnit() == mUnit)
 				continue;
-			if (RayCast(mRay, gameObject->GetUnit(), 0.0f, Flag::Enemy))
+			if (RayCast(mRay, gameObject->GetUnit(), mMaxDistance, Flag::Enemy))
 			{
 				auto node = GridManager::Get()->GetGraph().GetNode(gameObject->GetAgent().GetPosition());
 				bool check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node->coordinate);
 				if (check)
 				{
 					mTarget = (gameObject->GetFlag() != mUnit->GetFlag() ? &gameObject->GetUnit() : nullptr);
-					GridManager::Get()->GetGird().ObjectPosition(mUnit->GetAgent().GetPosition());
+					if(mTarget)
+						GridManager::Get()->GetGird().ObjectPosition(mUnit->GetAgent().GetPosition());
 					break;
 				}
 			}
@@ -150,7 +161,7 @@ void GameManager::Update(float deltaTime)
 		{
 			for (auto& node : GridManager::Get()->GetGraph().GetNodes())
 			{
-				if (RayCast(mRay, node.collider, 0.0f))
+				if (RayCast(mRay, node.collider, mMaxDistance))
 				{
 					bool check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node.coordinate);
 					if (check)
@@ -276,29 +287,17 @@ void GameManager::DebugUI()
 				mUnit->GetAgent().GetPosition(), GetColor(mCurrentState));
 		if (mUnit->GetStatus() != Status::TurnOver)
 		{
-			for (auto& unit : mSoldiers)
+			for (auto& unit : mAlly)
 			{
-				if (unit->GetFlag() != Flag::Enemy)
-					continue;
-
 				auto node = GridManager::Get()->GetGraph().GetNode(unit->GetAgent().GetPosition());
 				bool check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node->coordinate);
-				if (check)
-					JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(node->position, 1.0f), Colors::OrangeRed);
-				else
-					continue;
+				if (check) JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(node->position, 1.0f), Colors::ForestGreen);
 			}
-			for (auto& unit : mMutants)
+			for (auto& unit : mEnemy)
 			{
-				if (unit->GetFlag() != Flag::Enemy)
-					continue;
-
 				auto node = GridManager::Get()->GetGraph().GetNode(unit->GetAgent().GetPosition());
 				bool check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node->coordinate);
-				if (check)
-					JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(node->position, 1.0f), Colors::OrangeRed);
-				else
-					continue;
+				if (check) JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(node->position, 1.0f), Colors::OrangeRed);
 			}
 		}
 	}
@@ -307,6 +306,7 @@ void GameManager::DebugUI()
 
 void GameManager::Spawn(const JimmyGod::Math::Vector3& pos, const char* name, UnitType type, Flag flag)
 {
+	std::shared_ptr<Unit> temp;
 	switch (type)
 	{
 	case UnitType::Soldier:
@@ -314,14 +314,28 @@ void GameManager::Spawn(const JimmyGod::Math::Vector3& pos, const char* name, Un
 		auto& newUnit = mSoldiers.emplace_back(new Soldier(name, flag));
 		newUnit->Initialize(&mWorld);
 		newUnit->GetAgent().GetTransformComponent().SetPosition(pos);
+		temp = newUnit;
+
 	} break;
 	case UnitType::Mutant:
 	{
 		auto& newUnit = mMutants.emplace_back(new Mutant(name, flag));
 		newUnit->Initialize(&mWorld);
 		newUnit->GetAgent().GetTransformComponent().SetPosition(pos);
+		temp = newUnit;
 	} break;
-	default: break;
+	}
+
+	switch (flag)
+	{
+	case Flag::Ally:
+		mAlly.push_back(temp);
+		break;
+	case Flag::Neutral:
+		break;
+	case Flag::Enemy:
+		mEnemy.push_back(temp);
+		break;
 	}
 }
 
@@ -344,12 +358,12 @@ const JimmyGod::Graphics::Color GameManager::GetColor(Flag flag) const
 	return Vector4();
 }
 
-bool GameManager::RayCast(const JimmyGod::Math::Ray& mousePoint, const Unit& collider, float maxDistance, Flag layerMask)
+bool GameManager::RayCast(const JimmyGod::Math::Ray& mousePoint, const Unit& collider, float& maxDistance, Flag layerMask)
 {
 	return ((layerMask == collider.GetFlag()) && Intersect(mousePoint, collider.GetSphereCollider(), maxDistance));
 }
 
-bool GameManager::RayCast(const JimmyGod::Math::Ray& mousePoint, const JimmyGod::Math::Sphere& collider, float maxDistance)
+bool GameManager::RayCast(const JimmyGod::Math::Ray& mousePoint, const JimmyGod::Math::Sphere& collider, float& maxDistance)
 {
 	return (Intersect(mousePoint, collider, maxDistance));
 }

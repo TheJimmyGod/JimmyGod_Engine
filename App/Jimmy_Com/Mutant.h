@@ -3,6 +3,7 @@
 #include "Unit.h"
 #include "CharacterModule.h"
 #include "GridManager.h"
+#include "UIManager.h"
 
 class Mutant : public CharacterModule, public Unit
 {
@@ -45,7 +46,13 @@ public:
 		if (isDead)
 			return;
 		if (val - mDefence > 0.0f)
-			mHealth -= val - mDefence;
+		{
+			float tookDmg = val - mDefence;
+			mHealth -= tookDmg;
+			
+			std::string str = std::to_string(static_cast<int>(tookDmg));
+			UIManager::Get()->RenderText(str.c_str(), GetAgent().GetPosition(), 50.0f, 1.0f, Colors::Blue);
+		}
 		if (mHealth < 0.0f)
 		{
 			isDead = true;

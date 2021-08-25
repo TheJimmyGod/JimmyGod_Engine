@@ -22,6 +22,7 @@
 #include "Cloth.h"
 #include "Rope.h"
 #include "Spark.h"
+#include "TextMesh.h"
 #include "Planet.h"
 #include "SkyDome.h"
 

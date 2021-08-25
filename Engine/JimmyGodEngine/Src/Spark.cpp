@@ -44,12 +44,9 @@ void JimmyGod::Spark::Update(float deltaTime)
 {
 	if (!IsDisplay)return;
 	mPhysicsWorld.Update(deltaTime);
-	if (mTime > 0.0f)
-		mTime -= deltaTime;
-	else
-		IsSummoned = false;
-	if (IsSummoned == false)
-		Clear();
+	if (mTime > 0.0f) mTime -= deltaTime;
+	else IsSummoned = false;
+	if (IsSummoned == false) Clear();
 }
 
 void JimmyGod::Spark::ShowSpark(const JimmyGod::Math::Vector3 & pos, const JimmyGod::Math::Vector3& dir, float endTime)
@@ -64,12 +61,13 @@ void JimmyGod::Spark::ShowSpark(const JimmyGod::Math::Vector3 & pos, const Jimmy
 	Clear();
 	for (uint32_t i = 0; i < mAmount; ++i)
 	{
-		auto p = new Particle({ Vector3{ mFoot.x,mFoot.y + 2.5f, mFoot.z } });
+		auto p = new Particle({ Vector3{ mFoot.x,mFoot.y + 1.5f, mFoot.z } });
 		p->SetVelocity(Vector3{ NormalizedDir.x + RandomFloat(-0.5f, 0.5f),
 			NormalizedDir.y + RandomFloat(-0.5f, 0.5f),
 			NormalizedDir.z + RandomFloat(-0.5f, 0.5f) });
 		p->radius = mRadius;
 		p->bounce = 0.3f;
+		
 		mParticles.push_back(p);
 		mPhysicsWorld.AddParticle(p);
 	}

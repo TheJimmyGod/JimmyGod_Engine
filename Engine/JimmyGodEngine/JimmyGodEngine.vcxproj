@@ -177,6 +177,7 @@
     <ClInclude Include="Inc\SkyDome.h" />
     <ClInclude Include="Inc\Spark.h" />
     <ClInclude Include="Inc\Terrain.h" />
+    <ClInclude Include="Inc\TextMesh.h" />
     <ClInclude Include="Inc\TransformComponent.h" />
     <ClInclude Include="Src\MetaRegistration.h" />
     <ClInclude Include="Src\Precompiled.h" />
@@ -204,6 +205,7 @@
     <ClCompile Include="Src\SkyDome.cpp" />
     <ClCompile Include="Src\Spark.cpp" />
     <ClCompile Include="Src\Terrain.cpp" />
+    <ClCompile Include="Src\TextMesh.cpp" />
     <ClCompile Include="Src\TransformComponent.cpp" />
   </ItemGroup>
   <ItemGroup>

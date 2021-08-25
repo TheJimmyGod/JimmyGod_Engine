@@ -150,6 +150,9 @@
     <ClInclude Include="Inc\RenderService.h">
       <Filter>Inc\Services</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\TextMesh.h">
+      <Filter>Inc\Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\JimmyGodEngine.cpp">
@@ -220,6 +223,9 @@
     </ClCompile>
     <ClCompile Include="Src\RenderService.cpp">
       <Filter>Src\Services</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\TextMesh.cpp">
+      <Filter>Src\Effect</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
