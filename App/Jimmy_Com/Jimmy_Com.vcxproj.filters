@@ -3,21 +3,55 @@
   <ItemGroup>
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="WinMain.cpp" />
-    <ClCompile Include="GridManager.cpp" />
-    <ClCompile Include="CharacterModule.cpp" />
-    <ClCompile Include="GameManager.cpp" />
-    <ClCompile Include="Unit.cpp" />
-    <ClCompile Include="UIManager.cpp" />
+    <ClCompile Include="GridManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="UIManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterModule.cpp">
+      <Filter>Unit</Filter>
+    </ClCompile>
+    <ClCompile Include="Unit.cpp">
+      <Filter>Unit</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameState.h" />
-    <ClInclude Include="Unit.h" />
-    <ClInclude Include="Flag.h" />
-    <ClInclude Include="Soldier.h" />
-    <ClInclude Include="Mutant.h" />
-    <ClInclude Include="GridManager.h" />
-    <ClInclude Include="CharacterModule.h" />
-    <ClInclude Include="GameManager.h" />
-    <ClInclude Include="UIManager.h" />
+    <ClInclude Include="GridManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="UIManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterModule.h">
+      <Filter>Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="Mutant.h">
+      <Filter>Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="Soldier.h">
+      <Filter>Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="Unit.h">
+      <Filter>Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="Flag.h">
+      <Filter>Unit</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Managers">
+      <UniqueIdentifier>{a3c00723-f9c6-4bda-8072-77e69b70ce1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Unit">
+      <UniqueIdentifier>{d050a0fb-8cc0-4fe7-9643-bfb4fce1debb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

@@ -21,9 +21,9 @@ public:
 	void DebugUI();
 	void Spawn(const JimmyGod::Math::Vector3& pos, const char* name, UnitType type, Flag flag);
 
-	std::shared_ptr<Soldier>& GetSoldier(size_t index) { return mSoldiers[index]; }
+	std::unique_ptr<Soldier>& GetSoldier(size_t index) { return mSoldiers[index]; }
 	const size_t GetSoldierCount() const { return mSoldiers.size(); }
-	std::shared_ptr<Mutant>& GetMutant(size_t index) { return mMutants[index]; }
+	std::unique_ptr<Mutant>& GetMutant(size_t index) { return mMutants[index]; }
 	const size_t GetMutantCount() const { return mMutants.size(); }
 
 	const Unit* SelectedUnit() const { return mUnit; }
@@ -39,12 +39,8 @@ private:
 	JimmyGod::CameraService* mCamera = nullptr;
 	JimmyGod::RenderService* mRender = nullptr;
 
-	std::vector<std::shared_ptr<Soldier>> mSoldiers;
-	std::vector<std::shared_ptr<Mutant>> mMutants;
-
-	std::vector<std::shared_ptr<Unit>> mAlly;
-	std::vector<std::shared_ptr<Unit>> mNetural;
-	std::vector<std::shared_ptr<Unit>> mEnemy;
+	std::vector<std::unique_ptr<Soldier>> mSoldiers;
+	std::vector<std::unique_ptr<Mutant>> mMutants;
 
 	Flag mCurrentState = Flag::Ally;
 	bool GameOver = false;
@@ -61,11 +57,18 @@ private:
 	Ray mRay;	
 
 	AI::Coord mDestination = { 0,0 };
+	Quaternion mRotation = Quaternion::Zero;
 
 	Unit* mUnit = nullptr;
 	Unit* mTarget = nullptr;
 
 	const JimmyGod::Graphics::Color GetColor(Flag flag) const;
+	const JimmyGod::Graphics::Color GetColor_Standby(Flag flag) const;
+
+	void ActionState(float deltaTime);
+	void ControlState();
+	Unit* TraceUnit(Flag flag);
+
 	bool RayCast(const JimmyGod::Math::Ray& mousePoint,
 		const Unit& collider, float& maxDistance, Flag layerMask);
 	bool RayCast(const JimmyGod::Math::Ray& mousePoint,

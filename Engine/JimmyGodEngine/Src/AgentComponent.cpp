@@ -49,11 +49,12 @@ void JimmyGod::AgentComponent::DebugUI()
 	}
 }
 
-void JimmyGod::AgentComponent::Movement(const Vector3& pos)
+void JimmyGod::AgentComponent::Movement(const Vector3& pos, float deltaTime)
 {
 	mSpeed = Magnitude(pos);
 
-	mTransformComponent->rot = Quaternion::RotationLook(GetTransformComponent().pos - pos);
+	Quaternion rotation = Quaternion::RotationLook(mTransformComponent->pos - pos);
+	mTransformComponent->SetRotation(Slerp(GetTransformComponent().rot, rotation, deltaTime * 10.0f));
 	mTransformComponent->pos = pos;
 }
 

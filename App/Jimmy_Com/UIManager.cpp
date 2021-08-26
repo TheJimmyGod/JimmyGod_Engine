@@ -57,6 +57,13 @@ void UIManager::Update(float deltaTime)
 	for (auto& text : mTextmeshes)
 	{
 		text->Update(GameManager::Get()->GetGameWorld().GetService<CameraService>()->GetActiveCamera(), deltaTime);
+		if (text->GetLifeTime() <= 0.0f && text->GetInitialize())
+		{
+			text.reset();
+			auto it = std::find(mTextmeshes.begin(), mTextmeshes.end(), text);
+			mTextmeshes.erase(it);
+			break;
+		}
 	}
 }
 

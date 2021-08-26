@@ -35,7 +35,7 @@ namespace JimmyGod
 			mPath.clear();
 			ChangeState("Idle"); 
 		}
-		void Movement(const Vector3& pos);
+		void Movement(const Vector3& pos, float deltaTime);
 
 		const JimmyGod::Math::Vector3& GetPosition() const;
 		const float GetSpeed() const;
@@ -93,7 +93,7 @@ namespace JimmyGod
 				{
 					Vector3 direction = Normalize(Destinination - agent.GetPosition());
 					Vector3 nextPos = agent.GetPosition() + (direction * (agent.mMovementSpeed / agent.mMass) * deltaTime);
-					agent.Movement(nextPos);
+					agent.Movement(nextPos, deltaTime);
 				}
 				else{  currentWaypoint++; }
 			}
