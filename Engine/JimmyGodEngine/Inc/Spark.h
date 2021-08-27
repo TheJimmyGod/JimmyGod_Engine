@@ -7,7 +7,7 @@ namespace JimmyGod
 	public:
 		Spark() = default;
 		~Spark() = default;
-		void Initialize(const std::filesystem::path& path, uint32_t amount, float radius);
+		void Initialize(const std::filesystem::path& path, uint32_t amount, float radius, float spread = 0.5f);
 		void Terminate();
 		void Update(float deltaTime);
 		void ShowSpark(const JimmyGod::Math::Vector3& pos, const JimmyGod::Math::Vector3& dir, float endTime);
@@ -30,7 +30,8 @@ namespace JimmyGod
 		JimmyGod::Math::Vector3 mFoot = JimmyGod::Math::Vector3::Zero;
 		
 		JimmyGod::Physics::PhysicsWorld mPhysicsWorld;
-		float mRadius = 0;;
+		float mRadius = 0.0f;
+		float mSpread = 0.0f;
 		uint32_t mAmount = 0;
 		JimmyGod::Graphics::MeshPX mMesh;
 		JimmyGod::Graphics::MeshBuffer mMeshBuffer;

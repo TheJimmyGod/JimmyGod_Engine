@@ -1,4 +1,6 @@
 #include "UIManager.h"
+
+#include "../App/Jimmy_Com/HUD.h"
 #include "GameManager.h"
 #include "Flag.h"
 #include "Unit.h"
@@ -6,6 +8,7 @@
 using namespace JimmyGod;
 using namespace JimmyGod::Graphics;
 using namespace JimmyGod::Math;
+using namespace JimmyCom;
 
 namespace
 {
@@ -16,10 +19,13 @@ void UIManager::StaticInitialize()
 {
 	sInstance = std::make_unique<UIManager>();
 	sInstance->Initialize();
+
+	//JimmyCom::HUD::StaticInitialize();
 }
 
 void UIManager::StaticTerminate()
 {
+	//JimmyCom::HUD::StaticTerminate();
 	if (sInstance != nullptr)
 	{
 		sInstance->Terminate();
@@ -34,24 +40,29 @@ UIManager* UIManager::Get()
 
 void UIManager::Initialize()
 {
-	mSoldierSpark.Initialize("../../Assets/Textures/Sun.jpg", 20, 0.2f);
+	for (size_t i = 0; i < 15; i++)
+	{
+		JimmyGod::Spark* spark = new Spark();
+		spark->Initialize("../../Assets/Textures/Sun.jpg", 4, 0.2f,0.1f);
+		mSoldierSpark.emplace_back(spark);
+	}
 	mMutantSpark.Initialize("../../Assets/Textures/Neptune.jpg", 20, 0.2f);
 }
 
 void UIManager::Terminate()
 {
-	mSoldierSpark.Terminate();
+	for (auto& spark : mSoldierSpark)
+		spark->Terminate();
 	mMutantSpark.Terminate();
 	for (auto& text : mTextmeshes)
-	{
 		text.reset();
-	}
 	mTextmeshes.clear();
 }
 
 void UIManager::Update(float deltaTime)
 {
-	mSoldierSpark.Update(deltaTime);
+	for(auto& spark : mSoldierSpark)
+		spark->Update(deltaTime);
 	mMutantSpark.Update(deltaTime);
 
 	for (auto& text : mTextmeshes)
@@ -69,7 +80,8 @@ void UIManager::Update(float deltaTime)
 
 void UIManager::Render(const Camera& camera)
 {
-	mSoldierSpark.Render(camera);
+	for(auto& spark : mSoldierSpark)
+		spark->Render(camera);
 	mMutantSpark.Render(camera);
 }
 
@@ -79,21 +91,23 @@ void UIManager::UpdateAnimation(Unit* unit, Unit* target, float lifeTime)
 	{
 		mSparkPlay = false;
 		mAnimationPlay = false;
+		mIndex = 0;
+		mTime = 0.0f;
 		return;
 	}
 	else
 	{
 		float time = unit->mTime;
-		auto rot = unit->GetAgent().GetTransformComponent().GetRotation();
-		auto pos = unit->GetAgent().GetPosition();
+		auto rot = unit->GetRotation();
+		auto pos = unit->GetPosition();
 		if (target == nullptr) return;
-		auto targetPos = target->GetAgent().GetPosition();
+		auto targetPos = target->GetPosition();
 
 		if ((time > 0.0f && time <= lifeTime) && !mAnimationPlay)
 		{
 			mAnimationPlay = true;
 			mCurrentUnit = unit->GetUnitType();
-			if (unit->GetUnitType() == UnitType::Soldier)
+			if (mCurrentUnit == UnitType::Soldier)
 			{
 				unit->GetAgent().GetModelComponent().SetAnimationSpeed(1.1f);
 				unit->GetAgent().GetModelComponent().PlayAnimation(4);
@@ -106,16 +120,43 @@ void UIManager::UpdateAnimation(Unit* unit, Unit* target, float lifeTime)
 				unit->GetAgent().GetModelComponent().SetAnimationTime(0.0f);
 			}
 		}
-		if ((time > 0.0f && time <= lifeTime - 1.0f) && !mSparkPlay)
+		if (mCurrentUnit == UnitType::Soldier)
 		{
-			mSparkPlay = true;
-			mHand = FindBone(unit->GetAgent().GetModelComponent().GetModel().mSkeleton, "RightHand");
-			auto handPosition = pos + GetTranslation(unit->GetAgent().GetModelComponent().GetBoneMatrices()[mHand->index]
-				* Matrix4::RotationQuaternion(rot)) * 0.04f;
-			auto direction = targetPos - pos;
-
-			PlayEffect(handPosition, direction, lifeTime);
+			if ((time > 0.0f && time <= lifeTime -1.0f) && !mSparkPlay)
+			{
+				mSparkPlay = true;
+				mHand = FindBone(unit->GetAgent().GetModelComponent().GetModel().mSkeleton, "RightHand");
+			}
+			if (mSparkPlay)
+			{
+				if (JimmyGod::Core::TimeUtil::GetTime() > mTime)
+				{
+					if (mIndex >= 14)
+						mIndex = 0;
+					mTime = JimmyGod::Core::TimeUtil::GetTime() + 0.05f;
+					
+					auto handPosition = pos + GetTranslation(unit->GetAgent().GetModelComponent().GetBoneMatrices()[mHand->index]
+						* Matrix4::RotationQuaternion(rot)) * 0.04f;
+					auto direction = targetPos - pos;
+					mSoldierSpark[mIndex]->ShowSpark(handPosition, direction, lifeTime - 0.8f);
+					mIndex++;
+				}
+			}
 		}
+		else if (mCurrentUnit == UnitType::Mutant)
+		{
+			if ((time > 0.0f && time <= lifeTime - 1.0f) && !mSparkPlay)
+			{
+				mSparkPlay = true;
+				mHand = FindBone(unit->GetAgent().GetModelComponent().GetModel().mSkeleton, "RightHand");
+				auto handPosition = pos + GetTranslation(unit->GetAgent().GetModelComponent().GetBoneMatrices()[mHand->index]
+					* Matrix4::RotationQuaternion(rot)) * 0.04f;
+				auto direction = targetPos - pos;
+
+				mMutantSpark.ShowSpark(handPosition, direction, lifeTime - 0.8f);
+			}
+		}
+
 	}
 }
 
@@ -123,20 +164,4 @@ void UIManager::RenderText(const char* text, const JimmyGod::Math::Vector3& pos,
 {
 	auto& texts = mTextmeshes.emplace_back(std::make_unique<TextMesh>());
 	texts->Initialize(text, pos, size, color, lifeTime, static_cast<uint32_t>(0));
-}
-
-void UIManager::PlayEffect(const Vector3& pos, const Vector3& dir, float lifeTime)
-{
-	switch (mCurrentUnit)
-	{
-	case UnitType::Soldier:
-		mSoldierSpark.ShowSpark(pos, dir, lifeTime);
-		break;
-	case UnitType::Mutant:
-		mMutantSpark.ShowSpark(pos, dir, lifeTime);
-		break;
-	default:
-		break;
-	}
-
 }

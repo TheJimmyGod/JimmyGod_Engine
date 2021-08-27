@@ -3,6 +3,7 @@
 using namespace JimmyGod;
 using namespace JimmyGod::Math;
 using namespace JimmyGod::Graphics;
+using namespace JimmyCom;
 
 void CharacterModule::Terminate()
 {

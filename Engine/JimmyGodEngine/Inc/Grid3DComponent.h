@@ -6,7 +6,7 @@ namespace JimmyGod
 {
 	class TransformComponent;
 
-	class GridComponent final : public Component
+	class Grid3DComponent final : public Component
 	{
 	public:
 		META_CLASS_DECLARE
@@ -39,8 +39,6 @@ namespace JimmyGod
 		const AI::Graph& GetGraph() const { return mGraph; }
 
 		JimmyGod::Math::Vector2 worldPos = JimmyGod::Math::Vector2::Zero;
-		bool is3D= true;
-		float tileSize2D = 0.0f;
 		float tileRadius3D = 0.0f;
 
 	private:

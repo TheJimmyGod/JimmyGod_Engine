@@ -58,11 +58,6 @@ void JimmyGod::AgentComponent::Movement(const Vector3& pos, float deltaTime)
 	mTransformComponent->pos = pos;
 }
 
-const JimmyGod::Math::Vector3& JimmyGod::AgentComponent::GetPosition() const
-{
-	return mTransformComponent->GetPosition();
-}
-
 const float JimmyGod::AgentComponent::GetSpeed() const
 {
 	return mSpeed;

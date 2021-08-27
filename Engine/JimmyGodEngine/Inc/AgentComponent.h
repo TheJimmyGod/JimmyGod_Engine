@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Component.h"
+#include "TransformComponent.h"
 #include <JimmyGodEngine/Inc/JimmyGodEngine.h>
 
 namespace JimmyGod
@@ -37,7 +38,6 @@ namespace JimmyGod
 		}
 		void Movement(const Vector3& pos, float deltaTime);
 
-		const JimmyGod::Math::Vector3& GetPosition() const;
 		const float GetSpeed() const;
 
 		const TransformComponent& GetTransformComponent() const { return *mTransformComponent; }
@@ -89,10 +89,10 @@ namespace JimmyGod
 			else
 			{
 				Destinination = Vector3(agent.mPath[currentWaypoint].x, agent.mPath[currentWaypoint].y, agent.mPath[currentWaypoint].z);
-				if (Math::Distance(agent.GetPosition(), Destinination) > 0.1f)
+				if (Math::Distance(agent.GetTransformComponent().GetPosition(), Destinination) > 0.1f)
 				{
-					Vector3 direction = Normalize(Destinination - agent.GetPosition());
-					Vector3 nextPos = agent.GetPosition() + (direction * (agent.mMovementSpeed / agent.mMass) * deltaTime);
+					Vector3 direction = Normalize(Destinination - agent.GetTransformComponent().pos);
+					Vector3 nextPos = agent.GetTransformComponent().GetPosition() + (direction * (agent.mMovementSpeed / agent.mMass) * deltaTime);
 					agent.Movement(nextPos, deltaTime);
 				}
 				else{  currentWaypoint++; }

@@ -6,7 +6,7 @@
 #include "ColliderComponent.h"
 #include "ModelComponent.h"
 #include "AgentComponent.h"
-#include "GridComponent.h"
+#include "Grid3DComponent.h"
 
 using namespace JimmyGod;
 

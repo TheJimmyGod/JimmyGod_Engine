@@ -12,6 +12,7 @@ using namespace JimmyGod;
 using namespace JimmyGod::Math;
 using namespace JimmyGod::Input;
 using namespace JimmyGod::Graphics;
+using namespace JimmyCom;
 
 namespace
 {
@@ -80,10 +81,14 @@ void GameManager::Update(float deltaTime)
 	mRender->Update(deltaTime);
 
 	TurnProcess();
-
+	// Turn Process
+	// -> The function that investigate status for each unit.
 	ControlState();
-
+	// Control State
+	// -> The function that controls the unit with mouse and keyborad.
 	ActionState(deltaTime);
+	// Action State
+	// -> The function that updating actions with attack and move
 
 	for (auto& unit : mSoldiers)
 		unit->Update(deltaTime);
@@ -114,21 +119,13 @@ void GameManager::DebugUI()
 	if (mUnit != nullptr)
 	{
 		if (mUnit->GetAgent().GetSpeed() == 0 && mUnit->GetStatus() == Status::Standby)
-			GridManager::Get()->GetGird().DisplayAreaCube(
-				mUnit->GetAgent().mArea,
-				mUnit->GetAgent().GetPosition(), GetColor(mCurrentState));
+			GridManager::Get()->GetGird().DisplayAreaCube(mUnit->GetAgent().mArea, mUnit->GetPosition(), GetColor(mCurrentState));
 		if (mUnit->GetStatus() != Status::TurnOver)
 		{
 			for (auto& unit : mSoldiers)
-			{
-				auto node = GridManager::Get()->GetGraph().GetNode(unit->GetAgent().GetPosition());
-				JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(node->position, 1.0f), GetColor_Standby(unit->GetFlag()));
-			}
+				JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(unit->GetPosition(), 1.0f), GetColor_Standby(unit->GetFlag()));
 			for (auto& unit : mMutants)
-			{
-				auto node = GridManager::Get()->GetGraph().GetNode(unit->GetAgent().GetPosition());
-				JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(node->position, 1.0f), GetColor_Standby(unit->GetFlag()));
-			}
+				JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(unit->GetPosition(), 1.0f), GetColor_Standby(unit->GetFlag()));
 		}
 	}
 	GridManager::Get()->GetGird().DebugUI();
@@ -143,13 +140,14 @@ void GameManager::Spawn(const JimmyGod::Math::Vector3& pos, const char* name, Un
 		auto& newUnit = mSoldiers.emplace_back(new Soldier(name, flag));
 		newUnit->Initialize(&mWorld);
 		newUnit->GetAgent().GetTransformComponent().SetPosition(pos);
-
+		newUnit->SetCoordinate(GridManager::Get()->GetGraph().GetNode(newUnit->GetPosition())->coordinate);
 	} break;
 	case UnitType::Mutant:
 	{
 		auto& newUnit = mMutants.emplace_back(new Mutant(name, flag));
 		newUnit->Initialize(&mWorld);
 		newUnit->GetAgent().GetTransformComponent().SetPosition(pos);
+		newUnit->SetCoordinate(GridManager::Get()->GetGraph().GetNode(newUnit->GetPosition())->coordinate);
 	} break;
 	}
 }
@@ -204,7 +202,7 @@ void GameManager::ActionState(float deltaTime)
 			if (mUnit->GetAgent().mPath.size() == 0 && mMoveActive)
 			{
 				mMoveActive = false;
-				GridManager::Get()->GetGird().ObjectPosition(mUnit->GetAgent().GetPosition());
+				GridManager::Get()->GetGird().ObjectPosition(mUnit->GetPosition());
 				mUnit->SetStatus(Status::TurnOver);
 				mUnit = nullptr;
 				mTarget = nullptr;
@@ -235,7 +233,7 @@ void GameManager::ActionState(float deltaTime)
 				}
 				else
 				{
-					auto direction = mUnit->GetAgent().GetPosition() - mTarget->GetAgent().GetPosition();
+					auto direction = mUnit->GetPosition() - mTarget->GetPosition();
 					mRotation = Quaternion::RotationLook(direction);
 					mUnit->GetAgent().GetTransformComponent().SetRotation(Slerp(mUnit->GetAgent().GetTransformComponent().rot, mRotation, deltaTime * 10.0f));
 				}
@@ -264,8 +262,9 @@ void GameManager::ControlState()
 			mUnit = TraceUnit(mCurrentState);
 			if (mUnit && mUnit->GetStatus() == Status::Standby)
 			{
-				GridManager::Get()->GetGird().ObjectPosition(mUnit->GetAgent().GetPosition());
-				mDestination = GridManager::Get()->GetGraph().GetNode(mUnit->GetAgent().GetPosition())->coordinate;
+				GridManager::Get()->GetGird().ObjectPosition(mUnit->GetPosition());
+				mUnit->SetCoordinate(GridManager::Get()->GetGraph().GetNode(mUnit->GetPosition())->coordinate);
+				mDestination = mUnit->GetCoordinate();
 			}
 			else
 				mUnit = nullptr;
@@ -280,15 +279,12 @@ void GameManager::ControlState()
 				mTarget = TraceUnit((mCurrentState == Flag::Ally ? Flag::Enemy : Flag::Ally));
 			if (mTarget)
 			{
-				auto node = GridManager::Get()->GetGraph().GetNode(mTarget->GetAgent().GetPosition())->coordinate;
+				auto node = GridManager::Get()->GetGraph().GetNode(mTarget->GetPosition())->coordinate;
 				check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node);
-				if (mTarget == mUnit && mTarget->GetFlag() == mUnit->GetFlag())
-				{
+				if (mTarget == mUnit || mTarget->GetFlag() == mUnit->GetFlag())
 					mTarget = nullptr;
-					return;
-				}
 				if (check)
-						GridManager::Get()->GetGird().ObjectPosition(mTarget->GetAgent().GetPosition());
+						GridManager::Get()->GetGird().ObjectPosition(mTarget->GetPosition());
 			}
 			else
 			{
@@ -339,16 +335,12 @@ void GameManager::ControlState()
 Unit* GameManager::TraceUnit(Flag flag)
 {
 	for (auto& gameObject : mSoldiers)
-	{
 		if (RayCast(mRay, gameObject->GetUnit(), mMaxDistance, flag) && gameObject->GetStatus() == Status::Standby)
 			return &gameObject->GetUnit();
-	}
 
 	for (auto& gameObject : mMutants)
-	{
 		if (RayCast(mRay, gameObject->GetUnit(), mMaxDistance, flag) && gameObject->GetStatus() == Status::Standby)
 			return &gameObject->GetUnit();
-	}
 
 	return nullptr;
 }
@@ -366,13 +358,9 @@ bool GameManager::RayCast(const JimmyGod::Math::Ray& mousePoint, const JimmyGod:
 bool GameManager::TurnProcess()
 {
 	for (auto& unit : mSoldiers)
-	{
 		if (unit->GetFlag() == mCurrentState && unit->GetStatus() != Status::TurnOver) return false;
-	}
 	for (auto& unit : mMutants)
-	{
 		if (unit->GetFlag() == mCurrentState && unit->GetStatus() != Status::TurnOver) return false;
-	}
 
 	switch (mCurrentState)
 	{
@@ -385,14 +373,12 @@ bool GameManager::TurnProcess()
 	case Flag::Enemy:
 		mCurrentState = Flag::Ally;
 		break;
-	default:
-		break;
+	default: break;
 	}
 
 	for (auto& unit : mSoldiers)
 		unit->SetStatus(Status::Standby);
 	for (auto& unit : mMutants)
 		unit->SetStatus(Status::Standby);
-
 	return true;
 }

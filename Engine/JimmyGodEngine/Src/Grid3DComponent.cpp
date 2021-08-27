@@ -1,5 +1,5 @@
 #include "Precompiled.h"
-#include "GridComponent.h"
+#include "Grid3DComponent.h"
 
 #include "GameObject.h"
 #include "TransformComponent.h"
@@ -9,41 +9,27 @@ using namespace JimmyGod::Input;
 using namespace JimmyGod::Math;
 using namespace JimmyGod::Graphics;
 
-META_DERIVED_BEGIN(GridComponent, Component)
+META_DERIVED_BEGIN(Grid3DComponent, Component)
 	META_FIELD_BEGIN
 		META_FIELD(worldPos, "WorldPos")
-		META_FIELD(is3D, "Demension")
-		META_FIELD(tileSize2D,"TileSize2D")
 		META_FIELD(tileRadius3D,"TileRadius3D")
 	META_FIELD_END
 META_CLASS_END
 
-void JimmyGod::GridComponent::Initialize()
+void JimmyGod::Grid3DComponent::Initialize()
 {
 	mTransformComponent = GetOwner().GetComponent<TransformComponent>();
-	if (is3D)
-		mGraph.Resize3D(worldPos.x, worldPos.y, tileRadius3D, mTransformComponent->GetPosition());
-	else
-	{
-		mTextureIds[0] = SpriteRenderManager::Get()->LoadTexture("grass.png");
-		mTextureIds[1] = SpriteRenderManager::Get()->LoadTexture("flower.png");
-		mTextureIds[2] = SpriteRenderManager::Get()->LoadTexture("tree0.png");
-		mTextureIds[3] = SpriteRenderManager::Get()->LoadTexture("tree1.png");
-		mTextureIds[4] = SpriteRenderManager::Get()->LoadTexture("tree2.png");
-		mTextureIds[5] = SpriteRenderManager::Get()->LoadTexture("tree3.png");
-
-		mGraph.Resize(worldPos.x, worldPos.y);
-	}
+	mGraph.Resize3D(worldPos.x, worldPos.y, tileRadius3D, mTransformComponent->GetPosition());
 	mTiles.resize(mGraph.GetColumns() * mGraph.GetRows(), 0);
 	mNode = mGraph.GetNodes();
 }
-void JimmyGod::GridComponent::Terminate() 
+void JimmyGod::Grid3DComponent::Terminate() 
 {
 	mTiles.clear();
 	mNode.clear();
 }
 
-void JimmyGod::GridComponent::Update(float deltaTime)
+void JimmyGod::Grid3DComponent::Update(float deltaTime)
 {
 	auto inputSystem = JimmyGod::Input::InputSystem::Get();
 	if (inputSystem->IsKeyDown(KeyCode::W))
@@ -68,55 +54,29 @@ void JimmyGod::GridComponent::Update(float deltaTime)
 	}
 }
 
-void JimmyGod::GridComponent::DebugUI()
+void JimmyGod::Grid3DComponent::DebugUI()
 {
-	if (mNode.empty())
-		return;
-	if (isDebugUI == false)
-		return;
+	if (mNode.empty() || !isDebugUI) return;
 	
 	for (int y = 0; y < mGraph.GetRows(); y++)
 	{
 		for (int x = 0; x < mGraph.GetColumns(); x++)
 		{
 			const int index = GetIndex(x, y);
-			float halfSize = tileSize2D / 2.0f;
-			Vector2 pos
-			{
-				static_cast<float>(x) * tileSize2D,
-				static_cast<float>(y) * tileSize2D
-			};
-
-			if(is3D == false)
-				SpriteRenderManager::Get()->DrawSprite(mTextureIds[mTiles[index]], pos, Pivot::TopLeft, Flip::None);
 
 			if (mGraph.GetNode(AI::Coord{ x,y }))
-			{
-				if(is3D)
-					JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(mNode[index].position,1.0f),Colors::Red);
-				else
-					for (size_t i = 0; i < mNode[index].neighbors.size(); i++)
-					{
-
-						JimmyGod::Graphics::SimpleDraw::AddScreenLine(Vector2(pos.x + halfSize, pos.y + halfSize), Vector2(
-							static_cast<float>(mNode[index].neighbors[i].x * tileSize2D + halfSize),
-							static_cast<float>(mNode[index].neighbors[i].y * tileSize2D + halfSize)), JimmyGod::Graphics::Colors::Red);
-					}
-			}
+				JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(mNode[index].position, 1.0f), Colors::Red);
 		}
 	}
-	if (is3D)
-		DisplayClosedListIn3D();
-	else
-		DisplayClosedListIn2D();
+	DisplayClosedListIn3D();
 }
 
-void JimmyGod::GridComponent::ObjectPosition(const Math::Vector3 pos)
+void JimmyGod::Grid3DComponent::ObjectPosition(const Math::Vector3 pos)
 {
 	mCurrentCoordinate = mGraph.GetNode(pos)->coordinate;
 }
 
-void JimmyGod::GridComponent::CreateGrid(int columns, int rows, int tileSize2Ds)
+void JimmyGod::Grid3DComponent::CreateGrid(int columns, int rows, int tileSize2Ds)
 {
 	if (columns == 0 || rows == 0)
 		return;
@@ -125,15 +85,12 @@ void JimmyGod::GridComponent::CreateGrid(int columns, int rows, int tileSize2Ds)
 	mGraph.clear();
 	mNode.clear();
 
-	if (is3D)
-		mGraph.Resize3D(worldPos.x, worldPos.y, tileRadius3D, mTransformComponent->GetPosition());
-	else
-		mGraph.Resize(worldPos.x, worldPos.y);
+	mGraph.Resize3D(worldPos.x, worldPos.y, tileRadius3D, mTransformComponent->GetPosition());
 	mTiles.resize(mGraph.GetColumns() * mGraph.GetRows(), 0);
 	mNode = mGraph.GetNodes();
 }
 
-void JimmyGod::GridComponent::DisplayClosedListIn2D()
+void JimmyGod::Grid3DComponent::DisplayClosedListIn2D()
 {
 	std::list<JimmyGod::AI::Coord> closedList;
 	JimmyGod::AI::Path parent;
@@ -165,30 +122,13 @@ void JimmyGod::GridComponent::DisplayClosedListIn2D()
 	}
 	default: break;
 	}
-
-	if (closedList.size())
-	{
-		for (auto node : closedList)
-		{
-			if (parent[mGraph.GetIndex(node)].IsValid())
-			{
-				JimmyGod::Graphics::SimpleDraw::AddScreenLine(Vector2(
-					static_cast<float>(node.x) * tileSize2D + (tileSize2D / 2),
-					static_cast<float>(node.y) * tileSize2D + (tileSize2D / 2)),
-					Vector2(
-						static_cast<float>(parent[mGraph.GetIndex(node)].x) * tileSize2D + (tileSize2D / 2),
-						static_cast<float>(parent[mGraph.GetIndex(node)].y) * tileSize2D + (tileSize2D / 2)),
-					JimmyGod::Graphics::Colors::White);
-			}
-		}
-	}
 }
 
-void JimmyGod::GridComponent::DisplayClosedListIn3D()
+void JimmyGod::Grid3DComponent::DisplayClosedListIn3D()
 {
 }
 
-void JimmyGod::GridComponent::DisplayAreaCube(int area, const Vector3& pos, const JimmyGod::Graphics::Color& color)
+void JimmyGod::Grid3DComponent::DisplayAreaCube(int area, const Vector3& pos, const JimmyGod::Graphics::Color& color)
 {
 	AI::Coord c = mGraph.GetNode(pos)->coordinate;
 	minY = Max(c.y - area+1,1);
@@ -202,11 +142,8 @@ void JimmyGod::GridComponent::DisplayAreaCube(int area, const Vector3& pos, cons
 			const int index = GetIndex(x, y);
 			if (mGraph.GetNode(AI::Coord{ x,y }))
 			{
-				if (is3D)
-				{
-					if(mNode[index].GetWalkable())
-						JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(mNode[index].position, 1.0f), color);
-				}
+				if (mNode[index].GetWalkable())
+					JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(mNode[index].position, 1.0f), color);
 			}
 		}
 	}
@@ -216,12 +153,12 @@ void JimmyGod::GridComponent::DisplayAreaCube(int area, const Vector3& pos, cons
 		JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(n->position, 1.0f), Colors::Blue);
 }
 
-int JimmyGod::GridComponent::GetIndex(int x, int y) const
+int JimmyGod::Grid3DComponent::GetIndex(int x, int y) const
 {
 	return x + (y * mGraph.GetColumns());
 }
 
-void JimmyGod::GridComponent::FindPath(const AI::Coord& from, const AI::Coord& to, float maxDistance, std::vector<Math::Vector3>& newPath)
+void JimmyGod::Grid3DComponent::FindPath(const AI::Coord& from, const AI::Coord& to, float maxDistance, std::vector<Math::Vector3>& newPath)
 {
 	AI::Path path;
 	newPath.clear();
@@ -308,7 +245,7 @@ void JimmyGod::GridComponent::FindPath(const AI::Coord& from, const AI::Coord& t
 	}
 }
 
-void JimmyGod::GridComponent::SetPathFind(const char* name)
+void JimmyGod::Grid3DComponent::SetPathFind(const char* name)
 {
 	if (name == "BFS") mPathFind = AI::PathFind::BFS;
 	else if (name == "DFS") mPathFind = AI::PathFind::DFS;
@@ -317,7 +254,7 @@ void JimmyGod::GridComponent::SetPathFind(const char* name)
 	else return;
 }
 
-bool JimmyGod::GridComponent::CheckMaximumAndMinimumGird(const AI::Coord& coord) const
+bool JimmyGod::Grid3DComponent::CheckMaximumAndMinimumGird(const AI::Coord& coord) const
 {
 	if (coord.x > maxX - 1 || coord.y > maxY - 1 || coord.x < minX || coord.y < minY)
 		return false;

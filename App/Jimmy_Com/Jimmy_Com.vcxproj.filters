@@ -18,6 +18,9 @@
     <ClCompile Include="Unit.cpp">
       <Filter>Unit</Filter>
     </ClCompile>
+    <ClCompile Include="HUD.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameState.h" />
@@ -44,6 +47,9 @@
     </ClInclude>
     <ClInclude Include="Flag.h">
       <Filter>Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="HUD.h">
+      <Filter>Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

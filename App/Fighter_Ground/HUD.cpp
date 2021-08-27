@@ -1,31 +1,30 @@
-#include "HUD.h"
+#include "../App/Fighter_Ground/HUD.h"
 
-using namespace FighterGround;
 using namespace JimmyGod;
 using namespace JimmyGod::Graphics;
 
 namespace
 {
-	std::unique_ptr<HUD> sInstance = nullptr;
+	std::unique_ptr<FighterGround::HUD> sInstance = nullptr;
 }
 
-void HUD::StaticInitialize()
+void FighterGround::HUD::StaticInitialize()
 {
-	sInstance = std::make_unique<HUD>();
+	sInstance = std::make_unique<FighterGround::HUD>();
 	sInstance->Initialize();
 }
 
-void HUD::StaticTerminate()
+void FighterGround::HUD::StaticTerminate()
 {
 	sInstance.reset();
 }
 
-HUD * HUD::Get()
+FighterGround::HUD * FighterGround::HUD::Get()
 {
 	return sInstance.get();
 }
 
-void HUD::Initialize()
+void FighterGround::HUD::Initialize()
 {
 	mEnergy[0] = TextureManager::Get()->Load("Energy1.png");
 	mEnergy[1] = TextureManager::Get()->Load("Energy2.png");
@@ -38,13 +37,13 @@ void HUD::Initialize()
 	mHealth[2] = TextureManager::Get()->Load("Health3.png");
 }
 
-void HUD::Update(size_t energy, size_t hp)
+void FighterGround::HUD::Update(size_t energy, size_t hp)
 {
 	mEnergyRate = energy;
 	mHealthRate = hp;
 }
 
-void HUD::Render()
+void FighterGround::HUD::Render()
 {
 	switch (mEnergyRate)
 	{

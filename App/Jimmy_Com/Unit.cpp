@@ -3,6 +3,11 @@
 #include "CharacterModule.h"
 #include "GridManager.h"
 
+using namespace JimmyGod;
+using namespace JimmyGod::Math;
+using namespace JimmyGod::AI;
+using namespace JimmyCom;
+
 void Unit::Attack(Unit& unit)
 {
 	unit.TakeDamage(mDamage);
@@ -10,8 +15,7 @@ void Unit::Attack(Unit& unit)
 
 bool Unit::AttackUpdate(float deltaTime)
 {
-	if (mTime <= 0.0f)
-		return true;
+	if (mTime <= 0.0f) return true;
 	else
 	{
 		mTime -= deltaTime;
@@ -19,19 +23,16 @@ bool Unit::AttackUpdate(float deltaTime)
 	}
 }
 
-const JimmyGod::Math::Sphere& Unit::GetSphereCollider() const
+const Sphere& Unit::GetSphereCollider() const
 {
 	return GetAgent().GetColliderComponent().GetSphere();
 }
 
-void Unit::Move(const JimmyGod::AI::Coord& pos)
+void Unit::Move(const Coord& pos)
 {
 	if (GridManager::Get() == nullptr) return;
-	JimmyGod::AI::Coord destiniation = pos;
-	JimmyGod::AI::Coord current = GridManager::Get()->GetGraph().GetNode(GetAgent().GetPosition())->coordinate;
-	GridManager::Get()->GetGird().FindPath(current, destiniation, GetAgent().mArea, GetAgent().mPath);
-	if (GetAgent().mPath.size() > 0)
-		GetAgent().ChangeState("Move");
+	GridManager::Get()->GetGird().FindPath(mCurrentCoordinate, pos, mRange, GetAgent().mPath);
+	if (GetAgent().mPath.size() > 0) GetAgent().ChangeState("Move");
 }
 
 void Unit::TakeDamage(float val)

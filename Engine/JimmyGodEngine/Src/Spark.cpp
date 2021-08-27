@@ -6,7 +6,7 @@ using namespace JimmyGod::Math;
 using namespace JimmyGod::Physics;
 using namespace JimmyGod::Graphics;
 
-void JimmyGod::Spark::Initialize(const std::filesystem::path & path, uint32_t amount, float radius)
+void JimmyGod::Spark::Initialize(const std::filesystem::path & path, uint32_t amount, float radius, float spread)
 {
 	PhysicsWorld::Settings settings;
 	settings.gravity = { 0.0f,-9.8f,0.0f };
@@ -18,6 +18,7 @@ void JimmyGod::Spark::Initialize(const std::filesystem::path & path, uint32_t am
 	mRadius = radius;
 	mMesh = JimmyGod::Graphics::MeshBuilder::CreateSpherePX(mRadius);
 	mAmount = amount;
+	mSpread = spread;
 	mMeshBuffer.Initialize(mMesh, true);
 	std::filesystem::path texturePath = L"../../Assets/Shaders/DoTexturing.fx";
 	mVertexShader.Initialize(texturePath, JimmyGod::Graphics::VertexPX::Format);
@@ -62,9 +63,9 @@ void JimmyGod::Spark::ShowSpark(const JimmyGod::Math::Vector3 & pos, const Jimmy
 	for (uint32_t i = 0; i < mAmount; ++i)
 	{
 		auto p = new Particle({ Vector3{ mFoot.x,mFoot.y + 1.5f, mFoot.z } });
-		p->SetVelocity(Vector3{ NormalizedDir.x + RandomFloat(-0.5f, 0.5f),
-			NormalizedDir.y + RandomFloat(-0.5f, 0.5f),
-			NormalizedDir.z + RandomFloat(-0.5f, 0.5f) });
+		p->SetVelocity(Vector3{ NormalizedDir.x + RandomFloat(-mSpread, mSpread),
+			NormalizedDir.y + RandomFloat(-0.1f, 0.1f),
+			NormalizedDir.z + RandomFloat(-mSpread, mSpread) });
 		p->radius = mRadius;
 		p->bounce = 0.3f;
 		

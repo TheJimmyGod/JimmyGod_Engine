@@ -9,7 +9,7 @@
 #include "ColliderComponent.h"
 #include "TransformComponent.h"
 #include "ModelComponent.h"
-#include "GridComponent.h"
+#include "Grid3DComponent.h"
 
 using namespace JimmyGod;
 
@@ -25,5 +25,5 @@ void JimmyGod::StaticMetaRegister()
 	META_REGISTER(ColliderComponent);
 	META_REGISTER(TransformComponent);
 	META_REGISTER(ModelComponent);
-	META_REGISTER(GridComponent);
+	META_REGISTER(Grid3DComponent);
 }

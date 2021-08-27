@@ -36,7 +36,7 @@
 // Component Headers
 #include "AgentComponent.h"
 #include "ColliderComponent.h"
-#include "GridComponent.h"
+#include "Grid3DComponent.h"
 #include "ModelComponent.h"
 #include "TransformComponent.h"
 

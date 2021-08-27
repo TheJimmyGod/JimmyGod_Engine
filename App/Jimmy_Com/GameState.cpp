@@ -14,6 +14,7 @@ using namespace JimmyGod::Graphics;
 using namespace JimmyGod::Input;
 using namespace JimmyGod::Math;
 using namespace JimmyGod::Physics;
+using namespace JimmyCom;
 
 void GameState::Initialize()
 {
