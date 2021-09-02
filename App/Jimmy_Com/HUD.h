@@ -16,10 +16,25 @@ namespace JimmyCom
 
 		void Initialize();
 		void Terminate();
+		void Update(float deltaTime);
+
 		void Render();
-		void RenderText();
+
+		void DisplayAllButtons()
+		{
+			for (auto& button : mButtons)
+				button->SetDisplay(true);
+		}
+		void DisappearAllButtons()
+		{
+			for (auto& button : mButtons)
+				button->SetDisplay(false);
+		}
+
+		std::unique_ptr<JimmyGod::Button>& GetButton(size_t index) { return mButtons[index]; }
+
 	private:
-		JimmyGod::Graphics::TextureId mIcons[4];
-		// TODO: make new object for button
+		std::vector<std::unique_ptr<Button>> mButtons;
+		JimmyGod::Graphics::TextureId mTextures;
 	};
 }

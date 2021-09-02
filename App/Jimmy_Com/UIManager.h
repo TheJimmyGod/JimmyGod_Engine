@@ -14,10 +14,24 @@ namespace JimmyCom
 		static UIManager* Get();
 
 	public:
+		enum Order : std::uint32_t
+		{
+			None = static_cast<uint32_t>(0),
+			Move = static_cast<uint32_t>(1),
+			Attack = static_cast<uint32_t>(2),
+			Standby = static_cast<uint32_t>(3)
+		};
+
 		void Initialize();
 		void Terminate();
 		void Update(float deltaTime);
 		void Render(const JimmyGod::Graphics::Camera& camera);
+
+		void SetOrder(uint32_t order) { mOrder = Order{ order }; }
+		const Order& GetOrder() const { return mOrder; }
+
+		void ShowButtons();
+		void HideButtons();
 
 		void UpdateAnimation(Unit* unit, Unit* Target, float lifeTime);
 		void RenderText(const char* text, const JimmyGod::Math::Vector3& pos, float size, float lifeTime, JimmyGod::Graphics::Color color);
@@ -32,6 +46,8 @@ namespace JimmyCom
 		Bone* mHand = nullptr;
 
 		UnitType mCurrentUnit = UnitType::Soldier;
+
+		Order mOrder = Order::None;
 
 		std::vector<std::unique_ptr<JimmyGod::TextMesh>> mTextmeshes;
 

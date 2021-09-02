@@ -487,6 +487,7 @@ namespace JimmyGod::Math
 	bool IsContained(const Vector3& point, const AABB& aabb);
 	bool IsContained(const Vector3& point, const OBB& obb);
 	bool GetContactPoint(const Ray& ray, const OBB& obb, Vector3& point, Vector3& normal);
+
 	bool Intersect(const Ray& ray, const Plane& plane, float& distance);
 	bool Intersect(const Ray& ray, const Sphere& sphere, float& distance);
 	bool Intersect(const LineSegment& a, const LineSegment& b);

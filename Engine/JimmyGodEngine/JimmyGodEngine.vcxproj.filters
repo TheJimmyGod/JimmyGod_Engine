@@ -129,9 +129,6 @@
     <ClInclude Include="Inc\Planet.h">
       <Filter>Inc\Planet</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Spark.h">
-      <Filter>Inc\Effect</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Bomb.h">
       <Filter>Inc\Object</Filter>
     </ClInclude>
@@ -151,6 +148,12 @@
       <Filter>Inc\Services</Filter>
     </ClInclude>
     <ClInclude Include="Inc\TextMesh.h">
+      <Filter>Inc\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Spark.h">
+      <Filter>Inc\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Button.h">
       <Filter>Inc\Effect</Filter>
     </ClInclude>
   </ItemGroup>
@@ -203,9 +206,6 @@
     <ClCompile Include="Src\Planet.cpp">
       <Filter>Src\Planet</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Spark.cpp">
-      <Filter>Src\Effect</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Bomb.cpp">
       <Filter>Src\Object</Filter>
     </ClCompile>
@@ -225,6 +225,12 @@
       <Filter>Src\Services</Filter>
     </ClCompile>
     <ClCompile Include="Src\TextMesh.cpp">
+      <Filter>Src\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Spark.cpp">
+      <Filter>Src\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Button.cpp">
       <Filter>Src\Effect</Filter>
     </ClCompile>
   </ItemGroup>

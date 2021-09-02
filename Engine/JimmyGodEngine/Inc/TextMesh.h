@@ -11,13 +11,14 @@ namespace JimmyGod
 			Down = static_cast<uint32_t>(1),
 			Right = static_cast<uint32_t>(2),
 			Left = static_cast<uint32_t>(3),
-			None = static_cast<uint32_t>(4)
+			None = static_cast<uint32_t>(4),
+			Stand = static_cast<uint32_t>(5)
 		};
 		TextMesh() {}
-		TextMesh(const char* str, const JimmyGod::Math::Vector3& pos, float size, JimmyGod::Graphics::Color color, float lifeTime, uint32_t animate);
+		TextMesh(const char* str, const JimmyGod::Math::Vector3& pos, float size, JimmyGod::Graphics::Color color, uint32_t animate, float lifeTime = 0.0f);
 		~TextMesh() = default;
 
-		void Initialize(const char* str, const JimmyGod::Math::Vector3& pos, float size, JimmyGod::Graphics::Color color, float lifeTime, uint32_t animate);
+		void Initialize(const char* str, const JimmyGod::Math::Vector3& pos, float size, JimmyGod::Graphics::Color color, uint32_t animate, float lifeTime = 0.0f);
 		void Update(const JimmyGod::Graphics::Camera& camera, float deltaTime);
 
 		const float GetLifeTime() const { return mLifeTime; }

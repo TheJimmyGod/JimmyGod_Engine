@@ -20,12 +20,12 @@ void UIManager::StaticInitialize()
 	sInstance = std::make_unique<UIManager>();
 	sInstance->Initialize();
 
-	//JimmyCom::HUD::StaticInitialize();
+	JimmyCom::HUD::StaticInitialize();
 }
 
 void UIManager::StaticTerminate()
 {
-	//JimmyCom::HUD::StaticTerminate();
+	JimmyCom::HUD::StaticTerminate();
 	if (sInstance != nullptr)
 	{
 		sInstance->Terminate();
@@ -64,7 +64,7 @@ void UIManager::Update(float deltaTime)
 	for(auto& spark : mSoldierSpark)
 		spark->Update(deltaTime);
 	mMutantSpark.Update(deltaTime);
-
+	JimmyCom::HUD::Get()->Update(deltaTime);
 	for (auto& text : mTextmeshes)
 	{
 		text->Update(GameManager::Get()->GetGameWorld().GetService<CameraService>()->GetActiveCamera(), deltaTime);
@@ -83,6 +83,17 @@ void UIManager::Render(const Camera& camera)
 	for(auto& spark : mSoldierSpark)
 		spark->Render(camera);
 	mMutantSpark.Render(camera);
+	JimmyCom::HUD::Get()->Render();
+}
+
+void JimmyCom::UIManager::ShowButtons()
+{
+	JimmyCom::HUD::Get()->DisplayAllButtons();
+}
+
+void JimmyCom::UIManager::HideButtons()
+{
+	JimmyCom::HUD::Get()->DisappearAllButtons();
 }
 
 void UIManager::UpdateAnimation(Unit* unit, Unit* target, float lifeTime)
@@ -163,5 +174,5 @@ void UIManager::UpdateAnimation(Unit* unit, Unit* target, float lifeTime)
 void UIManager::RenderText(const char* text, const JimmyGod::Math::Vector3& pos, float size, float lifeTime, JimmyGod::Graphics::Color color)
 {
 	auto& texts = mTextmeshes.emplace_back(std::make_unique<TextMesh>());
-	texts->Initialize(text, pos, size, color, lifeTime, static_cast<uint32_t>(0));
+	texts->Initialize(text, pos, size, color, static_cast<uint32_t>(0), lifeTime);
 }

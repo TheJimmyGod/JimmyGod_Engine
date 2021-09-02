@@ -118,8 +118,13 @@ void GameManager::DebugUI()
 	mWorld.DebugUI();
 	if (mUnit != nullptr)
 	{
-		if (mUnit->GetAgent().GetSpeed() == 0 && mUnit->GetStatus() == Status::Standby)
+		JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(mUnit->GetPosition(), 1.5f), Colors::Aqua);
+		if (UIManager::Get()->GetOrder() == UIManager::Order::Move && mUnit->GetAgent().GetSpeed() == 0)
 			GridManager::Get()->GetGird().DisplayAreaCube(mUnit->GetAgent().mArea, mUnit->GetPosition(), GetColor(mCurrentState));
+
+		if (UIManager::Get()->GetOrder() == UIManager::Order::Attack && !isAttacking)
+			GridManager::Get()->GetGird().DisplayAreaCube(mUnit->GetAgent().mArea, mUnit->GetPosition(), Colors::Yellow);
+
 		if (mUnit->GetStatus() != Status::TurnOver)
 		{
 			for (auto& unit : mSoldiers)
@@ -206,6 +211,8 @@ void GameManager::ActionState(float deltaTime)
 				mUnit->SetStatus(Status::TurnOver);
 				mUnit = nullptr;
 				mTarget = nullptr;
+
+				UIManager::Get()->SetOrder(static_cast<uint32_t>(0));
 			}
 		}
 		break;
@@ -224,6 +231,7 @@ void GameManager::ActionState(float deltaTime)
 				if (mUnit->AttackUpdate(deltaTime))
 				{
 					mUnit->SetProcess(false);
+					UIManager::Get()->SetOrder(static_cast<uint32_t>(0));
 					isAttacking = false;
 					if (mTarget != nullptr) mUnit->Attack(*mTarget);
 					mUnit->GetAgent().GetModelComponent().SetAnimationSpeed(1.0f);
@@ -249,6 +257,7 @@ void GameManager::ActionState(float deltaTime)
 void GameManager::ControlState()
 {
 	auto& camera = mCamera->GetActiveCamera();
+	bool check;
 	auto inputSystem = InputSystem::Get();
 	mMouseX = inputSystem->GetMouseScreenX();
 	mMouseY = inputSystem->GetMouseScreenY();
@@ -265,17 +274,57 @@ void GameManager::ControlState()
 				GridManager::Get()->GetGird().ObjectPosition(mUnit->GetPosition());
 				mUnit->SetCoordinate(GridManager::Get()->GetGraph().GetNode(mUnit->GetPosition())->coordinate);
 				mDestination = mUnit->GetCoordinate();
+				UIManager::Get()->ShowButtons();
 			}
 			else
 				mUnit = nullptr;
 		}
 	}
-	else
+	switch (UIManager::Get()->GetOrder())
+	{
+	case UIManager::Order::None:
+		return;
+		break;
+	case UIManager::Order::Standby:
+	{
+		mUnit->SetStatus(Status::TurnOver);
+		mUnit = nullptr;
+		mTarget = nullptr;
+		UIManager::Get()->SetOrder(static_cast<uint32_t>(0));
+		UIManager::Get()->HideButtons();
+	}
+		break;
+	case UIManager::Order::Move:
+	{
+		if (inputSystem->IsMouseDown(MouseButton::LBUTTON) && !mMoveActive)
+		{
+			for (auto& node : GridManager::Get()->GetGraph().GetNodes())
+			{
+				if (RayCast(mRay, node.collider, mMaxDistance))
+				{
+					check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node.coordinate);
+					if (check)
+					{
+						mDestination = node.coordinate;
+						GridManager::Get()->GetGird().ObjectPosition(node.position);
+						UIManager::Get()->HideButtons();
+
+						mMoveActive = true;
+						mUnit->SetStatus(Status::Move);
+						mUnit->Move(mDestination);
+						break;
+					}
+				}
+			}
+		}
+	}
+		break;
+	case UIManager::Order::Attack:
 	{
 		if (inputSystem->IsMouseDown(MouseButton::LBUTTON) && !isAttacking)
 		{
 			bool check;
-			if(mCurrentState != Flag::Neutral)
+			if (mCurrentState != Flag::Neutral)
 				mTarget = TraceUnit((mCurrentState == Flag::Ally ? Flag::Enemy : Flag::Ally));
 			if (mTarget)
 			{
@@ -284,43 +333,47 @@ void GameManager::ControlState()
 				if (mTarget == mUnit || mTarget->GetFlag() == mUnit->GetFlag())
 					mTarget = nullptr;
 				if (check)
-						GridManager::Get()->GetGird().ObjectPosition(mTarget->GetPosition());
-			}
-			else
-			{
-				for (auto& node : GridManager::Get()->GetGraph().GetNodes())
-				{
-					if (RayCast(mRay, node.collider, mMaxDistance))
-					{
-						check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node.coordinate);
-						if (check)
-						{
-							mDestination = node.coordinate;
-							GridManager::Get()->GetGird().ObjectPosition(node.position);
-							break;
-						}
-					}
-				}
+					GridManager::Get()->GetGird().ObjectPosition(mTarget->GetPosition());
+				UIManager::Get()->HideButtons();
+
+				mAttackActive = true;
+				mUnit->SetStatus(Status::Attack);
 			}
 		}
+	}
+		break;
+	default:
+		break;
 	}
 
-	if (inputSystem->IsKeyDown(KeyCode::SPACE) && mUnit)
-	{
-		if (mTarget && mUnit->GetStatus() == Status::Standby)
-		{
-			mAttackActive = true;
-			mUnit->SetStatus(Status::Attack);
-		}
-		else if (!mTarget && mUnit->GetStatus() == Status::Standby)
-		{
-			mMoveActive = true;
-			mUnit->SetStatus(Status::Move);
-			mUnit->Move(mDestination);
-		}
-		else
-			return;
-	}
+	//if (inputSystem->IsMouseDown(MouseButton::LBUTTON) && !isAttacking)
+	//{
+	//	bool check;
+	//	if (mCurrentState != Flag::Neutral)
+	//		mTarget = TraceUnit((mCurrentState == Flag::Ally ? Flag::Enemy : Flag::Ally));
+	//	if (mTarget)
+	//	{
+	//		auto node = GridManager::Get()->GetGraph().GetNode(mTarget->GetPosition())->coordinate;
+	//		check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node);
+	//		if (mTarget == mUnit || mTarget->GetFlag() == mUnit->GetFlag())
+	//			mTarget = nullptr;
+	//		if (check)
+	//			GridManager::Get()->GetGird().ObjectPosition(mTarget->GetPosition());
+	//	}
+	//	for (auto& node : GridManager::Get()->GetGraph().GetNodes())
+	//	{
+	//		if (RayCast(mRay, node.collider, mMaxDistance))
+	//		{
+	//			check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node.coordinate);
+	//			if (check)
+	//			{
+	//				mDestination = node.coordinate;
+	//				GridManager::Get()->GetGird().ObjectPosition(node.position);
+	//				break;
+	//			}
+	//		}
+	//	}
+	//}
 
 	if (inputSystem->IsMouseDown(MouseButton::RBUTTON))
 	{
@@ -328,6 +381,8 @@ void GameManager::ControlState()
 		{
 			mUnit = nullptr;
 			mTarget = nullptr;
+			UIManager::Get()->HideButtons();
+			UIManager::Get()->SetOrder(static_cast<uint32_t>(0));
 		}
 	}
 }

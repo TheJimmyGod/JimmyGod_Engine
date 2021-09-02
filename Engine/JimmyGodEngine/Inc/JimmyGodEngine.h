@@ -19,6 +19,7 @@
 
 // Object headers
 #include "Bomb.h"
+#include "Button.h"
 #include "Cloth.h"
 #include "Rope.h"
 #include "Spark.h"
