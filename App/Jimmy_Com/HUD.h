@@ -20,21 +20,15 @@ namespace JimmyCom
 
 		void Render();
 
-		void DisplayAllButtons()
-		{
-			for (auto& button : mButtons)
-				button->SetDisplay(true);
-		}
-		void DisappearAllButtons()
-		{
-			for (auto& button : mButtons)
-				button->SetDisplay(false);
-		}
+		void DisplayAllButtons();
+		void DisappearAllButtons();
 
 		std::unique_ptr<JimmyGod::Button>& GetButton(size_t index) { return mButtons[index]; }
 
 	private:
 		std::vector<std::unique_ptr<Button>> mButtons;
 		JimmyGod::Graphics::TextureId mTextures;
+
+		bool isDisplay = false;
 	};
 }

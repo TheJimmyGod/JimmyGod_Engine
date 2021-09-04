@@ -51,18 +51,15 @@ void UIManager::Initialize()
 
 void UIManager::Terminate()
 {
-	for (auto& spark : mSoldierSpark)
-		spark->Terminate();
+	for (auto& spark : mSoldierSpark) spark->Terminate();
 	mMutantSpark.Terminate();
-	for (auto& text : mTextmeshes)
-		text.reset();
+	for (auto& text : mTextmeshes) text.reset();
 	mTextmeshes.clear();
 }
 
 void UIManager::Update(float deltaTime)
 {
-	for(auto& spark : mSoldierSpark)
-		spark->Update(deltaTime);
+	for(auto& spark : mSoldierSpark) spark->Update(deltaTime);
 	mMutantSpark.Update(deltaTime);
 	JimmyCom::HUD::Get()->Update(deltaTime);
 	for (auto& text : mTextmeshes)
@@ -80,8 +77,7 @@ void UIManager::Update(float deltaTime)
 
 void UIManager::Render(const Camera& camera)
 {
-	for(auto& spark : mSoldierSpark)
-		spark->Render(camera);
+	for(auto& spark : mSoldierSpark) spark->Render(camera);
 	mMutantSpark.Render(camera);
 	JimmyCom::HUD::Get()->Render();
 }
@@ -142,14 +138,11 @@ void UIManager::UpdateAnimation(Unit* unit, Unit* target, float lifeTime)
 			{
 				if (JimmyGod::Core::TimeUtil::GetTime() > mTime)
 				{
-					if (mIndex >= 14)
-						mIndex = 0;
+					if (mIndex >= 14) mIndex = 0;
 					mTime = JimmyGod::Core::TimeUtil::GetTime() + 0.05f;
-					
 					auto handPosition = pos + GetTranslation(unit->GetAgent().GetModelComponent().GetBoneMatrices()[mHand->index]
 						* Matrix4::RotationQuaternion(rot)) * 0.04f;
-					auto direction = targetPos - pos;
-					mSoldierSpark[mIndex]->ShowSpark(handPosition, direction, lifeTime - 0.8f);
+					mSoldierSpark[mIndex]->ShowSpark(handPosition, targetPos - pos, lifeTime - 0.8f);
 					mIndex++;
 				}
 			}
@@ -162,9 +155,7 @@ void UIManager::UpdateAnimation(Unit* unit, Unit* target, float lifeTime)
 				mHand = FindBone(unit->GetAgent().GetModelComponent().GetModel().mSkeleton, "RightHand");
 				auto handPosition = pos + GetTranslation(unit->GetAgent().GetModelComponent().GetBoneMatrices()[mHand->index]
 					* Matrix4::RotationQuaternion(rot)) * 0.04f;
-				auto direction = targetPos - pos;
-
-				mMutantSpark.ShowSpark(handPosition, direction, lifeTime - 0.8f);
+				mMutantSpark.ShowSpark(handPosition, targetPos - pos, lifeTime - 0.8f);
 			}
 		}
 

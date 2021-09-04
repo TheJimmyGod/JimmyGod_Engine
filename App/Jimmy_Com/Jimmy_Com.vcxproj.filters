@@ -21,6 +21,12 @@
     <ClCompile Include="HUD.cpp">
       <Filter>Managers</Filter>
     </ClCompile>
+    <ClCompile Include="Soldier.cpp">
+      <Filter>Unit</Filter>
+    </ClCompile>
+    <ClCompile Include="Mutant.cpp">
+      <Filter>Unit</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameState.h" />

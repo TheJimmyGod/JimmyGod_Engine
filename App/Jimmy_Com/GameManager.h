@@ -46,9 +46,6 @@ namespace JimmyCom
 
 		Flag mCurrentState = Flag::Ally;
 		bool GameOver = false;
-		bool mMoveActive = false;
-		bool mAttackActive = false;
-		bool isAttacking = false;
 
 		int mMouseX = 0;
 		int mMouseY = 0;
@@ -76,5 +73,7 @@ namespace JimmyCom
 		bool RayCast(const JimmyGod::Math::Ray& mousePoint,
 			const JimmyGod::Math::Sphere& collider, float& maxDistance);
 		bool TurnProcess();
+
+		void Reset();
 	};
 }

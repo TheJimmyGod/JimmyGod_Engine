@@ -20,6 +20,7 @@ namespace JimmyCom
 		Move,
 		Attack,
 		Standby,
-		TurnOver
+		TurnOver,
+		Dead
 	};
 }

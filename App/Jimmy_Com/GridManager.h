@@ -13,7 +13,6 @@ namespace JimmyCom
 
 	public:
 		void Initialize(JimmyGod::GameWorld* gameWorld);
-		void Terminate();
 
 		const Grid3DComponent& GetGrid() const { return *mGrid->GetComponent<Grid3DComponent>(); }
 		Grid3DComponent& GetGird() { return *mGrid->GetComponent<Grid3DComponent>(); }

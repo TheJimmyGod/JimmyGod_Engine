@@ -8,6 +8,14 @@ using namespace JimmyGod::Math;
 using namespace JimmyGod::AI;
 using namespace JimmyCom;
 
+Unit& JimmyCom::Unit::operator=(Unit&& rhs) noexcept
+{
+	if (this == &rhs)
+		return *this;
+	*this = std::move(rhs);
+	return *this;
+}
+
 void Unit::Attack(Unit& unit)
 {
 	unit.TakeDamage(mDamage);

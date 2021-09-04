@@ -45,15 +45,15 @@ void JimmyCom::HUD::Initialize()
 		UIManager::Get()->SetOrder(2);
 	};
 
-	auto button1 = new Button("Health1.png", Vector2(900.0f, 500.0f), 20.0f);
+	auto button1 = new Button("Health1.png", Vector2(1100.0f, 500.0f), 20.0f);
 	button1->AddListener(StandbyFunc);
 	mButtons.emplace_back(std::move(button1));
 
-	auto button2 = new Button("Health1.png", Vector2(900.0f, 450.0f), 20.0f);
+	auto button2 = new Button("Health1.png", Vector2(1100.0f, 450.0f), 20.0f);
 	button2->AddListener(MoveFunc);
 	mButtons.emplace_back(std::move(button2));
 
-	auto button3 = new Button("Health1.png", Vector2(900.0f, 400.0f), 20.0f);
+	auto button3 = new Button("Health1.png", Vector2(1100.0f, 400.0f), 20.0f);
 	button3->AddListener(AttackFunc);
 	mButtons.emplace_back(std::move(button3));
 
@@ -65,21 +65,34 @@ void JimmyCom::HUD::Initialize()
 void JimmyCom::HUD::Terminate()
 {
 	TextureManager::Get()->Clear();
-	for (auto& button : mButtons)
-		button.reset();
+	for (auto& button : mButtons) button.reset();
 }
 
 void JimmyCom::HUD::Update(float deltaTime)
 {
-	for (auto& button : mButtons)
-		button->Update(deltaTime);
-	SpriteRenderManager::Get()->DrawScreenText("Standby", 900.0f, 500.0f, 15.0f, Colors::White);
-	SpriteRenderManager::Get()->DrawScreenText("Move", 900.0f, 450.0f, 15.0f, Colors::White);
-	SpriteRenderManager::Get()->DrawScreenText("Attack", 900.0f, 400.0f, 15.0f, Colors::White);
+	for (auto& button : mButtons) button->Update(deltaTime);
+	if (isDisplay)
+	{
+		SpriteRenderManager::Get()->DrawScreenText("Standby", 1050.0f, 500.0f, 15.0f, Colors::White);
+		SpriteRenderManager::Get()->DrawScreenText("Move", 1050.0f, 450.0f, 15.0f, Colors::White);
+		SpriteRenderManager::Get()->DrawScreenText("Attack", 1050.0f, 400.0f, 15.0f, Colors::White);
+	}
+
 }
 
 void JimmyCom::HUD::Render()
 {
-	for (auto& button : mButtons)
-		button->Render();
+	for (auto& button : mButtons) button->Render();
+}
+
+void JimmyCom::HUD::DisplayAllButtons()
+{
+	for (auto& button : mButtons) button->SetDisplay(true);
+	isDisplay = true;
+}
+
+void JimmyCom::HUD::DisappearAllButtons()
+{
+	for (auto& button : mButtons) button->SetDisplay(false);
+	isDisplay = false;
 }

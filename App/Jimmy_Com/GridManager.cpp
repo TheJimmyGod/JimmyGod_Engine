@@ -19,9 +19,7 @@ void GridManager::StaticInitialize(GameWorld* gameWorld)
 void GridManager::StaticTerminate()
 {
 	if (sInstance != nullptr)
-	{
 		sInstance.reset();
-	}
 }
 
 GridManager* GridManager::Get()

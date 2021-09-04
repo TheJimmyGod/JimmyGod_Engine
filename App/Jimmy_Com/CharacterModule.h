@@ -11,6 +11,16 @@ namespace JimmyCom
 			mModuleActive = true;
 			mTransformBuffer.Initialize();
 		}
+
+		CharacterModule& operator= (const CharacterModule& rhs) = default;
+		CharacterModule& operator= (CharacterModule&& rhs)
+		{
+			if (this == &rhs)
+				return *this;
+			*this = std::move(rhs);
+			return *this;
+		}
+
 		virtual ~CharacterModule() = default;
 
 		virtual void Initialize(JimmyGod::GameWorld* gameWorld, std::filesystem::path& path) = 0;
