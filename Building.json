@@ -3,9 +3,9 @@
     "Components": {
       "TransformComponent": {
         "Position": {
-          "x": 3.25,
+          "x": 9,
           "y": 0,
-          "z": 7.25
+          "z": 5
         },
         "Rotation": {
           "xDegree": 0,
@@ -29,16 +29,16 @@
           "y": 3,
           "z": 1
         },
-        "Radius": 2.0
+        "Radius": 3.0
       },
-      "AgentComponent": {
-        "Speed": 12.0,
-        "Weight": 1.0,
-        "Area": 4
-      },
-      "ModelComponent": {
-        "Path": "../../Assets/Models/Mutant/Mutant.model"
+      "MeshComponent": {
+        "Path": "../../Assets/Models/Environment/Building.obj",
+        "Diffuse": "../../Assets/Models/Environment/Building_diffuse.jpg",
+        "Specular": "None",
+        "Displacement": "None",
+        "Normal": "None",
+        "AO": "None"
       }
     }
   }
-} 
+}

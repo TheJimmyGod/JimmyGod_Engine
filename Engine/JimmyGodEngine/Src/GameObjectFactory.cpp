@@ -7,6 +7,7 @@
 #include "ModelComponent.h"
 #include "AgentComponent.h"
 #include "Grid3DComponent.h"
+#include "MeshComponent.h"
 
 using namespace JimmyGod;
 

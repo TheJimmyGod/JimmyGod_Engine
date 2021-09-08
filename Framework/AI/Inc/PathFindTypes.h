@@ -60,6 +60,11 @@ namespace JimmyGod::AI
 		{
 			return walkable;
 		}
+
+		void SetWalkable(bool b)
+		{
+			walkable = b;
+		}
 	};
 
 	enum class AStarTypes

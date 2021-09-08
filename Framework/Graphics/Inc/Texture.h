@@ -18,6 +18,8 @@ public:
 	void BindVS(uint32_t slot = 0) const;
 	void BindPS(uint32_t slot = 0) const;
 
+	bool IsInitialized() const { return mInitialized; }
+
 	uint32_t GetWidth() const { return mWidth; }
 	uint32_t GetHeight() const { return mHeight; }
 
@@ -30,6 +32,8 @@ private:
 	ID3D11ShaderResourceView* mShaderResourceView;
 	uint32_t mWidth;
 	uint32_t mHeight;
+
+	bool mInitialized = false;
 };
 
 }

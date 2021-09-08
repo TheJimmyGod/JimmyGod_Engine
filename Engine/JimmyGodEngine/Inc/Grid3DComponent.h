@@ -37,6 +37,9 @@ namespace JimmyGod
 		const int GetRows() const { return mGraph.GetRows(); }
 
 		const AI::Graph& GetGraph() const { return mGraph; }
+		AI::Graph& GetGraph() { return mGraph; }
+
+		auto& GetNodes() { return mNode; }
 
 		JimmyGod::Math::Vector2 worldPos = JimmyGod::Math::Vector2::Zero;
 		float tileRadius3D = 0.0f;

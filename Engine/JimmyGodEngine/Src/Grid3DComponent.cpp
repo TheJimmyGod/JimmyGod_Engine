@@ -65,7 +65,12 @@ void JimmyGod::Grid3DComponent::DebugUI()
 			const int index = GetIndex(x, y);
 
 			if (mGraph.GetNode(AI::Coord{ x,y }))
-				JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(mNode[index].position, 1.0f), Colors::Red);
+			{
+				if(mNode[index].GetWalkable())
+					JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(mNode[index].position, 0.5f), Colors::Green);
+				else
+					JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(mNode[index].position, 2.0f), Colors::Red);
+			}
 		}
 	}
 	DisplayClosedListIn3D();
@@ -131,10 +136,10 @@ void JimmyGod::Grid3DComponent::DisplayClosedListIn3D()
 void JimmyGod::Grid3DComponent::DisplayAreaCube(int area, const Vector3& pos, const JimmyGod::Graphics::Color& color)
 {
 	AI::Coord c = mGraph.GetNode(pos)->coordinate;
-	minY = Max(c.y - area+1,1);
-	minX = Max(c.x - area+1,1);
-	maxY = Min(c.y + area, mGraph.GetRows() - 1);
-	maxX = Min(c.x + area, mGraph.GetColumns() - 1);
+	minY = Max(c.y - area + 1,1);
+	minX = Max(c.x - area + 1,1);
+	maxY = Min(c.y + area, mGraph.GetRows());
+	maxX = Min(c.x + area, mGraph.GetColumns());
 	for (int y = minY; y < maxY; y++)
 	{
 		for (int x = minX; x < maxX; x++)
@@ -170,10 +175,7 @@ void JimmyGod::Grid3DComponent::FindPath(const AI::Coord& from, const AI::Coord&
 	{
 		// 3D check
 		if (mNode[GetIndex(coord.x, coord.y)].GetWalkable()) return false;
-		// 2D check
-		int tile = mTiles[GetIndex(coord.x, coord.y)];
-		if (tile == 0) return false;
-		return true;
+		else return true;
 	};
 
 	auto funcGetCost = [this](AI::Coord from, AI::Coord to)

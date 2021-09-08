@@ -170,6 +170,7 @@
     <ClInclude Include="Inc\GameWorld.h" />
     <ClInclude Include="Inc\Grid3DComponent.h" />
     <ClInclude Include="Inc\JimmyGodEngine.h" />
+    <ClInclude Include="Inc\MeshComponent.h" />
     <ClInclude Include="Inc\ModelComponent.h" />
     <ClInclude Include="Inc\Planet.h" />
     <ClInclude Include="Inc\RenderService.h" />
@@ -197,6 +198,7 @@
     <ClCompile Include="Src\GameWorld.cpp" />
     <ClCompile Include="Src\Grid3DComponent.cpp" />
     <ClCompile Include="Src\JimmyGodEngine.cpp" />
+    <ClCompile Include="Src\MeshComponent.cpp" />
     <ClCompile Include="Src\MetaRegistration.cpp" />
     <ClCompile Include="Src\ModelComponent.cpp" />
     <ClCompile Include="Src\Planet.cpp" />

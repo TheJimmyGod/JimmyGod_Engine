@@ -439,8 +439,8 @@ void SimpleDraw::AddGroundPlane(float size, float cellSize, const Color & color)
 	const float halfSize = size * 0.5f;
 	for (float i = -halfSize; i <= halfSize; i += cellSize)
 	{
-		sInstance->AddLine({i,0.0f, -halfSize}, {i,0.0f,halfSize}, color);
-		sInstance->AddLine({-halfSize,0.0f,i}, {halfSize,0.0f,i}, color);
+		sInstance->AddLine({i,-1.0f, -halfSize}, {i,-1.0f,halfSize}, color);
+		sInstance->AddLine({-halfSize,-1.0f,i}, {halfSize,-1.0f,i}, color);
 	}
 }
 

@@ -14,6 +14,7 @@ void GridManager::StaticInitialize(GameWorld* gameWorld)
 	sInstance = std::make_unique<GridManager>();
 	gameWorld->Create("../../Assets/Templates/Grid.json", "Grid");
 	sInstance->Initialize(gameWorld);
+
 }
 
 void GridManager::StaticTerminate()

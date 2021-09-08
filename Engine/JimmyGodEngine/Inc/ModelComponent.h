@@ -28,9 +28,10 @@ namespace JimmyGod
 
 		auto& GetBoneMatrices() { return mAnimator.GetBoneMatrices(); }
 		const JimmyGod::Graphics::Animator& GetAnimator() const { return mAnimator; }
+		JimmyGod::Graphics::Animator& GetAnimator() { return mAnimator; }
+		void Active(bool active) { isActive = active; }
 
 		std::string mPath;
-		void Active(bool active) { isActive = active; }
 	private:
 		JimmyGod::Graphics::Model mModel;
 		JimmyGod::Graphics::Animator mAnimator;

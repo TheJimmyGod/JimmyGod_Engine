@@ -10,6 +10,7 @@
 #include "TransformComponent.h"
 #include "ModelComponent.h"
 #include "Grid3DComponent.h"
+#include "MeshComponent.h"
 
 using namespace JimmyGod;
 
@@ -26,4 +27,5 @@ void JimmyGod::StaticMetaRegister()
 	META_REGISTER(TransformComponent);
 	META_REGISTER(ModelComponent);
 	META_REGISTER(Grid3DComponent);
+	META_REGISTER(MeshComponent);
 }

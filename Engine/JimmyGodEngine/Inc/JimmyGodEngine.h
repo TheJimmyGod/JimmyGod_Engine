@@ -38,6 +38,7 @@
 #include "AgentComponent.h"
 #include "ColliderComponent.h"
 #include "Grid3DComponent.h"
+#include "MeshComponent.h"
 #include "ModelComponent.h"
 #include "TransformComponent.h"
 

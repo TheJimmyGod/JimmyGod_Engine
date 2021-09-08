@@ -108,6 +108,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Jsons", "Jsons", "{EBCEC24F-B987-485A-9ED6-A2A16820CF24}"
 	ProjectSection(SolutionItems) = preProject
 		Assets\Templates\Batman.json = Assets\Templates\Batman.json
+		Assets\Templates\Building.json = Assets\Templates\Building.json
 		Assets\Templates\Grid.json = Assets\Templates\Grid.json
 		Assets\Templates\Mutant.json = Assets\Templates\Mutant.json
 		Assets\Templates\Test.json = Assets\Templates\Test.json

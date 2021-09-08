@@ -5,6 +5,8 @@
 #include "Unit.h"
 #include "Soldier.h"
 #include "Mutant.h"
+#include "Environment.h"
+#include "Building.h"
 
 namespace JimmyCom
 {
@@ -22,6 +24,7 @@ namespace JimmyCom
 		void Render();
 		void DebugUI();
 		void Spawn(const JimmyGod::Math::Vector3& pos, const char* name, UnitType type, Flag flag);
+		void Spawn_Enviroment(const JimmyGod::Math::Vector3& pos, const char* name, bool destructible);
 
 		std::unique_ptr<Soldier>& GetSoldier(size_t index) { return mSoldiers[index]; }
 		const size_t GetSoldierCount() const { return mSoldiers.size(); }
@@ -43,6 +46,7 @@ namespace JimmyCom
 
 		std::vector<std::unique_ptr<Soldier>> mSoldiers;
 		std::vector<std::unique_ptr<Mutant>> mMutants;
+		std::vector<std::unique_ptr<Building>> mBuildings;
 
 		Flag mCurrentState = Flag::Ally;
 		bool GameOver = false;
@@ -52,11 +56,14 @@ namespace JimmyCom
 
 		int mNextUnit = 0;
 
+		int mEnvironmentIndex = 0;
+
 		float mMaxDistance = 0.0f;
 		Ray mRay;
 
 		AI::Coord mDestination = { 0,0 };
 		Quaternion mRotation = Quaternion::Zero;
+		Quaternion mRotationTarget = Quaternion::Zero;
 
 		Unit* mUnit = nullptr;
 		Unit* mTarget = nullptr;
@@ -67,6 +74,7 @@ namespace JimmyCom
 		void ActionState(float deltaTime);
 		void ControlState();
 		Unit* TraceUnit(Flag flag);
+		bool IsExist(AI::Coord& coord) const;
 
 		bool RayCast(const JimmyGod::Math::Ray& mousePoint,
 			const Unit& collider, float& maxDistance, Flag layerMask);

@@ -39,8 +39,12 @@ void Animator::Update(float deltaTime)
 	auto& animationClip = mModel->mAnimationSet.clips[mClipIndex];
 	mClipDuration = animationClip->duration;
 	mTimer += deltaTime * animationClip->ticksPerSecond * mSpeed;
-	if (mTimer > animationClip->duration)
-		mTimer -= animationClip->duration;
+	if (mTimer > mClipDuration)
+	{
+		if (mStop)
+			return;
+		mTimer -= mClipDuration;
+	}
 	UpdateBoneRecursive(mModel->mSkeleton.root, mBoneMatrices, *animationClip, mTimer);
 
 	if (mBlendDuration > 0.0f)

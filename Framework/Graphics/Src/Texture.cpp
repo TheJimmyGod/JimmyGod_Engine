@@ -16,7 +16,11 @@ bool Texture::Initialize(const char* fileName)
 	mbstowcs_s(nullptr, wbuffer, fileName, 1024);
 
 	HRESULT hr = DirectX::CreateWICTextureFromFile(GetDevice(), GetContext(), wbuffer, nullptr, &mShaderResourceView);
-	ASSERT(SUCCEEDED(hr), "Failed to load texture %ls.", fileName);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+	//ASSERT(SUCCEEDED(hr), "Failed to load texture %ls.", fileName);
 
 	ID3D11Resource* resource = nullptr;
 	mShaderResourceView->GetResource(&resource);
@@ -27,13 +31,18 @@ bool Texture::Initialize(const char* fileName)
 
 	mWidth = desc.Width;
 	mHeight = desc.Height;
+	mInitialized = true;
 	return true;
 }
 
 bool Texture::Initialize(const std::filesystem::path& fileName)
 {
 	HRESULT hr = DirectX::CreateWICTextureFromFile(GetDevice(), GetContext(), fileName.c_str(), nullptr, &mShaderResourceView);
-	ASSERT(SUCCEEDED(hr), "Failed to load texture %ls.", fileName);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+	//ASSERT(SUCCEEDED(hr), "Failed to load texture %ls.", fileName);
 
 	ID3D11Resource* resource = nullptr;
 	mShaderResourceView->GetResource(&resource);
@@ -44,6 +53,7 @@ bool Texture::Initialize(const std::filesystem::path& fileName)
 
 	mWidth = desc.Width;
 	mHeight = desc.Height;
+	mInitialized = true;
 	return true;
 }
 
@@ -84,6 +94,7 @@ bool Texture::Initialize(const void * data, uint32_t width, uint32_t height)
 	}
 
 	SafeRelease(texture);
+	mInitialized = true;
 	return true;
 }
 

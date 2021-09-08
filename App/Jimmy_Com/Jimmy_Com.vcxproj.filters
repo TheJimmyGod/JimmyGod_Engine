@@ -27,6 +27,9 @@
     <ClCompile Include="Mutant.cpp">
       <Filter>Unit</Filter>
     </ClCompile>
+    <ClCompile Include="Environment.cpp">
+      <Filter>Environment</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameState.h" />
@@ -57,6 +60,12 @@
     <ClInclude Include="HUD.h">
       <Filter>Managers</Filter>
     </ClInclude>
+    <ClInclude Include="Environment.h">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="Building.h">
+      <Filter>Environment</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Managers">
@@ -64,6 +73,9 @@
     </Filter>
     <Filter Include="Unit">
       <UniqueIdentifier>{d050a0fb-8cc0-4fe7-9643-bfb4fce1debb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Environment">
+      <UniqueIdentifier>{ad4f4e45-93e6-45c4-8a9e-9521b72d2b48}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

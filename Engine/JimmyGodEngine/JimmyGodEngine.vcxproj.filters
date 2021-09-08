@@ -156,6 +156,9 @@
     <ClInclude Include="Inc\Button.h">
       <Filter>Inc\Effect</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\MeshComponent.h">
+      <Filter>Inc\Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\JimmyGodEngine.cpp">
@@ -232,6 +235,9 @@
     </ClCompile>
     <ClCompile Include="Src\Button.cpp">
       <Filter>Src\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\MeshComponent.cpp">
+      <Filter>Src\Component</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

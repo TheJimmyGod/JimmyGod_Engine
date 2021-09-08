@@ -57,7 +57,7 @@ void Graph::Resize3D(float columns, float rows, float radius, const JimmyGod::Ma
 			int colDirection[8] = { -1, 0, 1, -1, 1, -1, 0, 1 };
 			int index = GetIndex(present_Coord);
 			Vector3 point = startPos + (Vector3::XAxis * (x * nodeDistance + radius) + Vector3::ZAxis * (y * nodeDistance + radius));
-			
+			mNodes[index].id = index;
 			mNodes[index].position = point;
 			mNodes[index].walkable = true;
 			mNodes[index].collider = { mNodes[index].position,radius };

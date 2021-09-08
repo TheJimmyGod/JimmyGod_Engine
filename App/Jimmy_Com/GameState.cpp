@@ -20,8 +20,10 @@ void GameState::Initialize()
 {
 	GraphicsSystem::Get()->SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 	GameManager::StaticInitialize(100);
-	GridManager::StaticInitialize(&GameManager::Get()->GetGameWorld());;
+	GridManager::StaticInitialize(&GameManager::Get()->GetGameWorld());
 
+	GameManager::Get()->Spawn_Enviroment({ -12.5f,0.0f,-8.5f },"Building",false);
+	GameManager::Get()->Spawn_Enviroment({ 8.5f,0.0f,-8.5f }, "Building", false);
 	GameManager::Get()->Spawn({ 0.0f,0.0f,14.0f }, "Jimmy", UnitType::Soldier, Flag::Ally);
 	GameManager::Get()->Spawn({ 12.0f,0.0f,14.0f }, "Sushi", UnitType::Soldier, Flag::Ally);
 	GameManager::Get()->Spawn({ 0.0f,0.0f,10.0f }, "Robort", UnitType::Soldier, Flag::Enemy);
@@ -81,6 +83,5 @@ void GameState::DebugUI()
 			}
 		}
 	}
-
 	ImGui::End();
 }

@@ -22,7 +22,7 @@
       },
       "Grid3DComponent": {
         "WorldPos": { "x": 80, "y": 80 },
-        "TileRadius3D": 1.0
+        "TileRadius3D": 2.0
       }
     }
   }

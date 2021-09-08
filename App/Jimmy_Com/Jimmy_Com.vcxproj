@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CharacterModule.cpp" />
+    <ClCompile Include="Environment.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GridManager.cpp" />
@@ -159,7 +160,9 @@
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Building.h" />
     <ClInclude Include="CharacterModule.h" />
+    <ClInclude Include="Environment.h" />
     <ClInclude Include="Flag.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameState.h" />

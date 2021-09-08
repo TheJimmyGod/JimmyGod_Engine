@@ -22,6 +22,7 @@ namespace JimmyCom
 		void Initialize(JimmyGod::GameWorld* gameWorld, std::filesystem::path& path) override;
 		void SetProcess(bool p) override;
 		void TakeDamage(float val) override;
+		void Reset() override;
 	};
 }
 

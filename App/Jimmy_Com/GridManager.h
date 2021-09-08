@@ -16,7 +16,6 @@ namespace JimmyCom
 
 		const Grid3DComponent& GetGrid() const { return *mGrid->GetComponent<Grid3DComponent>(); }
 		Grid3DComponent& GetGird() { return *mGrid->GetComponent<Grid3DComponent>(); }
-		const AI::Graph& GetGraph() const { return mGrid->GetComponent<Grid3DComponent>()->GetGraph(); }
 	private:
 		JimmyGod::GameObject* mGrid = nullptr;
 	};

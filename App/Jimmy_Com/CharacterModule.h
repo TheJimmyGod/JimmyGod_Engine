@@ -13,7 +13,7 @@ namespace JimmyCom
 		}
 
 		CharacterModule& operator= (const CharacterModule& rhs) = default;
-		CharacterModule& operator= (CharacterModule&& rhs)
+		CharacterModule& operator= (CharacterModule&& rhs) noexcept
 		{
 			if (this == &rhs)
 				return *this;
@@ -28,6 +28,8 @@ namespace JimmyCom
 		virtual void Terminate();
 		virtual void Update(float deltaTime);
 		virtual void Render(const JimmyGod::Graphics::Camera& camera);
+		virtual void Reset() = 0;
+
 	protected:
 		struct TransformData
 		{

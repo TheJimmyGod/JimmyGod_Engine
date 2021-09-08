@@ -1,5 +1,4 @@
 #include "Soldier.h"
-#include "GridManager.h"
 #include "UIManager.h"
 
 using namespace JimmyCom;
@@ -9,8 +8,8 @@ using namespace JimmyGod::Math;
 JimmyCom::Soldier::Soldier(std::string name, Flag flag) :
 	CharacterModule(), Unit(name, flag)
 {
-	mHealth = 100.0f;
-	mDamage = 10.0f;
+	mHealth = 20.0f;
+	mDamage = 15.0f;
 	mDefence = 1.0f;
 	mRange = 5.0f;
 	mMaxHelath = mHealth;
@@ -71,8 +70,18 @@ void JimmyCom::Soldier::TakeDamage(float val)
 	if (mHealth < 0.0f)
 	{
 		isDead = true;
-		mAnimationProcess = false;
+		mAnimationProcess = true;
 		SetStatus(Status::Dead);
-		GetAgent().GetModelComponent().PlayAnimation(4);
+		mGameObject->GetComponent<ModelComponent>()->PlayAnimation(5);
+		mGameObject->GetComponent<ModelComponent>()->SetAnimationTime(0.0f);
+		mGameObject->GetComponent<ModelComponent>()->GetAnimator().StopLoop(true);
 	}
+}
+
+void JimmyCom::Soldier::Reset()
+{
+	isDead = false;
+	mHealth = mMaxHelath;
+	mAnimationProcess = true;
+	mGameObject->GetComponent<ModelComponent>()->GetAnimator().StopLoop(false);
 }

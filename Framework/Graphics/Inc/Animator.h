@@ -47,11 +47,17 @@ namespace JimmyGod::Graphics
 			}
 		}
 
+		void StopLoop(bool l)
+		{
+			mStop = l;
+		}
+
 		std::vector<JimmyGod::Math::Matrix4>& GetBoneMatrices() { return mBoneMatrices; }
 
 	private:
 		const Model* mModel;
 		float mTimer = 0.0f;
+		float mFinishTimer = 0.0f;
 		float mSpeed = 1.0f;
 		float mCurrentTimer = 0.0f;
 		float mClipDuration = 0.0f;
@@ -62,6 +68,8 @@ namespace JimmyGod::Graphics
 		float mBlendTime = 0.0f;
 		float mBlendDuration = 0.0f;
 		int mBlendIndex = 0;
+
+		bool mStop = false;
 
 		std::vector<JimmyGod::Math::Matrix4> mBoneMatrices;
 	};

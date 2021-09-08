@@ -1,5 +1,4 @@
 #include "Mutant.h"
-#include "GridManager.h"
 #include "UIManager.h"
 
 using namespace JimmyCom;
@@ -9,8 +8,8 @@ using namespace JimmyGod::Math;
 JimmyCom::Mutant::Mutant(std::string name, Flag flag) :
 	CharacterModule(), Unit(name, flag)
 {
-	mHealth = 150.0f;
-	mDamage = 8.0f;
+	mHealth = 25.0f;
+	mDamage = 25.0f;
 	mDefence = 2.0f;
 	mRange = 1.0f;
 	mMaxHelath = mHealth;
@@ -18,7 +17,7 @@ JimmyCom::Mutant::Mutant(std::string name, Flag flag) :
 	isDead = false;
 }
 
-Mutant& JimmyCom::Mutant::operator=(Mutant&& rhs)
+Mutant& JimmyCom::Mutant::operator=(Mutant&& rhs) noexcept
 {
 	if (this == &rhs) return *this;
 	CharacterModule::operator=(std::move(rhs));
@@ -71,8 +70,18 @@ void JimmyCom::Mutant::TakeDamage(float val)
 	if (mHealth < 0.0f)
 	{
 		isDead = true;
-		mAnimationProcess = false;
+		mAnimationProcess = true;
 		SetStatus(Status::Dead);
-		GetAgent().GetModelComponent().PlayAnimation(3);
+		mGameObject->GetComponent<ModelComponent>()->PlayAnimation(3);
+		mGameObject->GetComponent<ModelComponent>()->SetAnimationTime(0.0f);
+		mGameObject->GetComponent<ModelComponent>()->GetAnimator().StopLoop(true);
 	}
+}
+
+void JimmyCom::Mutant::Reset()
+{
+	isDead = false;
+	mHealth = mMaxHelath;
+	mAnimationProcess = true;
+	mGameObject->GetComponent<ModelComponent>()->GetAnimator().StopLoop(false);
 }

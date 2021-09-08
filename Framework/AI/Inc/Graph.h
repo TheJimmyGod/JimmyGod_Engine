@@ -46,8 +46,8 @@ namespace JimmyGod::AI
 		{
 			return coord.x + (coord.y * mColumns);
 		}
-		std::vector<Node> GetNodes() const { return mNodes; }
-
+		const std::vector<Node>& GetNodes() const { return mNodes; }
+		std::vector<Node>& GetNodes() { return mNodes; }
 		void clear(){	mNodes.clear(); }
 		// Node* ->
 		// Node& == Node* const
