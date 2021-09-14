@@ -30,5 +30,7 @@ namespace JimmyCom
 		JimmyGod::Graphics::TextureId mTextures;
 
 		bool isDisplay = false;
+		float mXaxis = 2000.0f;
+		float mCurrentxAxis = 0.0f;
 	};
 }

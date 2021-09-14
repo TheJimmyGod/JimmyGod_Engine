@@ -19,6 +19,10 @@ using namespace JimmyCom;
 void GameState::Initialize()
 {
 	GraphicsSystem::Get()->SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
+
+	mTerrain.Initialize(100, 100, 1.0f);
+	mTerrain.SetHeightScale(1.0f);
+
 	GameManager::StaticInitialize(100);
 	GridManager::StaticInitialize(&GameManager::Get()->GetGameWorld());
 
@@ -26,7 +30,7 @@ void GameState::Initialize()
 	GameManager::Get()->Spawn_Enviroment({ 8.5f,0.0f,-8.5f }, "Building", false);
 	GameManager::Get()->Spawn({ 0.0f,0.0f,14.0f }, "Jimmy", UnitType::Soldier, Flag::Ally);
 	GameManager::Get()->Spawn({ 12.0f,0.0f,14.0f }, "Sushi", UnitType::Soldier, Flag::Ally);
-	GameManager::Get()->Spawn({ 0.0f,0.0f,10.0f }, "Robort", UnitType::Soldier, Flag::Enemy);
+	//GameManager::Get()->Spawn({ 0.0f,0.0f,10.0f }, "Robort", UnitType::Soldier, Flag::Enemy);
 	GameManager::Get()->Spawn({ 0.0f,0.0f,-20.0f }, "God", UnitType::Mutant, Flag::Enemy);
 
 	JimmyGod::Physics::PhysicsWorld::Settings settings;
@@ -41,6 +45,7 @@ void GameState::Initialize()
 
 void GameState::Terminate()
 {
+	mTerrain.Terminate();
 	GameManager::StaticTerminate();
 	UIManager::StaticTerminate();
 	mSpark.Terminate();
@@ -64,6 +69,10 @@ void GameState::Render()
 {
 	GameManager::Get()->Render();
 	UIManager::Get()->Render(GameManager::Get()->GetGameWorld().GetService<CameraService>()->GetActiveCamera());
+
+	auto matView = GameManager::Get()->GetGameWorld().GetService<CameraService>()->GetActiveCamera().GetViewMatrix();
+	auto matProj = GameManager::Get()->GetGameWorld().GetService<CameraService>()->GetActiveCamera().GetPerspectiveMatrix();
+	mTerrain.Render(GameManager::Get()->GetGameWorld().GetService<CameraService>()->GetActiveCamera());
 }
 
 void GameState::DebugUI()

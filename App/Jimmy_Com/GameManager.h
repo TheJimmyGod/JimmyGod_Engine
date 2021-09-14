@@ -71,8 +71,10 @@ namespace JimmyCom
 		const JimmyGod::Graphics::Color GetColor(Flag flag) const;
 		const JimmyGod::Graphics::Color GetColor_Standby(Flag flag) const;
 
+		bool mCameraSwitched = false;
+
 		void ActionState(float deltaTime);
-		void ControlState();
+		void ControlState(float deltaTime);
 		Unit* TraceUnit(Flag flag);
 		bool IsExist(AI::Coord& coord) const;
 

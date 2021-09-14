@@ -38,6 +38,7 @@ void JimmyCom::Environment::Render(const JimmyGod::Graphics::Camera& camera)
 
 	auto matView = camera.GetViewMatrix();
 	auto matProj = camera.GetPerspectiveMatrix();
+	
 	auto matWorld = mGameObject->GetComponent<TransformComponent>()->GetTransform();
 	mGameObject->GetComponent<MeshComponent>()->Bind();
 	mTransformBuffer.BindVS(0);

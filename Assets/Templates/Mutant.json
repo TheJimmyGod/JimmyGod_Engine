@@ -4,7 +4,7 @@
       "TransformComponent": {
         "Position": {
           "x": 3.25,
-          "y": 0,
+          "y": 0.5,
           "z": 7.25
         },
         "Rotation": {
@@ -13,9 +13,9 @@
           "zDegree": 0
         },
         "Scale": {
-          "x": 0.04,
-          "y": 0.04,
-          "z": 0.04
+          "x": 0.045,
+          "y": 0.045,
+          "z": 0.045
         }
       },
       "ColliderComponent": {

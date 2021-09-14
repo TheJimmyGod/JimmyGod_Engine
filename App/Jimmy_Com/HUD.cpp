@@ -45,21 +45,17 @@ void JimmyCom::HUD::Initialize()
 		UIManager::Get()->SetOrder(2);
 	};
 
-	auto button1 = new Button("Health1.png", Vector2(1100.0f, 500.0f), 20.0f);
+	auto button1 = new Button("Health1.png", Vector2(2000.0f, 500.0f), 20.0f);
 	button1->AddListener(StandbyFunc);
 	mButtons.emplace_back(std::move(button1));
 
-	auto button2 = new Button("Health1.png", Vector2(1100.0f, 450.0f), 20.0f);
+	auto button2 = new Button("Health1.png", Vector2(2000.0f, 450.0f), 20.0f);
 	button2->AddListener(MoveFunc);
 	mButtons.emplace_back(std::move(button2));
 
-	auto button3 = new Button("Health1.png", Vector2(1100.0f, 400.0f), 20.0f);
+	auto button3 = new Button("Health1.png", Vector2(2000.0f, 400.0f), 20.0f);
 	button3->AddListener(AttackFunc);
 	mButtons.emplace_back(std::move(button3));
-
-	//mButtons[1] = Button("Health1.png", Vector2(1000.0f, 500.0f), 20.0f);
-	//mButtons[2] = Button("Health1.png", Vector2(1000.0f, 500.0f), 20.0f);
-	//mButtons[3] = Button("Health1.png", Vector2(1000.0f, 500.0f), 20.0f);
 }
 
 void JimmyCom::HUD::Terminate()
@@ -70,14 +66,18 @@ void JimmyCom::HUD::Terminate()
 
 void JimmyCom::HUD::Update(float deltaTime)
 {
-	for (auto& button : mButtons) button->Update(deltaTime);
 	if (isDisplay)
 	{
-		SpriteRenderManager::Get()->DrawScreenText("Standby", 1050.0f, 500.0f, 15.0f, Colors::White);
-		SpriteRenderManager::Get()->DrawScreenText("Move", 1050.0f, 450.0f, 15.0f, Colors::White);
-		SpriteRenderManager::Get()->DrawScreenText("Attack", 1050.0f, 400.0f, 15.0f, Colors::White);
+		mXaxis = Lerp(mXaxis, 1100.0f, deltaTime * 3.5f);
+		SpriteRenderManager::Get()->DrawScreenText("Standby", mXaxis, 500.0f, 15.0f, Colors::White);
+		SpriteRenderManager::Get()->DrawScreenText("Move", mXaxis, 450.0f, 15.0f, Colors::White);
+		SpriteRenderManager::Get()->DrawScreenText("Attack", mXaxis, 400.0f, 15.0f, Colors::White);
+		for (auto& button : mButtons) {
+			button->Update(deltaTime);
+			button->SetPosition(Lerp(button->GetPosition(), Vector2{ 1100.0f, button->GetPosition().y }, deltaTime * 3.0f
+			));
+		}
 	}
-
 }
 
 void JimmyCom::HUD::Render()
@@ -93,6 +93,11 @@ void JimmyCom::HUD::DisplayAllButtons()
 
 void JimmyCom::HUD::DisappearAllButtons()
 {
-	for (auto& button : mButtons) button->SetDisplay(false);
+	for (auto& button : mButtons)
+	{
+		button->SetDisplay(false);
+		button->SetPosition(Vector2{ 2000.0f, button->GetPosition().y });
+	}
+	mXaxis = 2000.0f;
 	isDisplay = false;
 }

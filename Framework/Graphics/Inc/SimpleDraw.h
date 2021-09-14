@@ -19,8 +19,8 @@ namespace JimmyGod::Graphics::SimpleDraw
 	void AddSphere(const Math::Vector3& sphere, float radius, const Color & color, uint32_t rings, uint32_t slices);
 	void AddTransform(const Math::Matrix4& transform);
 	void AddBone(const Math::Matrix4& transform);
-	void AddGroundPlane(float size, const Color& color);
-	void AddGroundPlane(float size, float cellSize, const Color& color);
+	void AddGroundPlane(float size, float yAxis = 1.0f, const Color& color = Colors::Magenta);
+	void AddGroundPlane(float size, float yAxis = 1.0f, float cellSize = 1.0f, const Color& color = Colors::Magenta);
 	void AddScreenCircle(const Math::Circle& circle, const Color& color);
 	void AddScreenLine(const Math::Vector2& v0, const Math::Vector2& v1, const Color& color);
 	void Render(const Camera& camera);

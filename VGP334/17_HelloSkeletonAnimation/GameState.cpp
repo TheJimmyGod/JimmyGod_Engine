@@ -44,9 +44,9 @@ void GameState::Initialize()
 
 	mActiveCamera = &mDefaultCamera;
 
-	mModel.Initialize("../../Assets/Models/Mutant_Walking.model");
+	//mModel.Initialize("../../Assets/Models/Mutant_Walking.model");
 	
-	mGroundMesh = MeshBuilder::CreatePlane(1500.0f, 16, 16, false);
+	mGroundMesh = MeshBuilder::CreatePlane(1500.0f, 16, 16);
 	mGroundMeshBuffer.Initialize(mGroundMesh);
 
 	mTransformBuffer.Initialize();
@@ -241,8 +241,8 @@ void GameState::Update(float deltaTime)
 
 	SimpleDrawCamera(mLightCamera);
 	fps = 1 / deltaTime;
-	if(!stopAnimation)
-		mAnimator.Update(deltaTime);
+	//if(!stopAnimation)
+	//	mAnimator.Update(deltaTime);
 
 	mSkyDome.Update(*mActiveCamera);
 }
@@ -271,7 +271,7 @@ void GameState::DebugUI()
 		ImGui::Text("fps: %.2f", fps);
 		static float mTime = 0.0f;
 		static float mCurrentTime = mAnimator.GetTime();
-		ImGui::SliderFloat("Duration", &mTime, 0.0f, mModel.mAnimationSet.clips[0].get()->duration);
+		//ImGui::SliderFloat("Duration", &mTime, 0.0f, mModel.mAnimationSet.clips[0].get()->duration);
 		if (mTime > 0.1f && !stopAnimation)
 		{
 			mAnimator.StopAnimation(true);

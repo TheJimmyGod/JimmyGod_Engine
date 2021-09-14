@@ -19,7 +19,7 @@ public:
 private:
 	JimmyGod::Physics::PhysicsWorld mPhysicsWorld;
 	std::vector<JimmyGod::Physics::Particle*> particles;
-	
+	JimmyGod::Terrain mTerrain;
 	JimmyGod::Spark mSpark;
 	bool SparkEffect = false;
 	bool mAttack = false;

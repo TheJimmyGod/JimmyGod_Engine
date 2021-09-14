@@ -40,8 +40,7 @@ namespace JimmyCom
 		void SetStatus(Status s) { mStatus = s; }
 		void SetCoordinate(const AI::Coord& coord) { mCurrentCoordinate = coord; }
 
-		float mTime = 0.0f;
-
+		float mUpdateTime = 0.0f;
 	protected:
 		int mLevel = 1;
 		int mEXP = 0;

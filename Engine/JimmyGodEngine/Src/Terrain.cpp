@@ -17,7 +17,7 @@ void Terrain::Initialize(uint32_t numRows, uint32_t numCols, float cellSize)
 	mTerrainPixelShader.Initialize(L"../../Assets/Shaders/DoPhongShading.fx");
 
 	mSampler.Initialize(Graphics::Sampler::Filter::Anisotropic, Graphics::Sampler::AddressMode::Wrap);
-	mGrassTexture.Initialize("../../Assets/Textures/grass_2048.jpg");
+	mGrassTexture.Initialize("../../Assets/Textures/Road.png");
 
 	GenerateIndices();
 	GenerateVertices();
@@ -109,9 +109,9 @@ void Terrain::GenerateVertices()
 			auto& vertex = mMesh.vertices.emplace_back();
 			vertex.position =
 			{
-				x * mCellSize,
-				0.0f,
-				z * mCellSize
+				x * mCellSize - mNumCols / 2,
+				-5.0f,
+				z * mCellSize - mNumRows / 2
 			};
 			vertex.normal = { 0.0f, 1.0f, 0.0f };
 			vertex.tangent = { 1.0f,0.0f,0.0f };

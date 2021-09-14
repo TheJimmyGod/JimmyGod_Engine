@@ -23,10 +23,10 @@ void Unit::Attack(Unit& unit)
 
 bool Unit::AttackUpdate(float deltaTime)
 {
-	if (mTime <= 0.0f) return true;
+	if (mUpdateTime <= 0.0f) return true;
 	else
 	{
-		mTime -= deltaTime;
+		mUpdateTime -= deltaTime;
 		return false;
 	}
 }

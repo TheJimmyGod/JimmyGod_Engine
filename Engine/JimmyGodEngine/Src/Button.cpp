@@ -21,7 +21,8 @@ void JimmyGod::Button::Update(float deltaTime)
 
 	int MouseX = inputSyetem->GetMouseScreenX();
 	int MouseY = inputSyetem->GetMouseScreenY();
-
+	mCollider = Circle(mPosition, mCollider.radius);
+	
 	if (inputSyetem->IsMouseDown(MouseButton::LBUTTON))
 	{
 		if (PointInCircle(Vector2(MouseX, MouseY), GetCollider()) && !onClick)

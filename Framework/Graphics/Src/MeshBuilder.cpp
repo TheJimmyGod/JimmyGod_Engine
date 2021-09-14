@@ -392,7 +392,7 @@ Mesh MeshBuilder::CreateSphere(float radius, int rings, int slices, bool isSpace
 	return mMesh;
 }
 
-Mesh MeshBuilder::CreatePlane(float size, int rows, int columns, bool isSpace)
+Mesh MeshBuilder::CreatePlane(float size, int rows, int columns)
 {
 	Mesh mMesh;
 
