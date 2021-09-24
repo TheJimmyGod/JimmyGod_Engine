@@ -21,7 +21,6 @@ void JimmyGod::StaticMetaRegister()
 
 	META_REGISTER(Component);
 	META_REGISTER(GameObject);
-
 	META_REGISTER(AgentComponent);
 	META_REGISTER(ColliderComponent);
 	META_REGISTER(TransformComponent);

@@ -9,7 +9,7 @@ namespace JimmyCom
 	class Soldier : public CharacterModule, public Unit
 	{
 	public:
-		Soldier(std::string name, Flag flag);
+		Soldier(const std::string& name, Flag flag);
 		~Soldier() = default;
 
 		Soldier& operator= (const Soldier& rhs) = default;
@@ -17,6 +17,9 @@ namespace JimmyCom
 
 		AgentComponent& GetAgent() override;
 		const AgentComponent& GetAgent() const override;
+
+		virtual const ModelComponent& GetModelComponent() const override;
+		virtual ModelComponent& GetModelComponent() override;
 
 		void Initialize(JimmyGod::GameWorld* gameWorld) override;
 		void Initialize(JimmyGod::GameWorld* gameWorld, std::filesystem::path& path) override;

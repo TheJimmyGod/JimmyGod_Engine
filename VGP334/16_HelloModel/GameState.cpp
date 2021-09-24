@@ -47,7 +47,7 @@ void GameState::Initialize()
 	//OBJLoader::Load("../../Assets/Models/Mutant_Walking.obj", 0.01f, mTankMesh);
 	//mTankMeshBuffer.Initialize(mTankMesh);
 
-	mGroundMesh = MeshBuilder::CreatePlane(300.0f, 16, 16, false);
+	mGroundMesh = MeshBuilder::CreatePlane(300.0f, 16, 16);
 	mGroundMeshBuffer.Initialize(mGroundMesh);
 
 	mTransformBuffer.Initialize();

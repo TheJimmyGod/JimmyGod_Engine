@@ -8,7 +8,7 @@ namespace JimmyCom
 	class Mutant : public CharacterModule, public Unit
 	{
 	public:
-		Mutant(std::string name, Flag flag);
+		Mutant(const std::string& name, Flag flag);
 
 		~Mutant() = default;
 
@@ -17,6 +17,9 @@ namespace JimmyCom
 
 		AgentComponent& GetAgent() override;
 		const AgentComponent& GetAgent() const override;
+
+		virtual const ModelComponent& GetModelComponent() const override;
+		virtual ModelComponent& GetModelComponent() override;
 
 		void Initialize(JimmyGod::GameWorld* gameWorld) override;
 		void Initialize(JimmyGod::GameWorld* gameWorld, std::filesystem::path& path) override;

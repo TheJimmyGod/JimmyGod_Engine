@@ -8,7 +8,6 @@ namespace JimmyGod
 {
 	class TransformComponent;
 	class ColliderComponent;
-	class ModelComponent;
 
 	class AIWorld;
 
@@ -24,44 +23,33 @@ namespace JimmyGod
 		void Update(float deltaTime) override;
 		void DebugUI() override;
 
-		void ChangeState(std::string stateName) { mStateMachine->ChangeState(stateName);}
+		void ChangeState(std::string stateName);
 
-		void Dead()
-		{
-			isActive = false;
-		}
-		void Stop() 
-		{ 
-			mSpeed = 0.0f;
-			mPath.clear();
-			ChangeState("Idle"); 
-		}
+		void Dead();
+		void Stop();
 		void Movement(const Vector3& pos, float deltaTime);
 
-		const float GetSpeed() const;
+		TransformComponent* GetTransformComponent() { return mTransformComponent; }
+		const TransformComponent* GetTransformComponent() const { return mTransformComponent; }
 
-		const TransformComponent& GetTransformComponent() const { return *mTransformComponent; }
-		TransformComponent& GetTransformComponent() { return *mTransformComponent; }
- 		const ColliderComponent& GetColliderComponent() const { return *mColliderComponent; }
-		ColliderComponent& GetColliderComponent() { return *mColliderComponent; }
-		const ModelComponent& GetModelComponent() const { return *mModelComponent; }
-		ModelComponent& GetModelComponent() { return *mModelComponent; }
+		ColliderComponent* GetColliderComponent() { return mColliderComponent; }
+		const ColliderComponent* GetColliderComponent() const { return mColliderComponent; }
+
+		const float GetSpeed() const;
 
 		float mMovementSpeed = 0.0f;
 		float mMass = 0.0f;
 		int mArea = 0;
 		std::vector<Math::Vector3> mPath;
-
 	private:
-		std::unique_ptr<JimmyGod::AI::StateMachine<AgentComponent>> mStateMachine;
+		std::unique_ptr<JimmyGod::AI::StateMachine<AgentComponent>> mStateMachine = nullptr;
+		TransformComponent* mTransformComponent = nullptr;
+		ColliderComponent* mColliderComponent = nullptr;
+
 	private:
 		bool isDebugUI = false;
 		bool isActive = true;
 		float mSpeed = 0.0f;
-
-		TransformComponent* mTransformComponent = nullptr;
-		ColliderComponent* mColliderComponent = nullptr;
-		ModelComponent* mModelComponent = nullptr;
 	};
 
 	class Idle : public JimmyGod::AI::State<AgentComponent>
@@ -71,15 +59,16 @@ namespace JimmyGod
 		void Update(AgentComponent& agent, float deltaTime) {}
 		void Exit(AgentComponent& agent) {}
 	};
+
 	class Move : public JimmyGod::AI::State<AgentComponent>
 	{
 	public:
-		void Enter(AgentComponent& agent)
+		void Enter(AgentComponent& agent) override
 		{
 			currentWaypoint = 0;
 			maxWaypoint = agent.mPath.size();
 		}
-		void Update(AgentComponent& agent, float deltaTime)
+		void Update(AgentComponent& agent, float deltaTime) override
 		{
 			if ((currentWaypoint == maxWaypoint) || (agent.mPath.size() == 0))
 			{
@@ -89,16 +78,16 @@ namespace JimmyGod
 			else
 			{
 				Destinination = Vector3(agent.mPath[currentWaypoint].x, agent.mPath[currentWaypoint].y, agent.mPath[currentWaypoint].z);
-				if (Math::Distance(agent.GetTransformComponent().GetPosition(), Destinination) > 0.1f)
+				if (Math::Distance(agent.GetTransformComponent()->GetPosition(), Destinination) > 0.1f)
 				{
-					Vector3 direction = Normalize(Destinination - agent.GetTransformComponent().pos);
-					Vector3 nextPos = agent.GetTransformComponent().GetPosition() + (direction * (agent.mMovementSpeed / agent.mMass) * deltaTime);
+					Vector3 direction = Normalize(Destinination - agent.GetTransformComponent()->GetPosition());
+					Vector3 nextPos = agent.GetTransformComponent()->GetPosition() + (direction * (agent.mMovementSpeed / agent.mMass) * deltaTime);
 					agent.Movement(nextPos, deltaTime);
 				}
 				else{  currentWaypoint++; }
 			}
 		}
-		void Exit(AgentComponent& agent) 
+		void Exit(AgentComponent& agent) override
 		{
 			currentWaypoint = 0;
 		}

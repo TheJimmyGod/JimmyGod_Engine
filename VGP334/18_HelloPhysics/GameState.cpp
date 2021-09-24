@@ -82,7 +82,7 @@ void GameState::Render()
 	mPhysicsWorld.DebugDraw();
 	mCloth.Render(mCamera);
 	//mCloth2.Render(mCamera);
-	SimpleDraw::AddGroundPlane(30.0f,Colors::Aqua);
+	SimpleDraw::AddGroundPlane(30.0f,1.0f,Colors::Aqua);
 	SimpleDraw::Render(mCamera);
 }
 

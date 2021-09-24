@@ -26,6 +26,10 @@ namespace JimmyGod
 		void DisplayClosedListIn2D();
 		void DisplayClosedListIn3D();
 		void DisplayAreaCube(int area, const Math::Vector3& pos, const JimmyGod::Graphics::Color& color);
+		JimmyGod::Math::Vector3 FindClosestPath(int area, const Math::Vector3& curr, const Math::Vector3& dest);
+
+		void CalculateGrid(int area, const JimmyGod::Math::Vector3& coord);
+
 		int GetIndex(int x, int y) const;
 
 		void FindPath(const AI::Coord& from, const AI::Coord& to, float maxDistance,std::vector<Math::Vector3>& newPath);

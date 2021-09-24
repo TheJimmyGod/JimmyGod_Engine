@@ -38,6 +38,9 @@ namespace JimmyCom
 
 		const JimmyGod::GameWorld& GetGameWorld() const { return mWorld; }
 		JimmyGod::GameWorld& GetGameWorld() { return mWorld; }
+
+		Unit* TraceClosestUnit(Flag flag);
+		Unit* TraceEnemy();
 	private:
 
 		JimmyGod::GameWorld mWorld;
@@ -47,9 +50,11 @@ namespace JimmyCom
 		std::vector<std::unique_ptr<Soldier>> mSoldiers;
 		std::vector<std::unique_ptr<Mutant>> mMutants;
 		std::vector<std::unique_ptr<Building>> mBuildings;
-
 		Flag mCurrentState = Flag::Ally;
 		bool GameOver = false;
+		bool mProcessing_AI = false;
+
+		float mTurnOver = 0.0f;
 
 		int mMouseX = 0;
 		int mMouseY = 0;
@@ -75,6 +80,10 @@ namespace JimmyCom
 
 		void ActionState(float deltaTime);
 		void ControlState(float deltaTime);
+		void AIDecisionState(float deltaTime);
+
+		void BeginAttack();
+
 		Unit* TraceUnit(Flag flag);
 		bool IsExist(AI::Coord& coord) const;
 

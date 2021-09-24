@@ -2,6 +2,7 @@
 #include "Flag.h"
 #include "CharacterModule.h"
 #include "GridManager.h"
+#include "GameManager.h"
 
 using namespace JimmyGod;
 using namespace JimmyGod::Math;
@@ -33,13 +34,15 @@ bool Unit::AttackUpdate(float deltaTime)
 
 const Sphere& Unit::GetSphereCollider() const
 {
-	return GetAgent().GetColliderComponent().GetSphere();
+	return GetAgent().GetColliderComponent()->GetSphere();
 }
 
-void Unit::Move(const Coord& pos)
+void Unit::Move(const Coord& pos, bool isExist)
 {
 	if (GridManager::Get() == nullptr) return;
 	GridManager::Get()->GetGird().FindPath(mCurrentCoordinate, pos, mRange, GetAgent().mPath);
+	if(isExist)
+		GetAgent().mPath.pop_back();
 	if (GetAgent().mPath.size() > 0) GetAgent().ChangeState("Move");
 }
 
@@ -55,4 +58,3 @@ void Unit::TakeDamage(float val)
 		GetAgent().Dead();
 	}
 }
-

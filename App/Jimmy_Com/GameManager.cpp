@@ -95,12 +95,17 @@ void GameManager::Update(float deltaTime)
 {
 	mWorld.Update(deltaTime);
 	mRender->Update(deltaTime);
-	TurnProcess(); // -> The function that investigate status for each unit.
-	ControlState(deltaTime); // -> The function that controls the unit with mouse and keyborad.
+	
 	ActionState(deltaTime); // -> The function that updating actions with attack and move
 	for (auto& unit : mSoldiers) unit->Update(deltaTime);
 	for (auto& unit : mMutants) unit->Update(deltaTime);
 	for (auto& object : mBuildings) object->Update(deltaTime);
+
+	TurnProcess(); // -> The function that investigate status for each unit.
+	if (mCurrentState == Flag::Enemy)
+		AIDecisionState(deltaTime);
+	else
+		ControlState(deltaTime); // -> The function that controls the unit with mouse and keyborad.
 }
 
 void GameManager::Render()
@@ -131,19 +136,15 @@ void GameManager::DebugUI()
 	}
 	for (auto& unit : mSoldiers)
 	{
-		if (mCurrentState != unit->GetFlag())
-			continue; 
-		if ((unit->GetStatus() == Status::TurnOver || unit->GetStatus() == Status::Dead))
-			continue;
+		if (mCurrentState != unit->GetFlag()) continue; 
+		if ((unit->GetStatus() == Status::TurnOver || unit->GetStatus() == Status::Dead)) continue;
 		JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(unit->GetPosition(), 1.0f), GetColor_Standby(unit->GetFlag()));
 	}
 
 	for (auto& unit : mMutants)
 	{
-		if (mCurrentState != unit->GetFlag())
-			continue;
-		if ((unit->GetStatus() == Status::TurnOver || unit->GetStatus() == Status::Dead))
-			continue;
+		if (mCurrentState != unit->GetFlag()) continue;
+		if ((unit->GetStatus() == Status::TurnOver || unit->GetStatus() == Status::Dead)) continue;
 		JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(unit->GetPosition(), 1.0f), GetColor_Standby(unit->GetFlag()));
 	}
 
@@ -159,14 +160,14 @@ void GameManager::Spawn(const JimmyGod::Math::Vector3& pos, const char* name, Un
 	{
 		auto& newUnit = mSoldiers.emplace_back(std::move(new Soldier(name, flag)));
 		newUnit->Initialize(&mWorld);
-		newUnit->GetAgent().GetTransformComponent().SetPosition(pos);
+		newUnit->GetAgent().GetTransformComponent()->SetPosition(pos);
 		newUnit->SetCoordinate(GridManager::Get()->GetGird().GetGraph().GetNode(pos)->coordinate);
 	} break;
 	case UnitType::Mutant:
 	{
 		auto& newUnit = mMutants.emplace_back(std::move(new Mutant(name, flag)));
 		newUnit->Initialize(&mWorld);
-		newUnit->GetAgent().GetTransformComponent().SetPosition(pos);
+		newUnit->GetAgent().GetTransformComponent()->SetPosition(pos);
 		newUnit->SetCoordinate(GridManager::Get()->GetGird().GetGraph().GetNode(pos)->coordinate);
 	} break;
 	default: return;
@@ -183,6 +184,56 @@ void JimmyCom::GameManager::Spawn_Enviroment(const JimmyGod::Math::Vector3& pos,
 		newEnvironment->InstallGrid();
 		mEnvironmentIndex++;
 	}
+}
+
+Unit* JimmyCom::GameManager::TraceClosestUnit(Flag flag)
+{
+	Unit* unit = nullptr;
+	float minDist = FLT_MAX;
+	for (auto& gameObject : mSoldiers)
+	{
+		if (gameObject->GetStatus() == Status::Dead)
+			continue;
+		if (gameObject->GetFlag() == flag && gameObject->GetStatus() == Status::Standby)
+		{
+			const float dist = Distance(gameObject->GetPosition(), mUnit->GetPosition());
+			if (minDist > dist)
+			{
+				minDist = dist;
+				unit = &gameObject->GetUnit();
+			}
+		}
+	}
+	for (auto& gameObject : mMutants)
+	{
+		if (gameObject->GetStatus() == Status::Dead)
+			continue;
+		if (gameObject->GetFlag() == flag && gameObject->GetStatus() == Status::Standby)
+		{
+			const float dist = Distance(gameObject->GetPosition(), mUnit->GetPosition());
+			if (minDist > dist)
+			{
+				minDist = dist;
+				unit = &gameObject->GetUnit();
+			}
+		}
+	}
+	return unit;
+}
+
+Unit* JimmyCom::GameManager::TraceEnemy()
+{
+	for (auto& gameObject : mSoldiers)
+	{
+		if (gameObject->GetFlag() == Flag::Enemy && gameObject->GetStatus() == Status::Standby)
+			return &gameObject->GetUnit();
+	}
+	for (auto& gameObject : mMutants)
+	{
+		if (gameObject->GetFlag() == Flag::Enemy && gameObject->GetStatus() == Status::Standby)
+			return &gameObject->GetUnit();
+	}
+	return nullptr;
 }
 
 const JimmyGod::Graphics::Color GameManager::GetColor(Flag flag) const
@@ -229,9 +280,10 @@ void GameManager::ActionState(float deltaTime)
 			{
 				mUnit->SetProcess(false);
 				if (mTarget != nullptr) mUnit->Attack(*mTarget);
-				mUnit->GetAgent().GetModelComponent().SetAnimationSpeed(1.0f);
+				mUnit->GetModelComponent().SetAnimationSpeed(1.0f);
 				mUnit->SetStatus(Status::TurnOver);
 				Reset();
+				mTurnOver = ATTACK_TIME;
 			}
 			else
 			{
@@ -240,8 +292,8 @@ void GameManager::ActionState(float deltaTime)
 
 				mRotation = Quaternion::RotationLook(Normalize(mUnit->GetPosition() - mTarget->GetPosition()));
 				mRotationTarget = Quaternion::RotationLook(Normalize(mTarget->GetPosition() - mUnit->GetPosition()));
-				mUnit->GetAgent().GetTransformComponent().SetRotation(Slerp(mUnit->GetAgent().GetTransformComponent().rot, mRotation, deltaTime * 10.0f));
-				mTarget->GetAgent().GetTransformComponent().SetRotation(Slerp(mTarget->GetAgent().GetTransformComponent().rot, mRotationTarget, deltaTime * 10.0f));
+				mUnit->GetAgent().GetTransformComponent()->SetRotation(Slerp(mUnit->GetAgent().GetTransformComponent()->GetRotation(), mRotation, deltaTime * 10.0f));
+				mTarget->GetAgent().GetTransformComponent()->SetRotation(Slerp(mTarget->GetAgent().GetTransformComponent()->GetRotation(), mRotationTarget, deltaTime * 10.0f));
 
 			}
 		} break;
@@ -294,8 +346,6 @@ void GameManager::ControlState(float deltaTime)
 			camera.SetLookAt(Vector3{ 0.0f, 0.0f, 0.0f });
 			mCamera->SetActiveCamera("Default");
 		}
-
-
 	}
 		break;
 	case UIManager::Order::Standby:
@@ -315,12 +365,11 @@ void GameManager::ControlState(float deltaTime)
 					check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node.coordinate);
 					if (check)
 					{
-						if (IsExist(node.coordinate)) break;
 						mDestination = node.coordinate;
 						GridManager::Get()->GetGird().ObjectPosition(node.position);
 						UIManager::Get()->HideButtons();
 						mUnit->SetStatus(Status::Move);
-						mUnit->Move(mDestination);
+						mUnit->Move(mDestination, IsExist(node.coordinate));
 						return;
 					}
 				}
@@ -338,25 +387,18 @@ void GameManager::ControlState(float deltaTime)
 				mTarget = TraceUnit((mCurrentState == Flag::Ally ? Flag::Enemy : Flag::Ally));
 			if (mTarget)
 			{
+				GridManager::Get()->GetGird().CalculateGrid(mUnit->GetAgent().mArea, mUnit->GetPosition());
 				check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(mTarget->GetCoordinate());
-				if (mTarget == mUnit || mTarget->GetFlag() == mUnit->GetFlag()) mTarget = nullptr;
-				if (check && mTarget != nullptr)
-				{
-					GridManager::Get()->GetGird().ObjectPosition(mTarget->GetPosition());
-					UIManager::Get()->HideButtons();
-
-					mUnit->SetStatus(Status::Attack);
-					mUnit->GetAgent().GetModelComponent().SetAnimationTime(0.0f);
-					mUnit->mUpdateTime = ATTACK_TIME;
-					mUnit->SetProcess(true); // For animation changing
-					mCamera->SetActiveCamera("Action");
-					mCamera->GetActiveCamera().SetPosition(Vector3{ mTarget->GetPosition().x,mTarget->GetPosition().y + 70.0f,mTarget->GetPosition().z});
-					mCameraSwitched = true;
-				}
-				else
+				if (mTarget == mUnit || mTarget->GetFlag() == mUnit->GetFlag() || !check)
 				{
 					mTarget = nullptr;
 					return;
+				}
+				if (mTarget != nullptr)
+				{
+					GridManager::Get()->GetGird().ObjectPosition(mTarget->GetPosition());
+					UIManager::Get()->HideButtons();
+					BeginAttack();
 				}
 			}
 		}
@@ -365,6 +407,84 @@ void GameManager::ControlState(float deltaTime)
 		break;
 	default: break;
 	}
+}
+
+void JimmyCom::GameManager::AIDecisionState(float deltaTime)
+{
+	if (mUnit && mUnit->GetFlag() == Flag::Enemy)
+	{
+		if (mUnit->GetAgent().mPath.empty() && mUnit->GetStatus() == Status::Move)
+		{
+			GridManager::Get()->GetGird().ObjectPosition(mUnit->GetPosition());
+			mUnit->SetCoordinate(GridManager::Get()->GetGird().GetGraph().GetNode(mUnit->GetPosition())->coordinate);
+			mUnit->SetStatus(Status::TurnOver);
+			Reset();
+			mTurnOver += 1.0f;
+		}
+	}
+
+	if (mProcessing_AI)
+		return;
+
+	if (mTurnOver > 0.0f)
+	{
+		mTurnOver -= deltaTime;
+		auto& camera = mCamera->GetActiveCamera();
+		if (mCameraSwitched)
+		{
+			if (camera.GetPosition().y < 70.0f)
+				camera.SetPosition(Lerp(camera.GetPosition(), Vector3{ 0.0f,70.0f,-1.0f }, deltaTime * 2.0f));
+			else
+				mCameraSwitched = false;
+		}
+		else
+		{
+			camera.SetPosition(Vector3{ 0.0f, 70.0f, -1.0f });
+			camera.SetLookAt(Vector3{ 0.0f, 0.0f, 0.0f });
+			mCamera->SetActiveCamera("Default");
+		}
+		return;
+	}
+	if (!mUnit)
+		mUnit = TraceEnemy();
+	if(mUnit)
+	{
+		mTarget = TraceClosestUnit(Flag::Ally);
+
+		if (!mTarget)
+			mUnit->SetStatus(Status::TurnOver);
+		else
+		{
+			if (!mProcessing_AI)
+			{
+				GridManager::Get()->GetGird().CalculateGrid(mUnit->GetAgent().mArea - 1, mUnit->GetPosition());
+				if (!GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(mTarget->GetCoordinate()))
+				{
+					auto pos = GridManager::Get()->GetGird().FindClosestPath(mUnit->GetAgent().mArea, mUnit->GetPosition(), mTarget->GetPosition());
+					auto coord = GridManager::Get()->GetGird().GetGraph().GetNode(pos)->coordinate;
+					mUnit->Move(coord, IsExist(coord));
+					mUnit->SetStatus(Status::Move);
+				}
+				else
+					BeginAttack();
+
+				mProcessing_AI = true;
+			}
+		}
+	}
+
+
+}
+
+void JimmyCom::GameManager::BeginAttack()
+{
+	mUnit->SetStatus(Status::Attack);
+	mUnit->GetModelComponent().SetAnimationTime(0.0f);
+	mUnit->mUpdateTime = ATTACK_TIME;
+	mUnit->SetProcess(true); // For animation changing
+	mCamera->SetActiveCamera("Action");
+	mCamera->GetActiveCamera().SetPosition(Vector3{ mTarget->GetPosition().x,mTarget->GetPosition().y + 70.0f,mTarget->GetPosition().z });
+	mCameraSwitched = true;
 }
 
 Unit* GameManager::TraceUnit(Flag flag)
@@ -420,6 +540,7 @@ bool GameManager::TurnProcess()
 	default: break;
 	}
 
+	Reset();
 	for (auto& unit : mSoldiers) 
 	{
 		if(unit->GetStatus() != Status::Dead) unit->SetStatus(Status::Standby);
@@ -428,6 +549,7 @@ bool GameManager::TurnProcess()
 	{
 		if (unit->GetStatus() != Status::Dead) unit->SetStatus(Status::Standby);
 	}
+	mTurnOver += 1.5f;
 	return true;
 }
 
@@ -437,4 +559,5 @@ void JimmyCom::GameManager::Reset()
 	mTarget = nullptr;
 	UIManager::Get()->HideButtons();
 	UIManager::Get()->SetOrder(static_cast<uint32_t>(0));
+	mProcessing_AI = false;
 }

@@ -30,7 +30,7 @@ void GameState::Initialize()
 	GameManager::Get()->Spawn_Enviroment({ 8.5f,0.0f,-8.5f }, "Building", false);
 	GameManager::Get()->Spawn({ 0.0f,0.0f,14.0f }, "Jimmy", UnitType::Soldier, Flag::Ally);
 	GameManager::Get()->Spawn({ 12.0f,0.0f,14.0f }, "Sushi", UnitType::Soldier, Flag::Ally);
-	//GameManager::Get()->Spawn({ 0.0f,0.0f,10.0f }, "Robort", UnitType::Soldier, Flag::Enemy);
+	GameManager::Get()->Spawn({ -10.0f,0.0f,-25.0f }, "Robort", UnitType::Mutant, Flag::Enemy);
 	GameManager::Get()->Spawn({ 0.0f,0.0f,-20.0f }, "God", UnitType::Mutant, Flag::Enemy);
 
 	JimmyGod::Physics::PhysicsWorld::Settings settings;

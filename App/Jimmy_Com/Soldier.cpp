@@ -5,7 +5,7 @@ using namespace JimmyCom;
 using namespace JimmyGod;
 using namespace JimmyGod::Math;
 
-JimmyCom::Soldier::Soldier(std::string name, Flag flag) :
+JimmyCom::Soldier::Soldier(const std::string& name, Flag flag) :
 	CharacterModule(), Unit(name, flag)
 {
 	mHealth = 20.0f;
@@ -34,6 +34,16 @@ AgentComponent& JimmyCom::Soldier::GetAgent()
 const AgentComponent& JimmyCom::Soldier::GetAgent() const
 {
 	return *mGameObject->GetComponent<AgentComponent>();
+}
+
+const ModelComponent& JimmyCom::Soldier::GetModelComponent() const
+{
+	return *mGameObject->GetComponent<ModelComponent>();
+}
+
+ModelComponent& JimmyCom::Soldier::GetModelComponent()
+{
+	return *mGameObject->GetComponent<ModelComponent>();
 }
 
 void JimmyCom::Soldier::Initialize(JimmyGod::GameWorld* gameWorld)

@@ -158,6 +158,42 @@ void JimmyGod::Grid3DComponent::DisplayAreaCube(int area, const Vector3& pos, co
 		JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(n->position, 1.0f), Colors::Blue);
 }
 
+JimmyGod::Math::Vector3 JimmyGod::Grid3DComponent::FindClosestPath(int area, const Math::Vector3& curr, const Math::Vector3& dest)
+{
+	CalculateGrid(area, curr);
+
+	float minDist = FLT_MAX;
+	JimmyGod::Math::Vector3 nodePos = JimmyGod::Math::Vector3::Zero;
+
+	for (int y = minY; y < maxY; y++)
+	{
+		for (int x = minX; x < maxX; x++)
+		{
+			const int index = GetIndex(x, y);
+			if (mGraph.GetNode(AI::Coord{ x,y }))
+			{
+				const float dist = Distance(mNode[index].position, dest);
+				if (minDist > dist)
+				{
+					minDist = dist;
+					nodePos = mNode[index].position;
+				}
+			}
+		}
+	}
+
+	return nodePos;
+}
+
+void JimmyGod::Grid3DComponent::CalculateGrid(int area, const JimmyGod::Math::Vector3& pos)
+{
+	AI::Coord c = mGraph.GetNode(pos)->coordinate;
+	minY = Max(c.y - area + 1, 1);
+	minX = Max(c.x - area + 1, 1);
+	maxY = Min(c.y + area, mGraph.GetRows());
+	maxX = Min(c.x + area, mGraph.GetColumns());
+}
+
 int JimmyGod::Grid3DComponent::GetIndex(int x, int y) const
 {
 	return x + (y * mGraph.GetColumns());

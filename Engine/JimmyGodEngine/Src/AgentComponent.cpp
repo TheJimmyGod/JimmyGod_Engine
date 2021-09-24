@@ -4,7 +4,6 @@
 #include "GameObject.h"
 #include "TransformComponent.h"
 #include "ColliderComponent.h"
-#include "ModelComponent.h"
 
 using namespace JimmyGod;
 using namespace JimmyGod::Math;
@@ -23,7 +22,6 @@ void JimmyGod::AgentComponent::Initialize()
 {
 	mTransformComponent = GetOwner().GetComponent<TransformComponent>();
 	mColliderComponent = GetOwner().GetComponent<ColliderComponent>();
-	mModelComponent = GetOwner().GetComponent<ModelComponent>();
 
 	mStateMachine = std::make_unique<StateMachine<AgentComponent>>(*this);
 	mStateMachine->AddState<Idle>("Idle");
@@ -45,8 +43,25 @@ void JimmyGod::AgentComponent::DebugUI()
 
 	for (auto& path : mPath)
 	{
-		JimmyGod::Graphics::SimpleDraw::AddSphere(path,0.25f, Colors::Red,6,6);
+		JimmyGod::Graphics::SimpleDraw::AddSphere(path,0.5f, Colors::Red,6,6);
 	}
+}
+
+void JimmyGod::AgentComponent::ChangeState(std::string stateName)
+{
+	mStateMachine->ChangeState(stateName);
+}
+
+void JimmyGod::AgentComponent::Dead()
+{
+	isActive = false;
+}
+
+void JimmyGod::AgentComponent::Stop()
+{
+	mSpeed = 0.0f;
+	mPath.clear();
+	ChangeState("Idle");
 }
 
 void JimmyGod::AgentComponent::Movement(const Vector3& pos, float deltaTime)
@@ -54,8 +69,8 @@ void JimmyGod::AgentComponent::Movement(const Vector3& pos, float deltaTime)
 	mSpeed = Magnitude(pos);
 
 	Quaternion rotation = Quaternion::RotationLook(mTransformComponent->pos - pos);
-	mTransformComponent->SetRotation(Slerp(GetTransformComponent().rot, rotation, deltaTime * 10.0f));
-	mTransformComponent->pos = pos;
+	mTransformComponent->SetRotation(Slerp(GetTransformComponent()->GetRotation(), rotation, deltaTime * 10.0f));
+	mTransformComponent->SetPosition(pos);
 }
 
 const float JimmyGod::AgentComponent::GetSpeed() const

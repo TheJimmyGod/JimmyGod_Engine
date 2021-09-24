@@ -132,7 +132,7 @@ void GameState::Render()
 	SimpleDraw::AddAABB(mTarget, 0.2f, Colors::White);
 
 
-	SimpleDraw::AddGroundPlane(30.0f,Colors::Aqua);
+	SimpleDraw::AddGroundPlane(30.0f,1.0f,Colors::Aqua);
 	SimpleDraw::AddTransform(Matrix4::Identity);
 	SimpleDraw::Render(mCamera);
 }

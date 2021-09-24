@@ -19,7 +19,7 @@ void ModelComponent::Initialize()
 	mModel.Initialize(mPath);
 	mAnimator.Initialize(mModel);
 	mBoneTransformBuffer.Initialize();
-	mAnimator.SetSpeed(0.5f);
+	mAnimator.SetSpeed(1.0f);
 }
 
 void ModelComponent::Terminate()

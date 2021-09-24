@@ -118,16 +118,16 @@ void UIManager::UpdateAnimation(Unit* unit, Unit* target, float lifeTime)
 			{
 			case JimmyCom::UnitType::Soldier:
 			{
-				unit->GetAgent().GetModelComponent().SetAnimationSpeed(1.1f);
-				unit->GetAgent().GetModelComponent().PlayAnimation(4);
-				unit->GetAgent().GetModelComponent().SetAnimationTime(0.0f);
+				unit->GetModelComponent().SetAnimationSpeed(1.1f);
+				unit->GetModelComponent().PlayAnimation(4);
+				unit->GetModelComponent().SetAnimationTime(0.0f);
 			}
 				break;
 			case JimmyCom::UnitType::Mutant:
 			{
-				unit->GetAgent().GetModelComponent().SetAnimationSpeed(1.1f);
-				unit->GetAgent().GetModelComponent().PlayAnimation(2);
-				unit->GetAgent().GetModelComponent().SetAnimationTime(0.0f);
+				unit->GetModelComponent().SetAnimationSpeed(1.1f);
+				unit->GetModelComponent().PlayAnimation(2);
+				unit->GetModelComponent().SetAnimationTime(0.0f);
 			}
 				break;
 			default: break;
@@ -140,7 +140,7 @@ void UIManager::UpdateAnimation(Unit* unit, Unit* target, float lifeTime)
 			if ((time > 0.0f && time <= lifeTime - 1.0f) && !mSparkPlay)
 			{
 				mSparkPlay = true;
-				mHand = FindBone(unit->GetAgent().GetModelComponent().GetModel().mSkeleton, "RightHand");
+				mHand = FindBone(unit->GetModelComponent().GetModel().mSkeleton, "RightHand");
 			}
 			if (mSparkPlay)
 			{
@@ -148,7 +148,7 @@ void UIManager::UpdateAnimation(Unit* unit, Unit* target, float lifeTime)
 				{
 					if (mIndex >= 14) mIndex = 0;
 					mTime = JimmyGod::Core::TimeUtil::GetTime() + 0.05f;
-					auto handPosition = pos + GetTranslation(unit->GetAgent().GetModelComponent().GetBoneMatrices()[mHand->index]
+					auto handPosition = pos + GetTranslation(unit->GetModelComponent().GetBoneMatrices()[mHand->index]
 						* Matrix4::RotationQuaternion(rot)) * 0.04f;
 					mSoldierSpark[mIndex]->ShowSpark(handPosition, Normalize(targetPos - pos), lifeTime - 0.8f);
 					mIndex++;
@@ -161,8 +161,8 @@ void UIManager::UpdateAnimation(Unit* unit, Unit* target, float lifeTime)
 			if ((time > 0.0f && time <= lifeTime - 1.0f) && !mSparkPlay)
 			{
 				mSparkPlay = true;
-				mHand = FindBone(unit->GetAgent().GetModelComponent().GetModel().mSkeleton, "RightHand");
-				auto handPosition = pos + GetTranslation(unit->GetAgent().GetModelComponent().GetBoneMatrices()[mHand->index]
+				mHand = FindBone(unit->GetModelComponent().GetModel().mSkeleton, "RightHand");
+				auto handPosition = pos + GetTranslation(unit->GetModelComponent().GetBoneMatrices()[mHand->index]
 					* Matrix4::RotationQuaternion(rot)) * 0.04f;
 				mMutantSpark.ShowSpark(handPosition, Normalize(targetPos - pos), lifeTime - 0.8f);
 			}
