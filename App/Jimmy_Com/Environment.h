@@ -17,6 +17,9 @@ namespace JimmyCom
 		{
 			mGameObject->GetComponent<TransformComponent>()->SetPosition(pos);
 		}
+
+		virtual JimmyGod::Math::Vector3& GetPosition() const { return mGameObject->GetComponent<TransformComponent>()->pos; }
+
 		virtual void TakeDamage(float dmg);
 
 		virtual float GetTerritory() const;

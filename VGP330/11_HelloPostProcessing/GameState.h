@@ -78,9 +78,9 @@ private:
 	PixelShader mPostProcessingPixelShader;
 
 	TransformBuffer mTransformBuffer; 
-	LightBuffer mLightBuffer; 
 	MaterialBuffer mMaterialBuffer;
 	SettingsBuffer mSettingsBuffer;
+	LightBuffer mLightBuffer; 
 
 	SettingsData mSettings;
 

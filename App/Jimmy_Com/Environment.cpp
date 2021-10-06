@@ -29,7 +29,6 @@ void JimmyCom::Environment::Terminate()
 void JimmyCom::Environment::Update(float deltaTime)
 {
 	mGameObject->GetComponent<ColliderComponent>()->Update(deltaTime);
-
 }
 
 void JimmyCom::Environment::Render(const JimmyGod::Graphics::Camera& camera)

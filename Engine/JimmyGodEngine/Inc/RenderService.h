@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GameObject.h"
 #include "Service.h"
 
 namespace JimmyGod
@@ -14,7 +15,12 @@ namespace JimmyGod
 		void Update(float deltaTime) override;
 		void Render() override;
 
+		void SetDefaultCamera(JimmyGod::Graphics::Camera* camera) { mDefaultCamera = camera; }
+		void SetLightCamera(JimmyGod::Graphics::Camera* camera) { mLightCamera = camera; }
+		//void GetObjectPosition(const JimmyGod::ModelComponent& obj) { mGameObjects.emplace_back(obj); }
 	private:
+		void DrawDepthMap();
+
 		struct SettingsData
 		{
 			float specularMapWeight = 1.0f;
@@ -55,5 +61,19 @@ namespace JimmyGod
 
 		JimmyGod::Graphics::DirectionalLight mDirectionalLight;
 		SettingsData mSettings;
+
+		JimmyGod::Math::Matrix4 mLightProjectMatrix;
+		std::vector<JimmyGod::Math::Vector3> mViewFrustumVertices;
+		//std::vector<JimmyGod::GameObject*> mGameObjects;
+
+		JimmyGod::Graphics::Camera* mDefaultCamera = nullptr;
+		JimmyGod::Graphics::Camera* mLightCamera = nullptr;
+
+		// Shadow
+		JimmyGod::Graphics::RenderTarget mDepthMapRenderTarget;
+		JimmyGod::Graphics::VertexShader mDepthMapVertexShader;
+		JimmyGod::Graphics::PixelShader mDepthMapPixelShader;
+		DepthMapConstantBuffer mDepthMapConstantBuffer;
+		ShadowConstantBuffer mShadowConstantBuffer;
 	};
 }

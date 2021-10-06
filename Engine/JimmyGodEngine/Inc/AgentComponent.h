@@ -23,6 +23,8 @@ namespace JimmyGod
 		void Update(float deltaTime) override;
 		void DebugUI() override;
 
+		void AgentInitilize(AI::AIWorld& aiWorld, uint32_t num);
+
 		void ChangeState(std::string stateName);
 
 		void Dead();
@@ -35,20 +37,28 @@ namespace JimmyGod
 		ColliderComponent* GetColliderComponent() { return mColliderComponent; }
 		const ColliderComponent* GetColliderComponent() const { return mColliderComponent; }
 
+		AI::Agent* GetAgent() { return mAgent; }
+
 		const float GetSpeed() const;
 
 		float mMovementSpeed = 0.0f;
 		float mMass = 0.0f;
 		int mArea = 0;
 		std::vector<Math::Vector3> mPath;
+
+		AI::Agent* mAgent = nullptr;
+
 	private:
 		std::unique_ptr<JimmyGod::AI::StateMachine<AgentComponent>> mStateMachine = nullptr;
+		//std::unique_ptr<JimmyGod::AI::DecisionModule<AgentComponent>> mDecisionModule = nullptr;
+		std::unique_ptr<JimmyGod::AI::SteeringModule> mSteeringModule = nullptr;
 		TransformComponent* mTransformComponent = nullptr;
 		ColliderComponent* mColliderComponent = nullptr;
 
 	private:
 		bool isDebugUI = false;
 		bool isActive = true;
+		bool ActiveSteering = false;
 		float mSpeed = 0.0f;
 	};
 

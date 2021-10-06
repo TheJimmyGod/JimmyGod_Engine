@@ -22,6 +22,17 @@ namespace JimmyGod
 		void Active(bool act) { IsDisplay = act; }
 		bool IsActive() const { return IsDisplay; }
 	private:
+		struct TransformData
+		{
+			JimmyGod::Math::Matrix4 world;
+			JimmyGod::Math::Matrix4 wvp;
+			JimmyGod::Math::Vector3 viewPosition;
+			float padding;
+		};
+
+		using TransformBuffer = JimmyGod::Graphics::TypedConstantBuffer<TransformData>;
+		TransformBuffer mTransformBuffer;
+
 		bool IsDisplay = false;
 		bool IsSummoned = false;
 		bool IsDebugUI = false;
@@ -37,10 +48,15 @@ namespace JimmyGod
 		JimmyGod::Graphics::MeshBuffer mMeshBuffer;
 		JimmyGod::Graphics::Sampler mSampler;
 		JimmyGod::Graphics::Texture mTexture;
+		JimmyGod::Graphics::Texture mBloomTexture;
 		JimmyGod::Graphics::ConstantBuffer mConstantBuffer;
 
 		JimmyGod::Graphics::PixelShader mPixelShader;
 		JimmyGod::Graphics::VertexShader mVertexShader;
+
+		JimmyGod::Graphics::PixelShader mGlowPixelShader;
+		JimmyGod::Graphics::VertexShader mGlowVertexShader;
+
 		float mTime = 0.0f;
 	};
 }

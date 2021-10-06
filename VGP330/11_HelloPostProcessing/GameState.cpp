@@ -95,7 +95,6 @@ void GameState::Terminate()
 	mCloudVertexShader.Terminate();
 	mMaterialBuffer.Terminate();
 	mLightBuffer.Terminate();
-	mMaterialBuffer.Terminate();
 	mMeshBuffer.Terminate();
 	mSampler.Terminate();
 	mEarth.Terminate();

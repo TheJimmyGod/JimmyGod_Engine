@@ -32,7 +32,7 @@ namespace JimmyGod
 
 		int GetIndex(int x, int y) const;
 
-		void FindPath(const AI::Coord& from, const AI::Coord& to, float maxDistance,std::vector<Math::Vector3>& newPath);
+		void FindPath(const AI::Coord& from, const AI::Coord& to, float maxDistance,std::vector<Math::Vector3>& newPath, AI::PathFind type);
 		void SetPathFind(const char* name);
 
 		bool CheckMaximumAndMinimumGird(const AI::Coord& coord) const;

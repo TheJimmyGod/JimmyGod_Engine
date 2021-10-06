@@ -135,11 +135,8 @@ void JimmyGod::Grid3DComponent::DisplayClosedListIn3D()
 
 void JimmyGod::Grid3DComponent::DisplayAreaCube(int area, const Vector3& pos, const JimmyGod::Graphics::Color& color)
 {
-	AI::Coord c = mGraph.GetNode(pos)->coordinate;
-	minY = Max(c.y - area + 1,1);
-	minX = Max(c.x - area + 1,1);
-	maxY = Min(c.y + area, mGraph.GetRows());
-	maxX = Min(c.x + area, mGraph.GetColumns());
+	CalculateGrid(area, pos);
+
 	for (int y = minY; y < maxY; y++)
 	{
 		for (int x = minX; x < maxX; x++)
@@ -172,11 +169,14 @@ JimmyGod::Math::Vector3 JimmyGod::Grid3DComponent::FindClosestPath(int area, con
 			const int index = GetIndex(x, y);
 			if (mGraph.GetNode(AI::Coord{ x,y }))
 			{
-				const float dist = Distance(mNode[index].position, dest);
+				if (mNode[index].GetWalkable() == false)
+					continue;
+				auto pos = mNode[index].position;
+				const float dist = Distance(pos, dest);
 				if (minDist > dist)
 				{
 					minDist = dist;
-					nodePos = mNode[index].position;
+					nodePos = pos;
 				}
 			}
 		}
@@ -192,6 +192,51 @@ void JimmyGod::Grid3DComponent::CalculateGrid(int area, const JimmyGod::Math::Ve
 	minX = Max(c.x - area + 1, 1);
 	maxY = Min(c.y + area, mGraph.GetRows());
 	maxX = Min(c.x + area, mGraph.GetColumns());
+
+	int newMaxX = maxX;
+	int newMaxY = maxY;
+	int newMinX = minX;
+	int newMinY = minY;
+
+	for (int y = minY; y < maxY; y++)
+	{
+		int unWalkableMinY = 0;
+		int unWalkableMaxY = 0;
+		int unWalkableMaxX = 0;
+		int unWalkableMinX = 0;
+		for (int x = minX; x < maxX; x++)
+		{
+			const int index = GetIndex(x, y);
+			if (mGraph.GetNode(AI::Coord{ x,y }))
+			{
+				if (mNode[index].GetWalkable() == false)
+				{
+					if (x < maxX / 2)
+						unWalkableMinX++;
+					else
+						unWalkableMaxX++;
+
+					if (y < maxY / 2)
+						unWalkableMinY++;
+					else
+						unWalkableMinY++;
+				}
+			}
+		}
+		if (unWalkableMinY > area - 2)
+			newMinY++;
+		if (unWalkableMaxY > area - 2)
+			newMaxY--;
+		if (unWalkableMinX > area - 2)
+			newMinX++;
+		if (unWalkableMinX > area - 2)
+			newMaxX--;
+	}
+
+	minY = newMinY;
+	minX = newMinX;
+	maxY = newMaxY;
+	maxX = newMaxX;
 }
 
 int JimmyGod::Grid3DComponent::GetIndex(int x, int y) const
@@ -199,7 +244,7 @@ int JimmyGod::Grid3DComponent::GetIndex(int x, int y) const
 	return x + (y * mGraph.GetColumns());
 }
 
-void JimmyGod::Grid3DComponent::FindPath(const AI::Coord& from, const AI::Coord& to, float maxDistance, std::vector<Math::Vector3>& newPath)
+void JimmyGod::Grid3DComponent::FindPath(const AI::Coord& from, const AI::Coord& to, float maxDistance, std::vector<Math::Vector3>& newPath, AI::PathFind type)
 {
 	AI::Path path;
 	newPath.clear();

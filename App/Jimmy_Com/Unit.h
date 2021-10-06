@@ -28,7 +28,7 @@ namespace JimmyCom
 		virtual ModelComponent& GetModelComponent() = 0;
 
 		virtual const JimmyGod::Math::Sphere& GetSphereCollider() const;
-		virtual void Move(const JimmyGod::AI::Coord& pos, bool isExist);
+		virtual void Move(const JimmyGod::AI::Coord& pos);
 		virtual void TakeDamage(float val);
 
 		virtual void SetProcess(bool p) = 0;

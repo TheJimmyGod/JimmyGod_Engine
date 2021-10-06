@@ -41,12 +41,14 @@ Path BFS::Search(const Graph & graph, Coord start, Coord end, std::function<bool
 		}
 		else // else expand node
 		{
-
-			for (auto neighbor : currentNode->neighbors)
+			for (int i = 0; i < currentNode->neighbors.size() / 2; ++i)
 			{
+				auto neighbor = currentNode->neighbors[i];
 				int index = graph.GetIndex(neighbor);
+				if (!neighbor.IsValid() && !isBlocked(neighbor))
+					continue;
 				float gCost = g[index] + 1;
-				if (!opened[index] && !isBlocked(neighbor) && g[index] < maxDistance)
+				if (!opened[index] && g[index] < maxDistance)
 				{
 					openList.push_back(neighbor);
 					g[index] = gCost;
@@ -54,6 +56,18 @@ Path BFS::Search(const Graph & graph, Coord start, Coord end, std::function<bool
 					parent[index] = current;
 				}
 			}
+			//for (auto neighbor : currentNode->neighbors)
+			//{
+			//	int index = graph.GetIndex(neighbor);
+			//	float gCost = g[index] + 1;
+			//	if (!opened[index] && !isBlocked(neighbor) && g[index] < maxDistance)
+			//	{
+			//		openList.push_back(neighbor);
+			//		g[index] = gCost;
+			//		opened[index] = true;
+			//		parent[index] = current;
+			//	}
+			//}
 		}
 		// Close node
 		closedList.push_back(current);

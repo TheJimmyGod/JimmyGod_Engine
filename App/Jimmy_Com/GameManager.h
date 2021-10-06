@@ -41,6 +41,7 @@ namespace JimmyCom
 
 		Unit* TraceClosestUnit(Flag flag);
 		Unit* TraceEnemy();
+		bool IsExist(const AI::Coord& coord) const;
 	private:
 
 		JimmyGod::GameWorld mWorld;
@@ -85,8 +86,7 @@ namespace JimmyCom
 		void BeginAttack();
 
 		Unit* TraceUnit(Flag flag);
-		bool IsExist(AI::Coord& coord) const;
-
+		
 		bool RayCast(const JimmyGod::Math::Ray& mousePoint,
 			const Unit& collider, float& maxDistance, Flag layerMask);
 		bool RayCast(const JimmyGod::Math::Ray& mousePoint,
