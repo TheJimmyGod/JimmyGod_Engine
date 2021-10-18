@@ -42,7 +42,7 @@ void JimmyGod::Graphics::DrawSkeleton(Bone* bone, std::vector<Math::Matrix4>& bo
 	// 0,1,0,0
 	// 0,0,1,0
 	// x,y,z,1
-
+	// Draw Skeleton
 	if (bone->parent != nullptr)
 	{
 		auto myMatrix = boneMatrices[bone->index] * rot;

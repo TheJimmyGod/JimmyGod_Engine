@@ -37,6 +37,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{E2DB21
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shaders", "Shaders", "{662ADD28-56C0-4094-B23B-B8B1C0F8DCC7}"
 	ProjectSection(SolutionItems) = preProject
+		Bloom.fx = Bloom.fx
+		Blur.fx = Blur.fx
 		Assets\Shaders\DepthMap.fx = Assets\Shaders\DepthMap.fx
 		Assets\Shaders\DoGouraudShading.fx = Assets\Shaders\DoGouraudShading.fx
 		Assets\Shaders\DoNothing.fx = Assets\Shaders\DoNothing.fx
@@ -47,6 +49,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shaders", "Shaders", "{662A
 		Assets\Shaders\Earth.fx = Assets\Shaders\Earth.fx
 		Assets\Shaders\Effect.fx = Assets\Shaders\Effect.fx
 		Assets\Shaders\Final.fx = Assets\Shaders\Final.fx
+		Assets\Shaders\GaussianBlur.fx = Assets\Shaders\GaussianBlur.fx
 		Assets\Shaders\Planet.fx = Assets\Shaders\Planet.fx
 		Assets\Shaders\PostProcess.fx = Assets\Shaders\PostProcess.fx
 		Assets\Shaders\SimpleDraw.fx = Assets\Shaders\SimpleDraw.fx

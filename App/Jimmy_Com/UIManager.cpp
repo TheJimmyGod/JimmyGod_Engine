@@ -43,10 +43,10 @@ void UIManager::Initialize()
 	for (size_t i = 0; i < 15; i++)
 	{
 		JimmyGod::Spark* spark = new Spark();
-		spark->Initialize("../../Assets/Textures/Sun.jpg", 4, 0.2f,0.7f);
+		spark->Initialize("../../Assets/Textures/Sun.jpg", 4, 0.11f, 0.05f);
 		mSoldierSpark.emplace_back(spark);
 	}
-	mMutantSpark.Initialize("../../Assets/Textures/Neptune.jpg", 20, 0.2f);
+	mMutantSpark.Initialize("../../Assets/Textures/Neptune.jpg", 20, 0.11f);
 }
 
 void UIManager::Terminate()

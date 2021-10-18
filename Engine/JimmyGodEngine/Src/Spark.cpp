@@ -16,31 +16,20 @@ void JimmyGod::Spark::Initialize(const std::filesystem::path & path, uint32_t am
 	mPhysicsWorld.Initialize(settings);
 
 	mRadius = radius;
-	mMesh = JimmyGod::Graphics::MeshBuilder::CreateSpherePX(mRadius);
 	mAmount = amount;
 	mSpread = spread;
+	mMesh = JimmyGod::Graphics::MeshBuilder::CreateSpherePX(mRadius);
 	mMeshBuffer.Initialize(mMesh, true);
 
 	std::filesystem::path texturePath = L"../../Assets/Shaders/DoTexturing.fx";
-	std::filesystem::path glowPath = L"../../Assets/Shaders/Effect.fx";
-	// TODO: Create glowVertexShader and glowPixelShader
-	mGlowVertexShader.Initialize(glowPath, "glowVSHorizontal1", JimmyGod::Graphics::VertexPX::Format);
-	mGlowPixelShader.Initialize(glowPath, "GLOW_PS");
+	std::filesystem::path BlurPath = L"../../Assets/Shaders/Blur.fx";
 
-	mGlowVertexShader.Initialize(glowPath, "glowVSHorizontal2", JimmyGod::Graphics::VertexPX::Format);
-	mGlowPixelShader.Initialize(glowPath, "GLOW_PS");
-
-	mGlowVertexShader.Initialize(glowPath, "glowVSVertical1", JimmyGod::Graphics::VertexPX::Format);
-	mGlowPixelShader.Initialize(glowPath, "GLOW_PS");
-
-	mGlowVertexShader.Initialize(glowPath, "glowVSVertical2", JimmyGod::Graphics::VertexPX::Format);
-	mGlowPixelShader.Initialize(glowPath, "GLOW_PS");
-
-	mVertexShader.Initialize(texturePath,"VS" , JimmyGod::Graphics::VertexPX::Format);
-	mPixelShader.Initialize(texturePath, "PS");
+	mVertexShader.Initialize(BlurPath,"VS" , JimmyGod::Graphics::VertexPX::Format);
+	mPixelShader.Initialize(BlurPath, "PS");
 	mSampler.Initialize(JimmyGod::Graphics::Sampler::Filter::Linear,
 		JimmyGod::Graphics::Sampler::AddressMode::Clamp);
 	mTexture.Initialize(path);
+
 	mConstantBuffer.Initialize(sizeof(Matrix4));
 }
 
@@ -51,9 +40,8 @@ void JimmyGod::Spark::Terminate()
 	mTexture.Terminate();
 	mPixelShader.Terminate();
 	mVertexShader.Terminate();
+
 	mMeshBuffer.Terminate();
-	mGlowPixelShader.Terminate();
-	mGlowVertexShader.Terminate();
 	mPhysicsWorld.Clear();
 }
 
@@ -98,12 +86,6 @@ void JimmyGod::Spark::Render(const JimmyGod::Graphics::Camera & camera)
 	auto view = camera.GetViewMatrix();
 	auto projection = camera.GetPerspectiveMatrix();
 	// for statement
-	mConstantBuffer.BindVS();
-
-	mSampler.BindPS(0);
-	mTexture.BindPS(0);
-
-
 
 	if (mParticles.empty())
 		return;
@@ -111,17 +93,19 @@ void JimmyGod::Spark::Render(const JimmyGod::Graphics::Camera & camera)
 	{
 		auto matWorld = Matrix4::Translation(mParticles[i]->position);
 		auto matrixViewProjection = JimmyGod::Math::Transpose(matWorld * view * projection);
-		mConstantBuffer.Update(&matrixViewProjection);
-		mGlowPixelShader.Bind();
-		mGlowVertexShader.Bind();
 
+		mConstantBuffer.Update(&matrixViewProjection);
+		mSampler.BindPS(0);
+		mTexture.BindPS(0);
 		mVertexShader.Bind();
 		mPixelShader.Bind();
+
+		mConstantBuffer.BindVS();
+
 		mMeshBuffer.Update(mMesh.vertices.data(), static_cast<uint32_t>(mMesh.vertices.size()));
 		if (IsDebugUI == false)
 			mMeshBuffer.Draw();
 	}
-
 }
 
 void JimmyGod::Spark::DebugUI(bool debug)

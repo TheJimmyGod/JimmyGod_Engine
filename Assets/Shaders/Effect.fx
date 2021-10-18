@@ -9,7 +9,10 @@ Texture2D textureMap : register(t0);
 SamplerState textureSampler : register(s0);
 
 float pSize;
-
+struct pixel
+{
+    float4 color : COLOR;
+};
 struct GLOW_OUTPUT
 {
 	float4 position : POSITION;
@@ -83,20 +86,21 @@ VS_OUTPUT VS(VS_INPUT input)
 	return output;
 }
 
-float4 GLOW_PS(GLOW_OUTPUT input) : SV_Target
+pixel GLOW_PS(GLOW_OUTPUT input) : SV_Target
 {
+    pixel OUT;
 	float4 color = textureMap.Sample(textureSampler, input.texCoord0) * 0.1f;
 	color += textureMap.Sample(textureSampler, input.texCoord1) * 0.3f;
 	color += textureMap.Sample(textureSampler, input.texCoord2) * 0.4f;
-	color += textureMap.Sample(textureSampler, input.texCoord0) * 0.25f;
-
-	color.a = 1.0f;
-
-	return color;
+	color += textureMap.Sample(textureSampler, input.texCoord3) * 0.25f;
+    color.a = 1.0f;
+    OUT.color = color;
+	return OUT;
 }
 
-float4 PS(VS_OUTPUT input) : SV_Target
+pixel PS(VS_OUTPUT input) : SV_Target
 {
-	float4 color = textureMap.Sample(textureSampler, input.texCoord);
-	return color;
+    pixel OUT;
+	OUT.color = textureMap.Sample(textureSampler, input.texCoord);
+	return OUT;
 }
