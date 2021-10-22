@@ -66,6 +66,9 @@
     <ClInclude Include="Building.h">
       <Filter>Environment</Filter>
     </ClInclude>
+    <ClInclude Include="Grass.h">
+      <Filter>Environment</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Managers">

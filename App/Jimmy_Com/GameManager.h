@@ -7,6 +7,7 @@
 #include "Mutant.h"
 #include "Environment.h"
 #include "Building.h"
+#include "Grass.h"
 
 namespace JimmyCom
 {
@@ -51,6 +52,7 @@ namespace JimmyCom
 		std::vector<std::unique_ptr<Soldier>> mSoldiers;
 		std::vector<std::unique_ptr<Mutant>> mMutants;
 		std::vector<std::unique_ptr<Building>> mBuildings;
+		std::vector<std::unique_ptr<Grass>> mGrasses;
 		Flag mCurrentState = Flag::Ally;
 		bool GameOver = false;
 		bool mProcessing_AI = false;

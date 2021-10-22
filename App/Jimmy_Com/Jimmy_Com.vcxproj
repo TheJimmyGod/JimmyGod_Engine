@@ -166,6 +166,7 @@
     <ClInclude Include="Flag.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="Grass.h" />
     <ClInclude Include="GridManager.h" />
     <ClInclude Include="HUD.h" />
     <ClInclude Include="Mutant.h" />

@@ -16,11 +16,15 @@ public:
 	void Render() override;
 	void DebugUI() override;
 
+	void Setup();
+
 private:
 	JimmyGod::Physics::PhysicsWorld mPhysicsWorld;
 	std::vector<JimmyGod::Physics::Particle*> particles;
 	JimmyGod::Terrain mTerrain;
 	JimmyGod::Spark mSpark;
+
+	bool mInitialize = false;
 	bool SparkEffect = false;
 	bool mAttack = false;
 private:

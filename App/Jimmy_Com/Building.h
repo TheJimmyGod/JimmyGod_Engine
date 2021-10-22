@@ -29,7 +29,7 @@ namespace JimmyCom
 			auto matView = camera.GetViewMatrix();
 			auto matProj = camera.GetPerspectiveMatrix();
 
-			auto matWorld = mGameObject->GetComponent<TransformComponent>()->GetTransform() * Matrix4::RotationX(-20.5f) * Matrix4::Translation(Vector3(0.0f, 6.0f, 0.0f));
+			auto matWorld = mGameObject->GetComponent<TransformComponent>()->GetTransform();
 			mGameObject->GetComponent<MeshComponent>()->Bind();
 			mTransformBuffer.BindVS(0);
 			TransformData transformData;
@@ -43,11 +43,10 @@ namespace JimmyCom
 		void InstallGrid() override
 		{
 			AI::Coord coord = GridManager::Get()->GetGrid().GetGraph().GetNode(mGameObject->GetComponent<TransformComponent>()->GetPosition())->coordinate;
-			coord.y += static_cast<int>(GetTerritory() + 1);
 			int minX, maxX, minY, maxY;
-			minY = Max(coord.y - static_cast<int>(GetTerritory() - 1), 1);
-			minX = Max(coord.x - static_cast<int>(GetTerritory()), 1);
-			maxY = Min(coord.y + static_cast<int>(GetTerritory() - 1), GridManager::Get()->GetGrid().GetRows());
+			minY = Max(coord.y - static_cast<int>(GetTerritory()- 1), 1);
+			minX = Max(coord.x - static_cast<int>(GetTerritory() - 1), 1);
+			maxY = Min(coord.y + static_cast<int>(GetTerritory()), GridManager::Get()->GetGrid().GetRows());
 			maxX = Min(coord.x + static_cast<int>(GetTerritory()), GridManager::Get()->GetGrid().GetColumns());
 
 			for (int y = minY; y < maxY; y++)

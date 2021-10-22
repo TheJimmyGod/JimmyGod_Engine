@@ -26,6 +26,9 @@ namespace JimmyCom
 		void Terminate();
 		void Update(float deltaTime);
 		void Render(const JimmyGod::Graphics::Camera& camera);
+		void DebugUI();
+
+		void HUD_Render();
 
 		void SetOrder(uint32_t order) { mOrder = Order{ order }; }
 		const Order& GetOrder() const { return mOrder; }
@@ -33,9 +36,10 @@ namespace JimmyCom
 		void ShowButtons();
 		void HideButtons();
 
+		void EnableDebugUI() { mDebugUI = !mDebugUI; }
+
 		void UpdateAnimation(Unit* unit, Unit* Target, float lifeTime);
 		void RenderText(const char* text, const JimmyGod::Math::Vector3& pos, float size, float lifeTime, JimmyGod::Graphics::Color color);
-		//void PlayEffect(const JimmyGod::Math::Vector3& pos, const JimmyGod::Math::Vector3& dir, float lifeTime);
 
 	private:
 		std::vector<JimmyGod::Spark*> mSoldierSpark;
@@ -53,6 +57,8 @@ namespace JimmyCom
 
 		bool mSparkPlay = false;
 		bool mAnimationPlay = false;
+
+		bool mDebugUI = false;
 
 		float mSparkTime = 0.0f;
 		float mAnimationTime = 0.0f;

@@ -89,6 +89,11 @@ void GameManager::Terminate()
 		object->Terminate();
 		object.reset();
 	}
+	for (auto& object : mGrasses)
+	{
+		object->Terminate();
+		object.reset();
+	}
 	for (auto& unit : mSoldiers)
 	{
 		unit->Terminate();
@@ -102,6 +107,7 @@ void GameManager::Terminate()
 	mSoldiers.clear();
 	mMutants.clear();
 	mBuildings.clear();
+	mGrasses.clear();
 }
 
 void GameManager::Update(float deltaTime)
@@ -113,6 +119,7 @@ void GameManager::Update(float deltaTime)
 	for (auto& unit : mSoldiers)unit->Update(deltaTime);
 	for (auto& unit : mMutants) unit->Update(deltaTime);
 	for (auto& object : mBuildings) object->Update(deltaTime);
+	for (auto& object : mGrasses) object->Update(deltaTime);
 
 	TurnProcess(); // -> The function that investigate status for each unit.
 	if (mCurrentState == Flag::Enemy)
@@ -130,6 +137,7 @@ void GameManager::Render()
 	for (auto& unit : mSoldiers) unit->Render(mCamera->GetActiveCamera());
 	for (auto& unit : mMutants) unit->Render(mCamera->GetActiveCamera());
 	for (auto& object : mBuildings) object->Render(mCamera->GetActiveCamera());
+	for (auto& object : mGrasses) object->Render(mCamera->GetActiveCamera());
 	SimpleDraw::AddGroundPlane(80.0f,-3.5f, 4.0f, Colors::Black);
 	SimpleDraw::Render(mCamera->GetActiveCamera());
 }
@@ -204,6 +212,15 @@ void JimmyCom::GameManager::Spawn_Enviroment(const JimmyGod::Math::Vector3& pos,
 		newEnvironment->SetPosition(pos);
 		newEnvironment->InstallGrid();
 		mEnvironmentIndex++;
+		return;
+	}
+	else if (name == "Grass")
+	{
+		auto& newEnvironment = mGrasses.emplace_back(new Grass(name + mEnvironmentIndex, destructible));
+		newEnvironment->Initialize(&mWorld);
+		newEnvironment->SetPosition(pos);
+		mEnvironmentIndex++;
+		return;
 	}
 }
 

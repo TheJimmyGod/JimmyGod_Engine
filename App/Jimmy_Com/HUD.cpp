@@ -45,6 +45,20 @@ void JimmyCom::HUD::Initialize()
 		UIManager::Get()->SetOrder(2);
 	};
 
+	auto StartFunc = [this]()
+	{
+		mGameState = State::GamePlay;
+		for (auto& b : mMainMenuButtons)
+			b->SetDisplay(false);
+	};
+
+	auto EndFunc = [this]()
+	{
+		mGameState = State::End;
+		for (auto& b : mMainMenuButtons)
+			b->SetDisplay(false);
+	};
+
 	auto button1 = new Button("Health1.png", Vector2(2000.0f, 500.0f), 20.0f);
 	button1->AddListener(StandbyFunc);
 	mButtons.emplace_back(std::move(button1));
@@ -56,12 +70,24 @@ void JimmyCom::HUD::Initialize()
 	auto button3 = new Button("Health1.png", Vector2(2000.0f, 400.0f), 20.0f);
 	button3->AddListener(AttackFunc);
 	mButtons.emplace_back(std::move(button3));
+
+	auto button4 = new Button("Energy5.png", Vector2(1000.0f, 325.0f), 20.0f);
+	button4->AddListener(StartFunc);
+	button4->SetDisplay(true);
+	mMainMenuButtons.emplace_back(std::move(button4));
+
+	auto button5 = new Button("Energy5.png", Vector2(1000.0f, 400.0f), 20.0f);
+	button5->AddListener(EndFunc);
+	button5->SetDisplay(true);
+	mMainMenuButtons.emplace_back(std::move(button5));
+
 }
 
 void JimmyCom::HUD::Terminate()
 {
 	TextureManager::Get()->Clear();
 	for (auto& button : mButtons) button.reset();
+	for (auto& button : mMainMenuButtons) button.reset();
 }
 
 void JimmyCom::HUD::Update(float deltaTime)
@@ -78,11 +104,29 @@ void JimmyCom::HUD::Update(float deltaTime)
 			));
 		}
 	}
+
+	if (mGameState == State::None)
+	{
+		for (auto& button : mMainMenuButtons)
+			button->Update(deltaTime);
+	}
 }
 
 void JimmyCom::HUD::Render()
 {
 	for (auto& button : mButtons) button->Render();
+	for (auto& button : mMainMenuButtons) button->Render();
+}
+
+void JimmyCom::HUD::DisplayMainMenu()
+{
+	if (mGameState == State::None)
+	{
+		SpriteRenderManager::Get()->DrawScreenText("Jimmy-Com", 350.0f, 300.0f, 35.0f, Colors::White);
+
+		SpriteRenderManager::Get()->DrawScreenText("Start", 1050.0f, 325.0f, 25.0f, Colors::White);
+		SpriteRenderManager::Get()->DrawScreenText("End", 1050.0f, 400.0f, 25.0f, Colors::White);
+	}
 }
 
 void JimmyCom::HUD::DisplayAllButtons()

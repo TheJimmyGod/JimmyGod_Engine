@@ -113,6 +113,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Jsons", "Jsons", "{EBCEC24F
 	ProjectSection(SolutionItems) = preProject
 		Assets\Templates\Batman.json = Assets\Templates\Batman.json
 		Assets\Templates\Building.json = Assets\Templates\Building.json
+		Assets\Templates\Grass.json = Assets\Templates\Grass.json
 		Assets\Templates\Grid.json = Assets\Templates\Grid.json
 		Assets\Templates\Mutant.json = Assets\Templates\Mutant.json
 		Assets\Templates\Test.json = Assets\Templates\Test.json

@@ -192,51 +192,6 @@ void JimmyGod::Grid3DComponent::CalculateGrid(int area, const JimmyGod::Math::Ve
 	minX = Max(c.x - area + 1, 1);
 	maxY = Min(c.y + area, mGraph.GetRows());
 	maxX = Min(c.x + area, mGraph.GetColumns());
-
-	int newMaxX = maxX;
-	int newMaxY = maxY;
-	int newMinX = minX;
-	int newMinY = minY;
-
-	for (int y = minY; y < maxY; y++)
-	{
-		int unWalkableMinY = 0;
-		int unWalkableMaxY = 0;
-		int unWalkableMaxX = 0;
-		int unWalkableMinX = 0;
-		for (int x = minX; x < maxX; x++)
-		{
-			const int index = GetIndex(x, y);
-			if (mGraph.GetNode(AI::Coord{ x,y }))
-			{
-				if (mNode[index].GetWalkable() == false)
-				{
-					if (x < maxX / 2)
-						unWalkableMinX++;
-					else
-						unWalkableMaxX++;
-
-					if (y < maxY / 2)
-						unWalkableMinY++;
-					else
-						unWalkableMinY++;
-				}
-			}
-		}
-		if (unWalkableMinY > area - 2)
-			newMinY++;
-		if (unWalkableMaxY > area - 2)
-			newMaxY--;
-		if (unWalkableMinX > area - 2)
-			newMinX++;
-		if (unWalkableMinX > area - 2)
-			newMaxX--;
-	}
-
-	minY = newMinY;
-	minX = newMinX;
-	maxY = newMaxY;
-	maxX = newMaxX;
 }
 
 int JimmyGod::Grid3DComponent::GetIndex(int x, int y) const

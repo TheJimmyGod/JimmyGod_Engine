@@ -77,8 +77,20 @@ void UIManager::Update(float deltaTime)
 
 void UIManager::Render(const Camera& camera)
 {
+	if (mDebugUI)
+		return;
 	for(auto& spark : mSoldierSpark) spark->Render(camera);
 	mMutantSpark.Render(camera);
+}
+
+void JimmyCom::UIManager::DebugUI()
+{
+	for (auto& spark : mSoldierSpark) spark->DebugUI(mDebugUI);
+	mMutantSpark.DebugUI(mDebugUI);
+}
+
+void JimmyCom::UIManager::HUD_Render()
+{
 	JimmyCom::HUD::Get()->Render();
 }
 

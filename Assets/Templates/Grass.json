@@ -3,9 +3,9 @@
     "Components": {
       "TransformComponent": {
         "Position": {
-          "x": 9,
+          "x": 1,
           "y": 0,
-          "z": 5
+          "z": 1
         },
         "Rotation": {
           "xDegree": -90,
@@ -13,9 +13,9 @@
           "zDegree": 0
         },
         "Scale": {
-          "x": 0.04,
-          "y": 0.04,
-          "z": 0.04
+          "x": 0.125,
+          "y": 0.125,
+          "z": 0.125
         }
       },
       "ColliderComponent": {
@@ -32,8 +32,8 @@
         "Radius": 2.0
       },
       "MeshComponent": {
-        "Path": "../../Assets/Models/Environment/Building.obj",
-        "Diffuse": "../../Assets/Models/Environment/Building_diffuse.jpg",
+        "Path": "../../Assets/Models/Environment/10450_Rectangular_Grass_Patch_v1_iterations-2.obj",
+        "Diffuse": "../../Assets/Models/Environment/10450_Rectangular_Grass_Patch_v1_Diffuse.jpg",
         "Specular": "None",
         "Displacement": "None",
         "Normal": "None",

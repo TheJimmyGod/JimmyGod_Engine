@@ -25,7 +25,7 @@ static int RopeLength = 50;
 
 void GameState::Initialize()
 {
-	GraphicsSystem::Get()->SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
+	GraphicsSystem::Get()->SetClearColor(Colors::Black);
 
 	mCamera = mWorld.AddService<CameraService>();
 	mWorld.Initialize(100);
