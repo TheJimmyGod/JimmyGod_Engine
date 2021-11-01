@@ -67,7 +67,7 @@ namespace JimmyGod::AI
 		}
 
 		AgentType& mAgent;
-		std::vector<std::unique_ptr<StrategyType>> mStrategies;
+		std::vector<StrategyType*> mStrategies;
 		StrategyType* mCurrentStrategy = nullptr;
 		std::unique_ptr<GoalType> mCurrentGoal = nullptr;
 	};

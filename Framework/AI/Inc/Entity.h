@@ -28,6 +28,7 @@ namespace JimmyGod::AI
 
 		float Radius = 1.0f;
 		JimmyGod::Math::Vector2 Position = JimmyGod::Math::Vector2::Zero;
+		JimmyGod::Math::Vector3 Position3D = JimmyGod::Math::Vector3::Zero;
 		JimmyGod::Math::Vector2 Heading = JimmyGod::Math::Vector2::YAxis;
 	private:
 		const uint64_t mUniqueId = 0;

@@ -11,6 +11,7 @@ namespace JimmyCom
 
 	enum class UnitType
 	{
+		None,
 		Soldier,
 		Mutant
 	};

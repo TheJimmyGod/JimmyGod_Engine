@@ -41,22 +41,20 @@ void GameState::Update(float deltaTime)
 		if (HUD::Get() == nullptr)
 			return;
 		if (HUD::Get()->GetState() == HUD::State::GamePlay)
-		{
 			Setup();
-		}
 		else if (HUD::Get()->GetState() == HUD::State::End)
-		{
 			SpriteRenderManager::Get()->DrawScreenText("Press Escape Key to end", 400.0f, 300.0f, 50.0f, Colors::White);
-		}
 		return;
 	}
 	fps = 1.0f / deltaTime;
 	GameManager::Get()->Update(deltaTime);
 
-
 	auto unit = (GameManager::Get()->SelectedUnit() == nullptr ? nullptr : GameManager::Get()->SelectedUnit());
 	auto target = (GameManager::Get()->SelectedTarget() == nullptr ? nullptr : GameManager::Get()->SelectedTarget());
-	UIManager::Get()->UpdateAnimation(unit, target, 1.6f);
+	float time = 0.0f;
+	if (unit != nullptr)
+		time = unit->mUpdateTime;
+	UIManager::Get()->UpdateAnimation(unit, target, GameManager::Get()->SelectedUnitType(), time, 1.6f);
 	mPhysicsWorld.Update(deltaTime);
 }
 
@@ -95,12 +93,12 @@ void GameState::DebugUI()
 				for (size_t i = 0; i < GameManager::Get()->GetMutantCount(); i++)
 				{
 					auto unit = GameManager::Get()->GetMutant(i).get();
-					unit->GetAgent().GetOwner().GetComponent<ModelComponent>()->EnableDebug();
+					unit->GetModelComponent().EnableDebug();
 				}
 				for (size_t i = 0; i < GameManager::Get()->GetSoldierCount(); i++)
 				{
 					auto unit = GameManager::Get()->GetSoldier(i).get();
-					unit->GetAgent().GetOwner().GetComponent<ModelComponent>()->EnableDebug();
+					unit->GetModelComponent().EnableDebug();
 				}
 				UIManager::Get()->EnableDebugUI();
 			}
@@ -119,10 +117,10 @@ void GameState::Setup()
 
 	GameManager::Get()->Spawn_Enviroment({ -12.5f,0.0f,-8.5f }, "Building", false);
 	GameManager::Get()->Spawn_Enviroment({ 8.5f,0.0f,5.5f }, "Building", false);
-	GameManager::Get()->Spawn_Enviroment({ 8.0f,0.0f,-4.0f }, "Grass", false);
+	GameManager::Get()->Spawn_Enviroment({ 8.0f,-2.0f,-4.0f }, "Grass", false);
 
 	GameManager::Get()->Spawn_Enviroment({ 17.5f,0.0f,-12.0f }, "Building", false);
-	GameManager::Get()->Spawn_Enviroment({ -15.0f,0.0f,0.5f }, "Grass", false);
+	GameManager::Get()->Spawn_Enviroment({ -15.0f,-2.0f,0.5f }, "Grass", false);
 	GameManager::Get()->Spawn_Enviroment({ 11.5f,0.0f,22.5f }, "Building", false);
 
 

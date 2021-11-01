@@ -104,9 +104,9 @@ void JimmyCom::UIManager::HideButtons()
 	JimmyCom::HUD::Get()->DisappearAllButtons();
 }
 
-void UIManager::UpdateAnimation(Unit* unit, Unit* target, float lifeTime)
+void UIManager::UpdateAnimation(CharacterModule* unit, CharacterModule* target, UnitType type, float updateTime, float lifeTime)
 {
-	if (unit == nullptr && target == nullptr)
+	if (unit == nullptr && target == nullptr && type == UnitType::None)
 	{
 		mSparkPlay = false;
 		mAnimationPlay = false;
@@ -116,7 +116,7 @@ void UIManager::UpdateAnimation(Unit* unit, Unit* target, float lifeTime)
 	}
 	else
 	{
-		float time = unit->mUpdateTime;
+		float time = updateTime;
 		auto rot = unit->GetRotation();
 		auto pos = unit->GetPosition();
 		if (target == nullptr) return;
@@ -125,7 +125,7 @@ void UIManager::UpdateAnimation(Unit* unit, Unit* target, float lifeTime)
 		if ((time > 0.0f && time <= lifeTime) && !mAnimationPlay)
 		{
 			mAnimationPlay = true;
-			mCurrentUnit = unit->GetUnitType();
+			mCurrentUnit = type;
 			switch (mCurrentUnit)
 			{
 			case JimmyCom::UnitType::Soldier:

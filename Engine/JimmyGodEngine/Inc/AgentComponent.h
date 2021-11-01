@@ -10,6 +10,7 @@ namespace JimmyGod
 	class ColliderComponent;
 
 	class AIWorld;
+	class AgentMesh;
 
 	class AgentComponent final : public Component
 	{
@@ -23,7 +24,7 @@ namespace JimmyGod
 		void Update(float deltaTime) override;
 		void DebugUI() override;
 
-		void AgentInitilize(AI::AIWorld& aiWorld, uint32_t num);
+		void Initialize_AgentMesh(AI::AIWorld& aiWorld, uint32_t num);
 
 		void ChangeState(std::string stateName);
 
@@ -37,8 +38,6 @@ namespace JimmyGod
 		ColliderComponent* GetColliderComponent() { return mColliderComponent; }
 		const ColliderComponent* GetColliderComponent() const { return mColliderComponent; }
 
-		AI::Agent* GetAgent() { return mAgent; }
-
 		const float GetSpeed() const;
 
 		float mMovementSpeed = 0.0f;
@@ -46,12 +45,9 @@ namespace JimmyGod
 		int mArea = 0;
 		std::vector<Math::Vector3> mPath;
 
-		AI::Agent* mAgent = nullptr;
-
 	private:
 		std::unique_ptr<JimmyGod::AI::StateMachine<AgentComponent>> mStateMachine = nullptr;
-		//std::unique_ptr<JimmyGod::AI::DecisionModule<AgentComponent>> mDecisionModule = nullptr;
-		std::unique_ptr<JimmyGod::AI::SteeringModule> mSteeringModule = nullptr;
+		AgentMesh* mAgentMesh;
 		TransformComponent* mTransformComponent = nullptr;
 		ColliderComponent* mColliderComponent = nullptr;
 

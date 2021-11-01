@@ -2,6 +2,7 @@
 #include "AgentComponent.h"
 
 #include "GameObject.h"
+#include "AgentMesh.h"
 #include "TransformComponent.h"
 #include "ColliderComponent.h"
 
@@ -32,34 +33,17 @@ void JimmyGod::AgentComponent::Initialize()
 void JimmyGod::AgentComponent::Terminate()
 {
 	mStateMachine.reset();
-	mSteeringModule.reset();
 
 	mPath.clear();
-
-	delete mAgent;
-	mAgent = nullptr;
+	delete mAgentMesh;
+	mAgentMesh = nullptr;
 }
 
 void JimmyGod::AgentComponent::Update(float deltaTime)
 {
 	mStateMachine->Update(deltaTime);
-
-	if (ActiveSteering)
-	{
-		Vector3 force = Vector3{ mSteeringModule->Calculate().x,0.0f,mSteeringModule->Calculate().y };
-		Vector3 accelration = (force / mAgent->Mass);
-		auto newAccel = accelration * deltaTime;
-		mAgent->Velocity += Vector2{newAccel.x,newAccel.z};
-
-		auto speed = Magnitude(mAgent->Velocity);
-		if (speed > mAgent->MaxSpeed)
-			mAgent->Velocity = mAgent->Velocity / speed * mAgent->MaxSpeed;
-		auto newVel = mAgent->Velocity * deltaTime;
-		mTransformComponent->pos += Vector3{newVel.x,mTransformComponent->pos.y,newVel.y};
-
-		if (speed > 0.0f)
-			mAgent->Heading = Normalize(mAgent->Velocity);
-	}
+	if (mAgentMesh && mAgentMesh->GetInitialized())
+		mAgentMesh->Update(deltaTime);
 }
 void JimmyGod::AgentComponent::DebugUI()
 {
@@ -68,23 +52,13 @@ void JimmyGod::AgentComponent::DebugUI()
 
 	for (auto& path : mPath)
 	{
-		JimmyGod::Graphics::SimpleDraw::AddSphere(path,0.5f, Colors::Red,6,6);
+		JimmyGod::Graphics::SimpleDraw::AddSphere(path,0.75f, Colors::Red,24,24);
 	}
 }
 
-void JimmyGod::AgentComponent::AgentInitilize(AI::AIWorld& aiWorld, uint32_t num)
+void JimmyGod::AgentComponent::Initialize_AgentMesh(AI::AIWorld& aiWorld, uint32_t num)
 {
-	mAgent = new AI::Agent(aiWorld, num);
-
-	mSteeringModule = std::make_unique<AI::SteeringModule>(*this->mAgent);
-	mSteeringModule->AddBehavior<WanderBehavior>("Wander")->SetActive(false);
-	mSteeringModule->AddBehavior<SeekBehavior>("Seek")->SetActive(false);
-	mSteeringModule->AddBehavior<ArriveBehavior>("Arrive")->SetActive(false);
-	mSteeringModule->AddBehavior<AvoidObsBehavior>("Avoid")->SetActive(false);
-	mSteeringModule->AddBehavior<WallAvoidBehvior>("Wall")->SetActive(false);
-	mSteeringModule->AddBehavior<FleeBehavior>("Flee")->SetActive(false);
-
-	ActiveSteering = true;
+	mAgentMesh = new AgentMesh(aiWorld,num);
 }
 
 void JimmyGod::AgentComponent::ChangeState(std::string stateName)

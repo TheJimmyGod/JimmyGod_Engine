@@ -73,6 +73,12 @@
     <Filter Include="Src\Object">
       <UniqueIdentifier>{65ddb414-0b9a-4695-a64a-e94a026b697f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Inc\Agent">
+      <UniqueIdentifier>{54f49e4b-ad9f-4d22-9aeb-5efd79146f66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Agent">
+      <UniqueIdentifier>{4d3102f1-a875-42ea-a26d-03ea5765dd52}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\Common.h">
@@ -159,6 +165,9 @@
     <ClInclude Include="Inc\MeshComponent.h">
       <Filter>Inc\Component</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\AgentMesh.h">
+      <Filter>Inc\Agent</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\JimmyGodEngine.cpp">
@@ -238,6 +247,9 @@
     </ClCompile>
     <ClCompile Include="Src\MeshComponent.cpp">
       <Filter>Src\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\AgentMesh.cpp">
+      <Filter>Src\Agent</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

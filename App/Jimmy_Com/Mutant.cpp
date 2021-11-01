@@ -1,5 +1,6 @@
 #include "Mutant.h"
 #include "UIManager.h"
+#include "GameManager.h"
 
 using namespace JimmyCom;
 using namespace JimmyGod;
@@ -26,26 +27,6 @@ Mutant& JimmyCom::Mutant::operator=(Mutant&& rhs) noexcept
 	return *this;
 }
 
-AgentComponent& JimmyCom::Mutant::GetAgent()
-{
-	return *mGameObject->GetComponent<AgentComponent>();
-}
-
-const AgentComponent& JimmyCom::Mutant::GetAgent() const
-{
-	return *mGameObject->GetComponent<AgentComponent>();
-}
-
-const ModelComponent& JimmyCom::Mutant::GetModelComponent() const
-{
-	return *mGameObject->GetComponent<ModelComponent>();
-}
-
-ModelComponent& JimmyCom::Mutant::GetModelComponent()
-{
-	return *mGameObject->GetComponent<ModelComponent>();
-}
-
 void JimmyCom::Mutant::Initialize(JimmyGod::GameWorld* gameWorld)
 {
 	ASSERT(gameWorld != nullptr, "The Game World does not exist!");
@@ -58,11 +39,6 @@ void JimmyCom::Mutant::Initialize(JimmyGod::GameWorld* gameWorld, std::filesyste
 	ASSERT(gameWorld != nullptr, "The Game World does not exist!");
 	gameWorld->Create(path, mName);
 	mGameObject = gameWorld->Find(mName).Get();
-}
-
-void JimmyCom::Mutant::SetProcess(bool p)
-{
-	mAnimationProcess = p;
 }
 
 void JimmyCom::Mutant::TakeDamage(float val)
@@ -94,4 +70,21 @@ void JimmyCom::Mutant::Reset()
 	mHealth = mMaxHelath;
 	mAnimationProcess = true;
 	mGameObject->GetComponent<ModelComponent>()->GetAnimator().StopLoop(false);
+}
+
+void JimmyCom::Mutant::Move(const JimmyGod::AI::Coord& pos)
+{
+	if (GridManager::Get() == nullptr) return;
+	SetStatus(Status::Move);
+	GridManager::Get()->GetGird().FindPath(mCurrentCoordinate, pos, mRange, GetAgentComponent().mPath, AI::PathFind::AStar);
+
+	while (GetAgentComponent().mPath.size() > 2)
+	{
+		if (GameManager::Get()->IsExist(GridManager::Get()->GetGird().GetGraph().GetNode(GetAgentComponent().mPath[GetAgentComponent().mPath.size() - 1])->coordinate))
+			GetAgentComponent().mPath.pop_back();
+		else
+			break;
+	}
+
+	if (GetAgentComponent().mPath.size() > 0) GetAgentComponent().ChangeState("Move");
 }

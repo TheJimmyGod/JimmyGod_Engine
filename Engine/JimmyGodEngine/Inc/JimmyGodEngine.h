@@ -18,6 +18,7 @@
 #include "Terrain.h"
 
 // Object headers
+#include "AgentMesh.h"
 #include "Bomb.h"
 #include "Button.h"
 #include "Cloth.h"

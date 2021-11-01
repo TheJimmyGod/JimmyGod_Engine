@@ -156,6 +156,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Inc\AgentComponent.h" />
+    <ClInclude Include="Inc\AgentMesh.h" />
     <ClInclude Include="Inc\App.h" />
     <ClInclude Include="Inc\AppState.h" />
     <ClInclude Include="Inc\Bomb.h" />
@@ -186,6 +187,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\AgentComponent.cpp" />
+    <ClCompile Include="Src\AgentMesh.cpp" />
     <ClCompile Include="Src\App.cpp" />
     <ClCompile Include="Src\Bomb.cpp" />
     <ClCompile Include="Src\Button.cpp" />

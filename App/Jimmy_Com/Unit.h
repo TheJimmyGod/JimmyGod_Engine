@@ -19,41 +19,26 @@ namespace JimmyCom
 		virtual ~Unit() = default;
 
 		virtual void Attack(Unit& unit);
-		virtual bool AttackUpdate(float deltaTime);
-
-		virtual const AgentComponent& GetAgent() const = 0;
-		virtual AgentComponent& GetAgent() = 0;
-
-		virtual const ModelComponent& GetModelComponent() const = 0;
-		virtual ModelComponent& GetModelComponent() = 0;
-
-		virtual const JimmyGod::Math::Sphere& GetSphereCollider() const;
-		virtual void Move(const JimmyGod::AI::Coord& pos);
+		virtual void Move(const JimmyGod::AI::Coord& pos) = 0;
 		virtual void TakeDamage(float val);
 
-		virtual void SetProcess(bool p) = 0;
-
 	public:
-		const float GetDamage() const { return mDamage; }
-		const float GetCurrentHealth() const { return mHealth; }
-		const int GetArea() const { return GetAgent().mArea; }
-		const Flag& GetFlag() const { return mFlag; }
-		const UnitType& GetUnitType() const { return mUnitType; }
-		const Status& GetStatus() const { return mStatus; }
-		const Unit& GetUnit() const { return *this; }
-		const std::string& GetName() const { return mName; }
+		const float GetDamage() const;
+		const float GetCurrentHealth() const;
+		const Flag& GetFlag() const;
+		const UnitType& GetUnitType() const;
+		const Status& GetStatus() const;
+		const Unit& GetUnit() const;
+		const std::string& GetName() const;
 
-		const JimmyGod::Math::Vector3& GetDestination() const { return mTargetPath; }
-		const JimmyGod::Math::Vector3& GetPosition() const { return GetAgent().GetTransformComponent()->GetPosition(); }
-		const JimmyGod::AI::Coord& GetCoordinate() const { return mCurrentCoordinate; }
-		const JimmyGod::Math::Quaternion& GetRotation() const { return GetAgent().GetTransformComponent()->GetRotation(); }
+		const JimmyGod::Math::Vector3& GetDestination() const;
+		const JimmyGod::AI::Coord& GetCoordinate() const;
 
-		Unit& GetUnit() { return *this; }
-		void SetStatus(Status s) { mStatus = s; }
-		void SetCoordinate(const AI::Coord& coord) { mCurrentCoordinate = coord; }
-		void SetDestination(const Vector3& pos) { mTargetPath = pos; }
+		Unit& GetUnit();
+		void SetStatus(Status s);
+		void SetCoordinate(const AI::Coord& coord);
+		void SetDestination(const Vector3& pos);
 
-		float mUpdateTime = 0.0f;
 		JimmyGod::Math::Vector3 mTargetPath = JimmyGod::Math::Vector3::Zero;
 	protected:
 		int mLevel = 1;

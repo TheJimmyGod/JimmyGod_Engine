@@ -22,49 +22,6 @@ void Unit::Attack(Unit& unit)
 	unit.TakeDamage(mDamage);
 }
 
-bool Unit::AttackUpdate(float deltaTime)
-{
-	if (mUpdateTime <= 0.0f) return true;
-	else
-	{
-		mUpdateTime -= deltaTime;
-		return false;
-	}
-}
-
-const Sphere& Unit::GetSphereCollider() const
-{
-	return GetAgent().GetColliderComponent()->GetSphere();
-}
-
-void Unit::Move(const Coord& pos)
-{
-	if (GridManager::Get() == nullptr) return;
-	GridManager::Get()->GetGird().FindPath(mCurrentCoordinate, pos, mRange, GetAgent().mPath, AI::PathFind::AStar);
-
-	//if (GetAgent().mPath.empty())
-	//{
-	//	while (GetAgent().mPath.empty())
-	//	{
-	//		auto x = RandomInt(pos.x - 2, pos.x + 2);
-	//		auto y = RandomInt(pos.y - 2, pos.y + 2);
-	//		auto coord = Coord{ x,y };
-	//		if (GridManager::Get()->GetGird().GetGraph().GetNode(coord)->GetWalkable() == false) continue;
-	//		
-	//		GridManager::Get()->GetGird().FindPath(mCurrentCoordinate, Coord{ x,y }, mRange, GetAgent().mPath, AI::PathFind::AStar);
-	//	}
-	//}
-
-	while (GetAgent().mPath.size() > 2)
-	{
-		if (GameManager::Get()->IsExist(GridManager::Get()->GetGird().GetGraph().GetNode(GetAgent().mPath[GetAgent().mPath.size() - 1])->coordinate))
-			GetAgent().mPath.pop_back();
-		else
-			break;
-	}
-
-	if (GetAgent().mPath.size() > 0) GetAgent().ChangeState("Move");
-}
 
 void Unit::TakeDamage(float val)
 {
@@ -75,6 +32,70 @@ void Unit::TakeDamage(float val)
 	if (mHealth < 0.0f)
 	{
 		isDead = true;
-		GetAgent().Dead();
 	}
+}
+
+const float JimmyCom::Unit::GetDamage() const
+{
+	return mDamage;
+}
+
+const float JimmyCom::Unit::GetCurrentHealth() const
+{
+	return mHealth;
+}
+
+const Flag& JimmyCom::Unit::GetFlag() const
+{
+	return mFlag;
+}
+
+const UnitType& JimmyCom::Unit::GetUnitType() const
+{
+	return mUnitType;
+}
+
+const Status& JimmyCom::Unit::GetStatus() const
+{
+	return mStatus;
+}
+
+const Unit& JimmyCom::Unit::GetUnit() const
+{
+	return *this;
+}
+
+const std::string& JimmyCom::Unit::GetName() const
+{
+	return mName;
+}
+
+const JimmyGod::Math::Vector3& JimmyCom::Unit::GetDestination() const
+{
+	return mTargetPath;
+}
+
+const JimmyGod::AI::Coord& JimmyCom::Unit::GetCoordinate() const
+{
+	return mCurrentCoordinate;
+}
+
+Unit& JimmyCom::Unit::GetUnit()
+{
+	return *this;
+}
+
+void JimmyCom::Unit::SetStatus(Status s)
+{
+	mStatus = s;
+}
+
+void JimmyCom::Unit::SetCoordinate(const AI::Coord& coord)
+{
+	mCurrentCoordinate = coord;
+}
+
+void JimmyCom::Unit::SetDestination(const Vector3& pos)
+{
+	mTargetPath = pos;
 }

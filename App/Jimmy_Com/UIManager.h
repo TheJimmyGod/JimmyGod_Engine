@@ -38,15 +38,15 @@ namespace JimmyCom
 
 		void EnableDebugUI() { mDebugUI = !mDebugUI; }
 
-		void UpdateAnimation(Unit* unit, Unit* Target, float lifeTime);
+		void UpdateAnimation(CharacterModule* unit, CharacterModule* target, UnitType type, float updateTime, float lifeTime);
 		void RenderText(const char* text, const JimmyGod::Math::Vector3& pos, float size, float lifeTime, JimmyGod::Graphics::Color color);
 
 	private:
 		std::vector<JimmyGod::Spark*> mSoldierSpark;
 		JimmyGod::Spark mMutantSpark;
 
-		Unit* mUnit = nullptr;
-		Unit* mTarget = nullptr;
+		CharacterModule* mUnit = nullptr;
+		CharacterModule* mTarget = nullptr;
 		Bone* mHand = nullptr;
 
 		UnitType mCurrentUnit = UnitType::Soldier;

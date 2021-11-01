@@ -10,7 +10,7 @@ namespace JimmyGod::AI
 	public:
 		virtual ~Strategy() = default;
 
-		virtual float CalculateDesirability(AgentType& agent) const = 0;
+		virtual float CalculateDesirability() const = 0;
 		virtual std::unique_ptr<Goal<AgentType>> CreateGoal() const = 0;
 	};
 }

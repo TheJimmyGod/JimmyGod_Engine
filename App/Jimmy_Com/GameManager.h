@@ -32,10 +32,15 @@ namespace JimmyCom
 		std::unique_ptr<Mutant>& GetMutant(size_t index) { return mMutants[index]; }
 		const size_t GetMutantCount() const { return mMutants.size(); }
 
-		const Unit* SelectedUnit() const { return mUnit; }
-		Unit* SelectedUnit() { return mUnit; }
-		const Unit* SelectedTarget() const { return mTarget; }
-		Unit* SelectedTarget() { return mTarget; }
+		const CharacterModule* SelectedUnit() const { return mUnitCM; }
+		CharacterModule* SelectedUnit() { return mUnitCM; }
+		const UnitType& SelectedUnitType() const {
+			if (mUnit == nullptr)
+				return UnitType::None;
+			return mUnit->GetUnitType(); 
+		}
+		const CharacterModule* SelectedTarget() const { return mTargetCM; }
+		CharacterModule* SelectedTarget() { return mTargetCM; }
 
 		const JimmyGod::GameWorld& GetGameWorld() const { return mWorld; }
 		JimmyGod::GameWorld& GetGameWorld() { return mWorld; }
@@ -74,7 +79,9 @@ namespace JimmyCom
 		Quaternion mRotationTarget = Quaternion::Zero;
 
 		Unit* mUnit = nullptr;
+		CharacterModule* mUnitCM = nullptr;
 		Unit* mTarget = nullptr;
+		CharacterModule* mTargetCM = nullptr;
 
 		const JimmyGod::Graphics::Color GetColor(Flag flag) const;
 		const JimmyGod::Graphics::Color GetColor_Standby(Flag flag) const;
@@ -89,12 +96,12 @@ namespace JimmyCom
 
 		Unit* TraceUnit(Flag flag);
 		
-		bool RayCast(const JimmyGod::Math::Ray& mousePoint,
-			const Unit& collider, float& maxDistance, Flag layerMask);
+		bool RayCast(const JimmyGod::Math::Ray& mousePoint, 
+			const CharacterModule& collider, float& maxDistance, Flag unitFlag, Flag layerMask);
 		bool RayCast(const JimmyGod::Math::Ray& mousePoint,
 			const JimmyGod::Math::Sphere& collider, float& maxDistance);
 		bool TurnProcess();
-
+		void CameraSwtiching(float deltaTime);
 		void Reset();
 	};
 }
