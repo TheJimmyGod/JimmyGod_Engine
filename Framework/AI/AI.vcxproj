@@ -170,6 +170,7 @@
     <ClInclude Include="Inc\CohesionBehavior.h" />
     <ClInclude Include="Inc\Common.h" />
     <ClInclude Include="Inc\DecisionModule.h" />
+    <ClInclude Include="Inc\DecisionState.h" />
     <ClInclude Include="Inc\DFS.h" />
     <ClInclude Include="Inc\Dijkstra.h" />
     <ClInclude Include="Inc\EnforceNonPenetrationConstraint.h" />

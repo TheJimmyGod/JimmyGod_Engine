@@ -171,6 +171,7 @@
     <ClInclude Include="HUD.h" />
     <ClInclude Include="Mutant.h" />
     <ClInclude Include="Soldier.h" />
+    <ClInclude Include="Strategy_Attack.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="Unit.h" />
   </ItemGroup>

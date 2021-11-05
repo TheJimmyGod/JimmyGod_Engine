@@ -187,14 +187,14 @@ void GameManager::Spawn(const JimmyGod::Math::Vector3& pos, const char* name, Un
 		auto& newUnit = mSoldiers.emplace_back((new Soldier(name, flag)));
 		newUnit->Initialize(&mWorld);
 		newUnit->GetTransformComponent().SetPosition(pos);
-		newUnit->SetCoordinate(GridManager::Get()->GetGird().GetGraph().GetNode(pos)->coordinate);
+		newUnit->GetAgentComponent().SetCurrentCoord(GridManager::Get()->GetGird().GetGraph().GetNode(pos)->coordinate);
 	} break;
 	case UnitType::Mutant:
 	{
 		auto& newUnit = mMutants.emplace_back((new Mutant(name, flag)));
 		newUnit->Initialize(&mWorld);
 		newUnit->GetTransformComponent().SetPosition(pos);
-		newUnit->SetCoordinate(GridManager::Get()->GetGird().GetGraph().GetNode(pos)->coordinate);
+		newUnit->GetAgentComponent().SetCurrentCoord(GridManager::Get()->GetGird().GetGraph().GetNode(pos)->coordinate);
 	} break;
 	default: return;
 	}
@@ -258,8 +258,9 @@ void GameManager::ActionState(float deltaTime)
 		{
 			if (mUnitCM->GetAgentComponent().mPath.size() == 0 && UIManager::Get()->GetOrder() == UIManager::Order::Move)
 			{
-				GridManager::Get()->GetGird().ObjectPosition(mUnitCM->GetPosition());
-				mUnit->SetCoordinate(GridManager::Get()->GetGird().GetGraph().GetNode(mUnitCM->GetPosition())->coordinate);
+				auto& getGrid = GridManager::Get()->GetGird();
+				getGrid.ObjectPosition(mUnitCM->GetPosition());
+				mUnitCM->GetAgentComponent().SetCurrentCoord(getGrid.GetGraph().GetNode(mUnitCM->GetPosition())->coordinate);
 				mUnit->SetStatus(Status::TurnOver);
 				Reset();
 			}
@@ -309,8 +310,8 @@ void GameManager::ControlState(float deltaTime)
 			if (mUnit && mUnit->GetStatus() == Status::Standby)
 			{
 				GridManager::Get()->GetGird().ObjectPosition(mUnitCM->GetTransformComponent().GetPosition());
-				mUnit->SetCoordinate(GridManager::Get()->GetGird().GetGraph().GetNode(mUnitCM->GetTransformComponent().GetPosition())->coordinate);
-				mDestination = mUnit->GetCoordinate();
+				mUnitCM->GetAgentComponent().SetCurrentCoord(GridManager::Get()->GetGird().GetGraph().GetNode(mUnitCM->GetTransformComponent().GetPosition())->coordinate);
+				mUnitCM->GetAgentComponent().SetDestinationCoord(mUnitCM->GetAgentComponent().GetCurrentCoord());
 				UIManager::Get()->ShowButtons();
 			}
 			else {
@@ -344,10 +345,11 @@ void GameManager::ControlState(float deltaTime)
 					check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node.coordinate);
 					if (check)
 					{
-						mDestination = node.coordinate;
+						mUnitCM->GetAgentComponent().SetCurrentCoord(mUnitCM->GetAgentComponent().GetCurrentCoord());
+						mUnitCM->GetAgentComponent().SetDestinationCoord(node.coordinate);
 						GridManager::Get()->GetGird().ObjectPosition(node.position);
 						UIManager::Get()->HideButtons();
-						mUnit->Move(mDestination);
+						mUnit->Move();
 						return;
 					}
 				}
@@ -365,7 +367,7 @@ void GameManager::ControlState(float deltaTime)
 			if (mTarget)
 			{
 				GridManager::Get()->GetGird().CalculateGrid(mUnitCM->GetAgentComponent().mArea, mUnitCM->GetPosition());
-				check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(mTarget->GetCoordinate());
+				check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(mTargetCM->GetAgentComponent().GetCurrentCoord());
 				if (mTarget == mUnit || mTarget->GetFlag() == mUnit->GetFlag() || !check) mTarget = nullptr;
 				if (mTarget != nullptr)
 				{
@@ -383,12 +385,13 @@ void GameManager::ControlState(float deltaTime)
 
 void JimmyCom::GameManager::AIDecisionState(float deltaTime)
 {
+	auto& grid = GridManager::Get()->GetGird();
 	if (mUnit)
 	{
 		if (mUnitCM->GetAgentComponent().mPath.empty() && mUnit->GetStatus() == Status::Move)
 		{
-			GridManager::Get()->GetGird().ObjectPosition(mUnitCM->GetPosition());
-			mUnit->SetCoordinate(GridManager::Get()->GetGird().GetGraph().GetNode(mUnitCM->GetPosition())->coordinate);
+			grid.ObjectPosition(mUnitCM->GetPosition());
+			mUnitCM->GetAgentComponent().SetCurrentCoord(grid.GetGraph().GetNode(mUnitCM->GetPosition())->coordinate);
 			mUnit->SetStatus(Status::TurnOver);
 			Reset();
 			mProcessing_AI = false;
@@ -408,7 +411,7 @@ void JimmyCom::GameManager::AIDecisionState(float deltaTime)
 	{
 		mUnit = TraceEnemy();
 		mTarget = TraceClosestUnit(Flag::Ally);
-		if (mUnitCM) GridManager::Get()->GetGird().ObjectPosition(mUnitCM->GetPosition());
+		if (mUnitCM) grid.ObjectPosition(mUnitCM->GetPosition());
 		mTurnOver += 2.0f;
 		return;
 	}
@@ -420,12 +423,12 @@ void JimmyCom::GameManager::AIDecisionState(float deltaTime)
 		{
 			if (!mProcessing_AI)
 			{
-				GridManager::Get()->GetGird().CalculateGrid(mUnitCM->GetAgentComponent().mArea - 1, mUnitCM->GetPosition());
-				if (!GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(mTarget->GetCoordinate()))
+				grid.CalculateGrid(mUnitCM->GetAgentComponent().mArea - 1, mUnitCM->GetPosition());
+				if (!grid.CheckMaximumAndMinimumGird(mTargetCM->GetAgentComponent().GetDestinationCoord()))
 				{
-					auto pos = GridManager::Get()->GetGird().FindClosestPath(mUnitCM->GetAgentComponent().mArea, mUnitCM->GetPosition(), mTargetCM->GetPosition());
-					auto coord = GridManager::Get()->GetGird().GetGraph().GetNode(pos)->coordinate;
-					mUnit->Move(coord);
+					auto pos = grid.FindClosestPath(mUnitCM->GetAgentComponent().mArea, mUnitCM->GetPosition(), mTargetCM->GetPosition());
+					mUnitCM->GetAgentComponent().SetDestinationCoord(grid.GetGraph().GetNode(pos)->coordinate);
+					mUnit->Move();
 				}
 				else BeginAttack();
 				mProcessing_AI = true;
@@ -530,9 +533,9 @@ Unit* JimmyCom::GameManager::TraceEnemy()
 bool JimmyCom::GameManager::IsExist(const AI::Coord& coord) const
 {
 	for (auto& gameObject : mSoldiers)
-		if (gameObject->GetCoordinate() == coord && gameObject->GetStatus() != Status::Dead) return true;
+		if (gameObject->GetAgentComponent().GetCurrentCoord() == coord && gameObject->GetStatus() != Status::Dead) return true;
 	for (auto& gameObject : mMutants)
-		if (gameObject->GetCoordinate() == coord && gameObject->GetStatus() != Status::Dead) return true;
+		if (gameObject->GetAgentComponent().GetCurrentCoord() == coord && gameObject->GetStatus() != Status::Dead) return true;
 	return false;
 }
 

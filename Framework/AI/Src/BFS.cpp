@@ -14,7 +14,7 @@ void JimmyGod::AI::BFS::Reset()
 	closedListForNode.clear();
 }
 
-Path BFS::Search(const Graph & graph, Coord start, Coord end, std::function<bool(Coord)> isBlocked, float maxDistance = 5.0f)
+Path BFS::Search(const Graph & graph, Coord start, Coord end, std::function<bool(Coord)> isBlocked, float maxDistance)
 {
 	Reset();
 	parent.resize(graph.GetColumns() * graph.GetRows());

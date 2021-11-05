@@ -69,6 +69,9 @@
     <ClInclude Include="Grass.h">
       <Filter>Environment</Filter>
     </ClInclude>
+    <ClInclude Include="Strategy_Attack.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Managers">

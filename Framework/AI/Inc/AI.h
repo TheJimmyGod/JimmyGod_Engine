@@ -47,3 +47,5 @@
 #include "PathFindTypes.h"
 #include "Entity.h"
 #include "Agent.h"
+
+#include "DecisionState.h"

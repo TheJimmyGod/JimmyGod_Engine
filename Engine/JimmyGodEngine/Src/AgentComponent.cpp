@@ -2,7 +2,6 @@
 #include "AgentComponent.h"
 
 #include "GameObject.h"
-#include "AgentMesh.h"
 #include "TransformComponent.h"
 #include "ColliderComponent.h"
 
@@ -33,17 +32,34 @@ void JimmyGod::AgentComponent::Initialize()
 void JimmyGod::AgentComponent::Terminate()
 {
 	mStateMachine.reset();
-
+	mSteeringModule.reset();
+	mDecisionModule.reset();
 	mPath.clear();
-	delete mAgentMesh;
-	mAgentMesh = nullptr;
 }
 
 void JimmyGod::AgentComponent::Update(float deltaTime)
 {
 	mStateMachine->Update(deltaTime);
-	if (mAgentMesh && mAgentMesh->GetInitialized())
-		mAgentMesh->Update(deltaTime);
+	if (isInitialized)
+	{
+		Vector3 force = Vector3{ mSteeringModule->Calculate().x,0.0f,mSteeringModule->Calculate().y };
+		Vector3 accelration = (force / mAgentMesh->Mass);
+		auto newAccel = accelration * deltaTime;
+		mAgentMesh->Velocity += Vector2{ newAccel.x,newAccel.z };
+
+		auto speed = Magnitude(mAgentMesh->Velocity);
+		if (speed > mAgentMesh->MaxSpeed)
+			mAgentMesh->Velocity = mAgentMesh->Velocity / speed * mAgentMesh->MaxSpeed;
+		auto newVel = mAgentMesh->Velocity * deltaTime;
+		mAgentMesh->Position += Vector2{ newVel.x,newVel.y };
+		mTransformComponent->pos += Vector3{ newVel.x, 0.0f, newVel.y };
+
+		if (speed > 0.0f)
+			mAgentMesh->Heading = Normalize(mAgentMesh->Velocity);
+
+
+		mDecisionModule->Update();
+	}
 }
 void JimmyGod::AgentComponent::DebugUI()
 {
@@ -58,7 +74,18 @@ void JimmyGod::AgentComponent::DebugUI()
 
 void JimmyGod::AgentComponent::Initialize_AgentMesh(AI::AIWorld& aiWorld, uint32_t num)
 {
-	mAgentMesh = new AgentMesh(aiWorld,num);
+	mAgentMesh = new Agent(aiWorld,num);
+
+	mSteeringModule = std::make_unique<AI::SteeringModule>(*this->mAgentMesh);
+	mSteeringModule->AddBehavior<WanderBehavior>("Wander")->SetActive(false);
+	mSteeringModule->AddBehavior<SeekBehavior>("Seek")->SetActive(false);
+	mSteeringModule->AddBehavior<ArriveBehavior>("Arrive")->SetActive(false);
+	mSteeringModule->AddBehavior<AvoidObsBehavior>("Avoid")->SetActive(false);
+	mSteeringModule->AddBehavior<WallAvoidBehvior>("Wall")->SetActive(false);
+	mSteeringModule->AddBehavior<FleeBehavior>("Flee")->SetActive(false);
+	mDecisionModule = std::make_unique<AI::DecisionModule<AgentComponent>>(*this);
+
+	isInitialized = true;
 }
 
 void JimmyGod::AgentComponent::ChangeState(std::string stateName)
@@ -85,6 +112,14 @@ void JimmyGod::AgentComponent::Movement(const Vector3& pos, float deltaTime)
 	Quaternion rotation = Quaternion::RotationLook(mTransformComponent->pos - pos);
 	mTransformComponent->SetRotation(Slerp(GetTransformComponent()->GetRotation(), rotation, deltaTime * 10.0f));
 	mTransformComponent->SetPosition(pos);
+}
+
+void JimmyGod::AgentComponent::AddStrategy(DecisionState state)
+{
+	if (state == DecisionState::Attack)
+	{
+		//mDecisionModule->AddStrategy<>();
+	}
 }
 
 const float JimmyGod::AgentComponent::GetSpeed() const

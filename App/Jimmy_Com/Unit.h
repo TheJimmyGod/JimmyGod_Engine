@@ -19,7 +19,7 @@ namespace JimmyCom
 		virtual ~Unit() = default;
 
 		virtual void Attack(Unit& unit);
-		virtual void Move(const JimmyGod::AI::Coord& pos) = 0;
+		virtual void Move() = 0;
 		virtual void TakeDamage(float val);
 
 	public:
@@ -31,13 +31,8 @@ namespace JimmyCom
 		const Unit& GetUnit() const;
 		const std::string& GetName() const;
 
-		const JimmyGod::Math::Vector3& GetDestination() const;
-		const JimmyGod::AI::Coord& GetCoordinate() const;
-
 		Unit& GetUnit();
 		void SetStatus(Status s);
-		void SetCoordinate(const AI::Coord& coord);
-		void SetDestination(const Vector3& pos);
 
 		JimmyGod::Math::Vector3 mTargetPath = JimmyGod::Math::Vector3::Zero;
 	protected:
@@ -55,8 +50,6 @@ namespace JimmyCom
 		Status mStatus = Status::Standby;
 		UnitType mUnitType = UnitType::Soldier;
 		std::string mName;
-
-		AI::Coord mCurrentCoordinate = { 0,0 };
 		bool isDead = true;
 	};
 }

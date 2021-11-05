@@ -70,16 +70,6 @@ const std::string& JimmyCom::Unit::GetName() const
 	return mName;
 }
 
-const JimmyGod::Math::Vector3& JimmyCom::Unit::GetDestination() const
-{
-	return mTargetPath;
-}
-
-const JimmyGod::AI::Coord& JimmyCom::Unit::GetCoordinate() const
-{
-	return mCurrentCoordinate;
-}
-
 Unit& JimmyCom::Unit::GetUnit()
 {
 	return *this;
@@ -88,14 +78,4 @@ Unit& JimmyCom::Unit::GetUnit()
 void JimmyCom::Unit::SetStatus(Status s)
 {
 	mStatus = s;
-}
-
-void JimmyCom::Unit::SetCoordinate(const AI::Coord& coord)
-{
-	mCurrentCoordinate = coord;
-}
-
-void JimmyCom::Unit::SetDestination(const Vector3& pos)
-{
-	mTargetPath = pos;
 }

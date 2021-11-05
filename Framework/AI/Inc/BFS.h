@@ -8,7 +8,7 @@ namespace JimmyGod::AI
 	{
 	public:
 		void Reset();
-		Path Search(const Graph& graph, Coord start, Coord end, std::function<bool(Coord)> isBlocked, float maxDistance);
+		Path Search(const Graph& graph, Coord start, Coord end, std::function<bool(Coord)> isBlocked, float maxDistance = 5.0f);
 
 		const std::list<Coord>& GetClosedList() const { return closedList; }
 		const std::vector<Node>& GetClosedListForNode() const { return closedListForNode; }

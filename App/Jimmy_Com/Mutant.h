@@ -19,7 +19,7 @@ namespace JimmyCom
 		void Initialize(JimmyGod::GameWorld* gameWorld, std::filesystem::path& path) override;
 		void TakeDamage(float val) override;
 		void Reset() override;
-		void Move(const JimmyGod::AI::Coord& pos) override;
+		void Move() override;
 	};
 }
 

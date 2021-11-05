@@ -42,7 +42,7 @@ namespace JimmyGod::AI
 			// Find the most desirable strategy
 			for (auto strategy : mStrategies)
 			{
-				float desirability = strategy->CalculateDesirability();
+				float desirability = strategy->CalculateDesirability(mAgent);
 				if (desirability > mostDesirable)
 				{
 					mostDesirable = desirability;

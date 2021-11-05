@@ -199,7 +199,7 @@ int JimmyGod::Grid3DComponent::GetIndex(int x, int y) const
 	return x + (y * mGraph.GetColumns());
 }
 
-void JimmyGod::Grid3DComponent::FindPath(const AI::Coord& from, const AI::Coord& to, float maxDistance, std::vector<Math::Vector3>& newPath, AI::PathFind type)
+void JimmyGod::Grid3DComponent::FindPath(const AI::Coord& from, const AI::Coord& to, std::vector<Math::Vector3>& newPath)
 {
 	AI::Path path;
 	newPath.clear();
@@ -223,7 +223,7 @@ void JimmyGod::Grid3DComponent::FindPath(const AI::Coord& from, const AI::Coord&
 	{
 	case JimmyGod::AI::PathFind::BFS:
 	{
-		path = mBFS.Search(mGraph, start, end, funcBlocked, maxDistance);
+		path = mBFS.Search(mGraph, start, end, funcBlocked);
 		break;
 	}
 	case JimmyGod::AI::PathFind::DFS:

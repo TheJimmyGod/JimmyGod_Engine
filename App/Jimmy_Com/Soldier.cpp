@@ -73,11 +73,15 @@ void JimmyCom::Soldier::Reset()
 	mGameObject->GetComponent<ModelComponent>()->GetAnimator().StopLoop(false);
 }
 
-void JimmyCom::Soldier::Move(const JimmyGod::AI::Coord& pos)
+void JimmyCom::Soldier::Move()
 {
 	if (GridManager::Get() == nullptr) return;
 	SetStatus(Status::Move);
-	GridManager::Get()->GetGird().FindPath(mCurrentCoordinate, pos, mRange, GetAgentComponent().mPath, AI::PathFind::AStar);
+
+	auto& agent = GetAgentComponent();
+	GridManager::Get()->GetGird().FindPath(agent.GetCurrentCoord(),
+		agent.GetDestinationCoord(),
+		GetAgentComponent().mPath);
 
 	while (GetAgentComponent().mPath.size() > 2)
 	{

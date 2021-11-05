@@ -74,7 +74,6 @@ namespace JimmyCom
 		float mMaxDistance = 0.0f;
 		Ray mRay;
 
-		AI::Coord mDestination = { 0,0 };
 		Quaternion mRotation = Quaternion::Zero;
 		Quaternion mRotationTarget = Quaternion::Zero;
 
