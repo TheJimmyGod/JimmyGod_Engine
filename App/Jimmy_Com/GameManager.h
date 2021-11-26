@@ -25,12 +25,24 @@ namespace JimmyCom
 		void Render();
 		void DebugUI();
 		void Spawn(const JimmyGod::Math::Vector3& pos, const char* name, UnitType type, Flag flag);
-		void Spawn_Enviroment(const JimmyGod::Math::Vector3& pos, const char* name, bool destructible);
+		void Spawn(JimmyGod::Math::Vector3&& pos, const char* name, UnitType type, Flag flag);
 
 		std::unique_ptr<Soldier>& GetSoldier(size_t index) { return mSoldiers[index]; }
 		const size_t GetSoldierCount() const { return mSoldiers.size(); }
 		std::unique_ptr<Mutant>& GetMutant(size_t index) { return mMutants[index]; }
 		const size_t GetMutantCount() const { return mMutants.size(); }
+
+		template<typename ...Arg>
+		void AddSoldier(Arg&& ... arg);
+
+		template<typename ...Arg>
+		void AddMutant(Arg&& ... arg);
+
+		template<typename ...Arg>
+		void AddBuilding(Arg&& ... arg);
+
+		template<typename ...Arg>
+		void AddGrass(Arg&& ... arg);
 
 		const CharacterModule* SelectedUnit() const { return mUnitCM; }
 		CharacterModule* SelectedUnit() { return mUnitCM; }
@@ -103,4 +115,25 @@ namespace JimmyCom
 		void CameraSwtiching(float deltaTime);
 		void Reset();
 	};
+
+	template<typename ...Arg>
+	inline void GameManager::AddSoldier(Arg && ...arg)
+	{
+		mSoldiers.emplace_back(std::forward<Arg>(arg)...);
+	}
+	template<typename ...Arg>
+	inline void GameManager::AddMutant(Arg && ...arg)
+	{
+		mMutants.emplace_back(std::forward<Arg>(arg)...);
+	}
+	template<typename ...Arg>
+	inline void GameManager::AddBuilding(Arg && ...arg)
+	{
+		mBuildings.emplace_back(std::forward<Arg>(arg)...);
+	}
+	template<typename ...Arg>
+	inline void GameManager::AddGrass(Arg && ...arg)
+	{
+		mGrasses.emplace_back(std::forward<Arg>(arg)...);
+	}
 }

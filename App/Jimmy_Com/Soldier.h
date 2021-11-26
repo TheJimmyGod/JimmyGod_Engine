@@ -9,14 +9,14 @@ namespace JimmyCom
 	class Soldier : public CharacterModule, public Unit
 	{
 	public:
-		Soldier(const std::string& name, Flag flag);
+		Soldier(const std::string& name, Flag flag, const JimmyGod::Math::Vector3& pos, JimmyGod::GameWorld* gameWorld);
+		Soldier(const std::string& name, Flag flag, JimmyGod::Math::Vector3&& pos, JimmyGod::GameWorld* gameWorld);
+
 		~Soldier() = default;
 
 		Soldier& operator= (const Soldier& rhs) = default;
 		Soldier& operator= (Soldier&& rhs);
 
-		void Initialize(JimmyGod::GameWorld* gameWorld) override;
-		void Initialize(JimmyGod::GameWorld* gameWorld, std::filesystem::path& path) override;
 		void TakeDamage(float val) override;
 		void Reset() override;
 		void Move() override;

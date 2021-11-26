@@ -112,19 +112,22 @@ void GameState::Setup()
 	mTerrain.Initialize(100, 100, 1.0f);
 	mTerrain.SetHeightScale(1.0f);
 
+	JimmyGod::Math::Vector3 pos1 = { -12.5f,0.0f,-8.5f };
+	JimmyGod::Math::Vector3 pos2 = { 17.5f,0.0f,-12.0f };
+	JimmyGod::Math::Vector3 pos3 = { 0.0f,0.0f,14.0f };
+
 	GameManager::StaticInitialize(100);
 	GridManager::StaticInitialize(&GameManager::Get()->GetGameWorld());
 
-	GameManager::Get()->Spawn_Enviroment({ -12.5f,0.0f,-8.5f }, "Building", false);
-	GameManager::Get()->Spawn_Enviroment({ 8.5f,0.0f,5.5f }, "Building", false);
-	GameManager::Get()->Spawn_Enviroment({ 8.0f,-2.0f,-4.0f }, "Grass", false);
+	GameManager::Get()->Spawn(pos1, "Building", UnitType::Object, Flag::Neutral);
+	GameManager::Get()->Spawn({ 8.5f,0.0f,5.5f }, "Building", UnitType::Object, Flag::Neutral);
+	GameManager::Get()->Spawn({ 8.0f,-2.0f,-4.0f }, "Grass", UnitType::Object, Flag::Neutral);
 
-	GameManager::Get()->Spawn_Enviroment({ 17.5f,0.0f,-12.0f }, "Building", false);
-	GameManager::Get()->Spawn_Enviroment({ -15.0f,-2.0f,0.5f }, "Grass", false);
-	GameManager::Get()->Spawn_Enviroment({ 11.5f,0.0f,22.5f }, "Building", false);
+	GameManager::Get()->Spawn(pos2, "Building", UnitType::Object, Flag::Neutral);
+	GameManager::Get()->Spawn({ -15.0f,-2.0f,0.5f }, "Grass", UnitType::Object, Flag::Neutral);
 
 
-	GameManager::Get()->Spawn({ 0.0f,0.0f,14.0f }, "Jimmy", UnitType::Soldier, Flag::Ally);
+	GameManager::Get()->Spawn(pos3, "Jimmy", UnitType::Soldier, Flag::Ally);
 	GameManager::Get()->Spawn({ 12.0f,0.0f,14.0f }, "Sushi", UnitType::Soldier, Flag::Ally);
 	GameManager::Get()->Spawn({ -10.0f,0.0f,-25.0f }, "Robort", UnitType::Mutant, Flag::Enemy);
 	GameManager::Get()->Spawn({ 0.0f,0.0f,-20.0f }, "God", UnitType::Mutant, Flag::Enemy);

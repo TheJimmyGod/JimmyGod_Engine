@@ -23,8 +23,6 @@ namespace JimmyCom
 
 		virtual ~CharacterModule() = default;
 
-		virtual void Initialize(JimmyGod::GameWorld* gameWorld, std::filesystem::path& path) = 0;
-		virtual void Initialize(JimmyGod::GameWorld* gameWorld) = 0;
 		virtual void Terminate();
 		virtual void Update(float deltaTime);
 		virtual bool AnimateTime(float deltaTime);

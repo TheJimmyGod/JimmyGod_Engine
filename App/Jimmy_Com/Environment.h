@@ -7,16 +7,11 @@ namespace JimmyCom
 	public:
 		Environment(std::string name, bool destructible);
 
-		virtual void Initialize(JimmyGod::GameWorld* gameWorld, std::filesystem::path& path);
-		virtual void Initialize(JimmyGod::GameWorld* gameWorld) = 0;
+		void Initialize(JimmyGod::GameWorld* gameWorld, std::filesystem::path& path);
+
 		virtual void Terminate();
 		virtual void Update(float deltaTime);
 		virtual void Render(const JimmyGod::Graphics::Camera& camera);
-
-		virtual void SetPosition(const JimmyGod::Math::Vector3& pos)
-		{
-			mGameObject->GetComponent<TransformComponent>()->SetPosition(pos);
-		}
 
 		virtual JimmyGod::Math::Vector3& GetPosition() const { return mGameObject->GetComponent<TransformComponent>()->pos; }
 

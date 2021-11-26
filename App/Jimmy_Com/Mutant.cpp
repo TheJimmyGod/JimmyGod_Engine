@@ -6,7 +6,7 @@ using namespace JimmyCom;
 using namespace JimmyGod;
 using namespace JimmyGod::Math;
 
-JimmyCom::Mutant::Mutant(const std::string& name, Flag flag) :
+JimmyCom::Mutant::Mutant(const std::string& name, Flag flag, const JimmyGod::Math::Vector3& pos, JimmyGod::GameWorld* gameWorld) :
 	CharacterModule(), Unit(name, flag)
 {
 	mHealth = 25.0f;
@@ -16,6 +16,36 @@ JimmyCom::Mutant::Mutant(const std::string& name, Flag flag) :
 	mMaxHelath = mHealth;
 	mUnitType = UnitType::Mutant;
 	isDead = false;
+
+	ASSERT(gameWorld != nullptr, "The Game World does not exist!");
+	gameWorld->Create("../../Assets/Templates/Mutant.json", mName);
+	mGameObject = gameWorld->Find(mName).Get();
+
+	mGameObject->GetComponent<TransformComponent>()->SetPosition(pos);
+	mGameObject->GetComponent<AgentComponent>()->SetCurrentCoord(GridManager::Get()->GetGird().GetGraph().GetNode(pos)->coordinate);
+
+	LOG("Mutant - L-value!");
+}
+
+JimmyCom::Mutant::Mutant(const std::string& name, Flag flag, JimmyGod::Math::Vector3&& pos, JimmyGod::GameWorld* gameWorld) :
+	CharacterModule(), Unit(name, flag)
+{
+	mHealth = 25.0f;
+	mDamage = 25.0f;
+	mDefence = 2.0f;
+	mRange = 1.0f;
+	mMaxHelath = mHealth;
+	mUnitType = UnitType::Mutant;
+	isDead = false;
+
+	ASSERT(gameWorld != nullptr, "The Game World does not exist!");
+	gameWorld->Create("../../Assets/Templates/Mutant.json", mName);
+	mGameObject = gameWorld->Find(mName).Get();
+
+	mGameObject->GetComponent<TransformComponent>()->SetPosition(std::move(pos));
+	mGameObject->GetComponent<AgentComponent>()->SetCurrentCoord(GridManager::Get()->GetGird().GetGraph().GetNode(pos)->coordinate);
+
+	LOG("Mutant - R-value!");
 }
 
 Mutant& JimmyCom::Mutant::operator=(Mutant&& rhs) noexcept
@@ -25,20 +55,6 @@ Mutant& JimmyCom::Mutant::operator=(Mutant&& rhs) noexcept
 	Unit::operator=(std::move(rhs));
 	*this = std::move(rhs);
 	return *this;
-}
-
-void JimmyCom::Mutant::Initialize(JimmyGod::GameWorld* gameWorld)
-{
-	ASSERT(gameWorld != nullptr, "The Game World does not exist!");
-	gameWorld->Create("../../Assets/Templates/Mutant.json", mName);
-	mGameObject = gameWorld->Find(mName).Get();
-}
-
-void JimmyCom::Mutant::Initialize(JimmyGod::GameWorld* gameWorld, std::filesystem::path& path)
-{
-	ASSERT(gameWorld != nullptr, "The Game World does not exist!");
-	gameWorld->Create(path, mName);
-	mGameObject = gameWorld->Find(mName).Get();
 }
 
 void JimmyCom::Mutant::TakeDamage(float val)

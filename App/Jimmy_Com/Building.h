@@ -10,16 +10,31 @@ namespace JimmyCom
 	class Building : public Environment
 	{
 	public:
-		Building(std::string name, bool destructible) : Environment(name, destructible)
+		Building(std::string name, bool destructible, const JimmyGod::Math::Vector3& pos, JimmyGod::GameWorld* gameWorld) : Environment(name, destructible)
 		{
 			mHealth = 100.0f;
-		}
 
-		void Initialize(JimmyGod::GameWorld* gameWorld) override
-		{
 			ASSERT(gameWorld != nullptr, "The Game World does not exist!");
 			gameWorld->Create("../../Assets/Templates/Building.json", mName);
 			mGameObject = gameWorld->Find(mName).Get();
+
+			mGameObject->GetComponent<TransformComponent>()->SetPosition(pos);
+			InstallGrid();
+
+			LOG("Building - L-value!");
+		}
+
+		Building(std::string name, bool destructible, JimmyGod::Math::Vector3&& pos, JimmyGod::GameWorld* gameWorld) : Environment(name, destructible)
+		{
+			mHealth = 100.0f;
+
+			ASSERT(gameWorld != nullptr, "The Game World does not exist!");
+			gameWorld->Create("../../Assets/Templates/Building.json", mName);
+			mGameObject = gameWorld->Find(mName).Get();
+
+			mGameObject->GetComponent<TransformComponent>()->SetPosition(std::move(pos));
+			InstallGrid();
+			LOG("Building - R-value!");
 		}
 
 		void Render(const JimmyGod::Graphics::Camera& camera) override

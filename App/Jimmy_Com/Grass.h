@@ -10,16 +10,28 @@ namespace JimmyCom
 	class Grass : public Environment
 	{
 	public:
-		Grass(std::string name, bool destructible) : Environment(name, destructible)
+		Grass(std::string name, bool destructible, const JimmyGod::Math::Vector3& pos, JimmyGod::GameWorld* gameWorld) : Environment(name, destructible)
 		{
 			mHealth = 1.0f;
-		}
 
-		void Initialize(JimmyGod::GameWorld* gameWorld) override
-		{
 			ASSERT(gameWorld != nullptr, "The Game World does not exist!");
 			gameWorld->Create("../../Assets/Templates/Grass.json", mName);
 			mGameObject = gameWorld->Find(mName).Get();
+
+			mGameObject->GetComponent<TransformComponent>()->SetPosition(pos);
+			LOG("Grass - L-value!");
+		}
+
+		Grass(std::string name, bool destructible, JimmyGod::Math::Vector3&& pos, JimmyGod::GameWorld* gameWorld) : Environment(name, destructible)
+		{
+			mHealth = 1.0f;
+
+			ASSERT(gameWorld != nullptr, "The Game World does not exist!");
+			gameWorld->Create("../../Assets/Templates/Grass.json", mName);
+			mGameObject = gameWorld->Find(mName).Get();
+
+			mGameObject->GetComponent<TransformComponent>()->SetPosition(std::move(pos));
+			LOG("Grass - R-value!");
 		}
 
 		void Render(const JimmyGod::Graphics::Camera& camera) override

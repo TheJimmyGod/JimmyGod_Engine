@@ -6,7 +6,7 @@ using namespace JimmyCom;
 using namespace JimmyGod;
 using namespace JimmyGod::Math;
 
-JimmyCom::Soldier::Soldier(const std::string& name, Flag flag) :
+JimmyCom::Soldier::Soldier(const std::string& name, Flag flag, const JimmyGod::Math::Vector3& pos, JimmyGod::GameWorld* gameWorld) :
 	CharacterModule(), Unit(name, flag)
 {
 	mHealth = 20.0f;
@@ -16,6 +16,36 @@ JimmyCom::Soldier::Soldier(const std::string& name, Flag flag) :
 	mMaxHelath = mHealth;
 	mUnitType = UnitType::Soldier;
 	isDead = false;
+
+	ASSERT(gameWorld != nullptr, "The Game World does not exist!");
+	gameWorld->Create("../../Assets/Templates/Batman.json", mName);
+	mGameObject = gameWorld->Find(mName).Get();
+
+	mGameObject->GetComponent<TransformComponent>()->SetPosition(pos);
+	mGameObject->GetComponent<AgentComponent>()->SetCurrentCoord(GridManager::Get()->GetGird().GetGraph().GetNode(pos)->coordinate);
+
+	LOG("Soldier - L-value!");
+}
+
+JimmyCom::Soldier::Soldier(const std::string& name, Flag flag, JimmyGod::Math::Vector3&& pos, JimmyGod::GameWorld* gameWorld) :
+	CharacterModule(), Unit(name, flag)
+{
+	mHealth = 20.0f;
+	mDamage = 15.0f;
+	mDefence = 1.0f;
+	mRange = 5.0f;
+	mMaxHelath = mHealth;
+	mUnitType = UnitType::Soldier;
+	isDead = false;
+
+	ASSERT(gameWorld != nullptr, "The Game World does not exist!");
+	gameWorld->Create("../../Assets/Templates/Batman.json", mName);
+	mGameObject = gameWorld->Find(mName).Get();
+
+	mGameObject->GetComponent<TransformComponent>()->SetPosition(std::move(pos));
+	mGameObject->GetComponent<AgentComponent>()->SetCurrentCoord(GridManager::Get()->GetGird().GetGraph().GetNode(pos)->coordinate);
+
+	LOG("Soldier - R-value!");
 }
 
 Soldier& JimmyCom::Soldier::operator=(Soldier&& rhs)
@@ -25,21 +55,6 @@ Soldier& JimmyCom::Soldier::operator=(Soldier&& rhs)
 	Unit::operator=(std::move(rhs));
 	*this = std::move(rhs);
 	return *this;
-}
-
-
-void JimmyCom::Soldier::Initialize(JimmyGod::GameWorld* gameWorld)
-{
-	ASSERT(gameWorld != nullptr, "The Game World does not exist!");
-	gameWorld->Create("../../Assets/Templates/Batman.json", mName);
-	mGameObject = gameWorld->Find(mName).Get();
-}
-
-void JimmyCom::Soldier::Initialize(JimmyGod::GameWorld* gameWorld, std::filesystem::path& path)
-{
-	ASSERT(gameWorld != nullptr, "The Game World does not exist!");
-	gameWorld->Create(path, mName);
-	mGameObject = gameWorld->Find(mName).Get();
 }
 
 void JimmyCom::Soldier::TakeDamage(float val)

@@ -13,7 +13,8 @@ namespace JimmyCom
 	{
 		None,
 		Soldier,
-		Mutant
+		Mutant,
+		Object
 	};
 
 	enum class Status

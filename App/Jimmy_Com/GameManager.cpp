@@ -15,6 +15,21 @@ using namespace JimmyGod::Input;
 using namespace JimmyGod::Graphics;
 using namespace JimmyCom;
 
+namespace
+{
+	template<typename ...Arg>
+	void AddSoldier(Arg&& ... arg)
+	{
+
+	}
+
+	template<typename ...Arg>
+	void AddMutant(Arg&& ... arg)
+	{
+
+	}
+}
+
 #pragma region Singleton
 namespace { std::unique_ptr<GameManager> sInstance; }
 
@@ -184,40 +199,59 @@ void GameManager::Spawn(const JimmyGod::Math::Vector3& pos, const char* name, Un
 	{
 	case UnitType::Soldier:
 	{
-		auto& newUnit = mSoldiers.emplace_back((new Soldier(name, flag)));
-		newUnit->Initialize(&mWorld);
-		newUnit->GetTransformComponent().SetPosition(pos);
-		newUnit->GetAgentComponent().SetCurrentCoord(GridManager::Get()->GetGird().GetGraph().GetNode(pos)->coordinate);
+		AddSoldier(new Soldier(name, flag, pos, &mWorld));
 	} break;
 	case UnitType::Mutant:
 	{
-		auto& newUnit = mMutants.emplace_back((new Mutant(name, flag)));
-		newUnit->Initialize(&mWorld);
-		newUnit->GetTransformComponent().SetPosition(pos);
-		newUnit->GetAgentComponent().SetCurrentCoord(GridManager::Get()->GetGird().GetGraph().GetNode(pos)->coordinate);
+		AddMutant(new Mutant(name, flag, pos, &mWorld));
 	} break;
+	case UnitType::Object:
+	{
+		if (name == "Building")
+		{
+			AddBuilding(new Building(name + mEnvironmentIndex, false, pos, &mWorld));
+			mEnvironmentIndex++;
+			return;
+		}
+		else if (name == "Grass")
+		{
+			AddGrass(new Grass(name + mEnvironmentIndex, false, pos, &mWorld));
+			mEnvironmentIndex++;
+			return;
+		}
+	}break;
 	default: return;
 	}
 }
 
-void JimmyCom::GameManager::Spawn_Enviroment(const JimmyGod::Math::Vector3& pos, const char* name, bool destructible)
+void GameManager::Spawn(JimmyGod::Math::Vector3&& pos, const char* name, UnitType type, Flag flag)
 {
-	if (name == "Building")
+	switch (type)
 	{
-		auto& newEnvironment = mBuildings.emplace_back(new Building(name + mEnvironmentIndex, destructible));
-		newEnvironment->Initialize(&mWorld);
-		newEnvironment->SetPosition(pos);
-		newEnvironment->InstallGrid();
-		mEnvironmentIndex++;
-		return;
-	}
-	else if (name == "Grass")
+	case UnitType::Soldier:
 	{
-		auto& newEnvironment = mGrasses.emplace_back(new Grass(name + mEnvironmentIndex, destructible));
-		newEnvironment->Initialize(&mWorld);
-		newEnvironment->SetPosition(pos);
-		mEnvironmentIndex++;
-		return;
+		AddSoldier(new Soldier(name, flag, std::move(pos), &mWorld));
+	} break;
+	case UnitType::Mutant:
+	{
+		AddMutant(new Mutant(name, flag, std::move(pos), &mWorld));
+	} break;
+	case UnitType::Object:
+	{
+		if (name == "Building")
+		{
+			AddBuilding(new Building(name + mEnvironmentIndex, false, std::move(pos), &mWorld));
+			mEnvironmentIndex++;
+			return;
+		}
+		else if (name == "Grass")
+		{
+			AddGrass(new Grass(name + mEnvironmentIndex, false, std::move(pos), &mWorld));
+			mEnvironmentIndex++;
+			return;
+		}
+	}break;
+	default: return;
 	}
 }
 #pragma endregion
