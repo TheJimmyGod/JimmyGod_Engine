@@ -32,7 +32,7 @@ namespace JimmyCom
 			gameWorld->Create("../../Assets/Templates/Building.json", mName);
 			mGameObject = gameWorld->Find(mName).Get();
 
-			mGameObject->GetComponent<TransformComponent>()->SetPosition(std::move(pos));
+			mGameObject->GetComponent<TransformComponent>()->SetPosition(pos);
 			InstallGrid();
 			LOG("Building - R-value!");
 		}

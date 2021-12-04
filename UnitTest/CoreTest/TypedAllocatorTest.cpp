@@ -93,6 +93,19 @@ namespace CoreTest
 			Assert::AreEqual(Bar::counter, 2);
 		}
 
+		TEST_METHOD(TestForwardingNewReference)
+		{
+			TypedAllocator<Foo> typedAllocator(2);
+			Foo* ptr = typedAllocator.New(Bar()); // R-value
+			Assert::IsNotNull(ptr);
+			Assert::AreEqual(Bar::counter, 2);
+
+			Bar bar;
+			Foo* ptr_sec = typedAllocator.New(bar); // L-value
+			Assert::IsNotNull(ptr_sec);
+			Assert::AreEqual(Bar::counter, 1);
+		}
+
 	};
 
 	int TypedAllocatorTest::Bar::counter = 0;

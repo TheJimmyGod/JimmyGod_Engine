@@ -42,7 +42,7 @@ JimmyCom::Soldier::Soldier(const std::string& name, Flag flag, JimmyGod::Math::V
 	gameWorld->Create("../../Assets/Templates/Batman.json", mName);
 	mGameObject = gameWorld->Find(mName).Get();
 
-	mGameObject->GetComponent<TransformComponent>()->SetPosition(std::move(pos));
+	mGameObject->GetComponent<TransformComponent>()->SetPosition(pos);
 	mGameObject->GetComponent<AgentComponent>()->SetCurrentCoord(GridManager::Get()->GetGird().GetGraph().GetNode(pos)->coordinate);
 
 	LOG("Soldier - R-value!");

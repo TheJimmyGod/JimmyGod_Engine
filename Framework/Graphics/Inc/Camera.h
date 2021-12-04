@@ -22,7 +22,7 @@ namespace JimmyGod::Graphics
 		void Pitch(float radian);
 		void Yaw(float radian);
 
-		void SetFov(float fov);
+		void SetFov(float fov); // Zoom
 		void SetNearPlane(float nearPlane);
 		void SetFarPlane(float farPlane);
 		void SetAspectRatio(float ratio);

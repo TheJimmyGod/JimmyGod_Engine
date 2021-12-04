@@ -15,21 +15,6 @@ using namespace JimmyGod::Input;
 using namespace JimmyGod::Graphics;
 using namespace JimmyCom;
 
-namespace
-{
-	template<typename ...Arg>
-	void AddSoldier(Arg&& ... arg)
-	{
-
-	}
-
-	template<typename ...Arg>
-	void AddMutant(Arg&& ... arg)
-	{
-
-	}
-}
-
 #pragma region Singleton
 namespace { std::unique_ptr<GameManager> sInstance; }
 
@@ -199,23 +184,23 @@ void GameManager::Spawn(const JimmyGod::Math::Vector3& pos, const char* name, Un
 	{
 	case UnitType::Soldier:
 	{
-		AddSoldier(new Soldier(name, flag, pos, &mWorld));
+		mSoldiers.emplace_back(new Soldier(name, flag, pos, &mWorld));
 	} break;
 	case UnitType::Mutant:
 	{
-		AddMutant(new Mutant(name, flag, pos, &mWorld));
+		mMutants.emplace_back(new Mutant(name, flag, pos, &mWorld));
 	} break;
 	case UnitType::Object:
 	{
 		if (name == "Building")
 		{
-			AddBuilding(new Building(name + mEnvironmentIndex, false, pos, &mWorld));
+			mBuildings.emplace_back(new Building(name + mEnvironmentIndex, false, pos, &mWorld));
 			mEnvironmentIndex++;
 			return;
 		}
 		else if (name == "Grass")
 		{
-			AddGrass(new Grass(name + mEnvironmentIndex, false, pos, &mWorld));
+			mGrasses.emplace_back(new Grass(name + mEnvironmentIndex, false, pos, &mWorld));
 			mEnvironmentIndex++;
 			return;
 		}
@@ -230,23 +215,23 @@ void GameManager::Spawn(JimmyGod::Math::Vector3&& pos, const char* name, UnitTyp
 	{
 	case UnitType::Soldier:
 	{
-		AddSoldier(new Soldier(name, flag, std::move(pos), &mWorld));
+		mSoldiers.emplace_back(new Soldier(name, flag, std::move(pos), &mWorld));
 	} break;
 	case UnitType::Mutant:
 	{
-		AddMutant(new Mutant(name, flag, std::move(pos), &mWorld));
+		mMutants.emplace_back(new Mutant(name, flag, std::move(pos), &mWorld));
 	} break;
 	case UnitType::Object:
 	{
 		if (name == "Building")
 		{
-			AddBuilding(new Building(name + mEnvironmentIndex, false, std::move(pos), &mWorld));
+			mBuildings.emplace_back(new Building(name + mEnvironmentIndex, false, std::move(pos), &mWorld));
 			mEnvironmentIndex++;
 			return;
 		}
 		else if (name == "Grass")
 		{
-			AddGrass(new Grass(name + mEnvironmentIndex, false, std::move(pos), &mWorld));
+			mGrasses.emplace_back(new Grass(name + mEnvironmentIndex, false, std::move(pos), &mWorld));
 			mEnvironmentIndex++;
 			return;
 		}

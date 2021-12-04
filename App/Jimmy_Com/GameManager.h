@@ -32,18 +32,6 @@ namespace JimmyCom
 		std::unique_ptr<Mutant>& GetMutant(size_t index) { return mMutants[index]; }
 		const size_t GetMutantCount() const { return mMutants.size(); }
 
-		template<typename ...Arg>
-		void AddSoldier(Arg&& ... arg);
-
-		template<typename ...Arg>
-		void AddMutant(Arg&& ... arg);
-
-		template<typename ...Arg>
-		void AddBuilding(Arg&& ... arg);
-
-		template<typename ...Arg>
-		void AddGrass(Arg&& ... arg);
-
 		const CharacterModule* SelectedUnit() const { return mUnitCM; }
 		CharacterModule* SelectedUnit() { return mUnitCM; }
 		const UnitType& SelectedUnitType() const {
@@ -115,25 +103,4 @@ namespace JimmyCom
 		void CameraSwtiching(float deltaTime);
 		void Reset();
 	};
-
-	template<typename ...Arg>
-	inline void GameManager::AddSoldier(Arg && ...arg)
-	{
-		mSoldiers.emplace_back(std::forward<Arg>(arg)...);
-	}
-	template<typename ...Arg>
-	inline void GameManager::AddMutant(Arg && ...arg)
-	{
-		mMutants.emplace_back(std::forward<Arg>(arg)...);
-	}
-	template<typename ...Arg>
-	inline void GameManager::AddBuilding(Arg && ...arg)
-	{
-		mBuildings.emplace_back(std::forward<Arg>(arg)...);
-	}
-	template<typename ...Arg>
-	inline void GameManager::AddGrass(Arg && ...arg)
-	{
-		mGrasses.emplace_back(std::forward<Arg>(arg)...);
-	}
 }

@@ -30,7 +30,7 @@ namespace JimmyCom
 			gameWorld->Create("../../Assets/Templates/Grass.json", mName);
 			mGameObject = gameWorld->Find(mName).Get();
 
-			mGameObject->GetComponent<TransformComponent>()->SetPosition(std::move(pos));
+			mGameObject->GetComponent<TransformComponent>()->SetPosition(pos);
 			LOG("Grass - R-value!");
 		}
 
