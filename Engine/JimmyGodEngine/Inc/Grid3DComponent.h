@@ -19,23 +19,18 @@ namespace JimmyGod
 		void Update(float deltaTime) override;
 		void DebugUI() override;
 
-		void ObjectPosition(const Math::Vector3 pos);
-		const AI::Coord GetObjectCoordinate() const { return mCurrentCoordinate; }
-
 		void CreateGrid(int columns, int rows, int tileSizes);
 		void DisplayClosedListIn2D();
 		void DisplayClosedListIn3D();
 		void DisplayAreaCube(int area, const Math::Vector3& pos, const JimmyGod::Graphics::Color& color);
 		JimmyGod::Math::Vector3 FindClosestPath(int area, const Math::Vector3& curr, const Math::Vector3& dest);
 
-		void CalculateGrid(int area, const JimmyGod::Math::Vector3& coord);
-
 		int GetIndex(int x, int y) const;
 
 		void FindPath(const AI::Coord& from, const AI::Coord& to, std::vector<Math::Vector3>& newPath);
 		void SetPathFind(const char* name);
 
-		bool CheckMaximumAndMinimumGird(const AI::Coord& coord) const;
+		bool Inside_Circle(const Math::Vector3& center, const Math::Vector3& tile, int radius) const;
 
 		const int GetColumns() const { return mGraph.GetColumns(); }
 		const int GetRows() const { return mGraph.GetRows(); }
@@ -52,11 +47,6 @@ namespace JimmyGod
 		bool isDebugUI = false;
 		bool isActive = true;
 
-		int maxY = 0;
-		int minX = 0;
-		int minY = 0;
-		int maxX = 0;
-
 		AI::PathFind mPathFind = AI::PathFind::AStar;
 		AI::AStarTypes mAStarType = AI::AStarTypes::Manhattan;
 		AI::Graph mGraph;
@@ -66,8 +56,8 @@ namespace JimmyGod
 		AI::DFS mDFS;
 		std::vector<AI::Node> mNode;
 		std::vector<int> mTiles;
-
-		AI::Coord mCurrentCoordinate;
+		
+		JimmyGod::Math::Vector3 mPos = JimmyGod::Math::Vector3::Zero;
 		JimmyGod::Graphics::TextureId mTextureIds[10];
 		const TransformComponent* mTransformComponent = nullptr;
 	};

@@ -31,54 +31,12 @@ void JimmyGod::Grid3DComponent::Terminate()
 
 void JimmyGod::Grid3DComponent::Update(float deltaTime)
 {
-	auto inputSystem = JimmyGod::Input::InputSystem::Get();
-	if (inputSystem->IsKeyDown(KeyCode::W))
-	{
-		if(maxY - 1 > mCurrentCoordinate.y)
-			mCurrentCoordinate.y += 1;
-	}
-	if (inputSystem->IsKeyDown(KeyCode::S))
-	{
-		if (minY < mCurrentCoordinate.y)
-			mCurrentCoordinate.y -= 1;
-	}
-	if (inputSystem->IsKeyDown(KeyCode::D))
-	{
-		if (maxX -1 > mCurrentCoordinate.x)
-			mCurrentCoordinate.x += 1;
-	}
-	if (inputSystem->IsKeyDown(KeyCode::A))
-	{
-		if(minX < mCurrentCoordinate.x)
-			mCurrentCoordinate.x -= 1;
-	}
 }
 
 void JimmyGod::Grid3DComponent::DebugUI()
 {
 	if (mNode.empty() || !isDebugUI) return;
-	
-	for (int y = 0; y < mGraph.GetRows(); y++)
-	{
-		for (int x = 0; x < mGraph.GetColumns(); x++)
-		{
-			const int index = GetIndex(x, y);
-
-			if (mGraph.GetNode(AI::Coord{ x,y }))
-			{
-				if(mNode[index].GetWalkable())
-					JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(mNode[index].position, 0.5f), Colors::Green);
-				else
-					JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(mNode[index].position, 2.0f), Colors::Red);
-			}
-		}
-	}
 	DisplayClosedListIn3D();
-}
-
-void JimmyGod::Grid3DComponent::ObjectPosition(const Math::Vector3 pos)
-{
-	mCurrentCoordinate = mGraph.GetNode(pos)->coordinate;
 }
 
 void JimmyGod::Grid3DComponent::CreateGrid(int columns, int rows, int tileSize2Ds)
@@ -135,63 +93,52 @@ void JimmyGod::Grid3DComponent::DisplayClosedListIn3D()
 
 void JimmyGod::Grid3DComponent::DisplayAreaCube(int area, const Vector3& pos, const JimmyGod::Graphics::Color& color)
 {
-	CalculateGrid(area, pos);
-
-	for (int y = minY; y < maxY; y++)
+	for (int y = 0; y < mGraph.GetRows(); y++)
 	{
-		for (int x = minX; x < maxX; x++)
+		for (int x = 0; x < mGraph.GetColumns(); x++)
 		{
 			const int index = GetIndex(x, y);
 			if (mGraph.GetNode(AI::Coord{ x,y }))
 			{
-				if (mNode[index].GetWalkable())
-					JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(mNode[index].position, 1.0f), color);
+				if (Inside_Circle(pos, mNode[index].position, area * 4))
+				{
+					if(mNode[index].GetWalkable())
+						JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(mNode[index].position, 1.0f), color);
+				}
 			}
 		}
 	}
-
-	auto n = mGraph.GetNode(mCurrentCoordinate);
-	if (n != nullptr)
-		JimmyGod::Graphics::SimpleDraw::AddAABB(AABB(n->position, 1.0f), Colors::Blue);
 }
 
 JimmyGod::Math::Vector3 JimmyGod::Grid3DComponent::FindClosestPath(int area, const Math::Vector3& curr, const Math::Vector3& dest)
 {
-	CalculateGrid(area, curr);
-
 	float minDist = FLT_MAX;
 	JimmyGod::Math::Vector3 nodePos = JimmyGod::Math::Vector3::Zero;
 
-	for (int y = minY; y < maxY; y++)
+	for (int y = 0; y < mGraph.GetRows(); y++)
 	{
-		for (int x = minX; x < maxX; x++)
+		for (int x = 0; x < mGraph.GetColumns(); x++)
 		{
 			const int index = GetIndex(x, y);
 			if (mGraph.GetNode(AI::Coord{ x,y }))
 			{
-				if (mNode[index].GetWalkable() == false)
-					continue;
-				auto pos = mNode[index].position;
-				const float dist = Distance(pos, dest);
-				if (minDist > dist)
+				if (Inside_Circle(curr, mNode[index].position, area * 4))
 				{
-					minDist = dist;
-					nodePos = pos;
+					if (mNode[index].GetWalkable() == false)
+						continue;
+					auto pos = mNode[index].position;
+					const float dist = Distance(pos, dest);
+					if (minDist > dist)
+					{
+						minDist = dist;
+						nodePos = pos;
+					}
 				}
 			}
 		}
 	}
 
 	return nodePos;
-}
-
-void JimmyGod::Grid3DComponent::CalculateGrid(int area, const JimmyGod::Math::Vector3& pos)
-{
-	AI::Coord c = mGraph.GetNode(pos)->coordinate;
-	minY = Max(c.y - area + 1, 1);
-	minX = Max(c.x - area + 1, 1);
-	maxY = Min(c.y + area, mGraph.GetRows());
-	maxX = Min(c.x + area, mGraph.GetColumns());
 }
 
 int JimmyGod::Grid3DComponent::GetIndex(int x, int y) const
@@ -292,10 +239,10 @@ void JimmyGod::Grid3DComponent::SetPathFind(const char* name)
 	else return;
 }
 
-bool JimmyGod::Grid3DComponent::CheckMaximumAndMinimumGird(const AI::Coord& coord) const
+bool JimmyGod::Grid3DComponent::Inside_Circle(const Math::Vector3& center, const Math::Vector3& tile, int radius) const
 {
-	if (coord.x > maxX - 1 || coord.y > maxY - 1 || coord.x < minX || coord.y < minY)
-		return false;
-	else
-		return true;
+	float dx = center.x - tile.x;
+	float dy = center.z - tile.z;
+	float dist = Sqrt(dx * dx + dy * dy);
+	return static_cast<int>(dist) <= static_cast<int>(radius);
 }

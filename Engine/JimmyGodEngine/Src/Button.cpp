@@ -6,11 +6,12 @@ using namespace JimmyGod::Input;
 using namespace JimmyGod::Graphics;
 using namespace JimmyGod::Math;
 
-JimmyGod::Button::Button(const char* fileName, const JimmyGod::Math::Vector2& pos, float radius)
+JimmyGod::Button::Button(const char* fileName_on, const char* fileName_off, const JimmyGod::Math::Vector2& pos, float radius)
 {
 	SetPosition(pos);
 	mCollider = Circle(mPosition, radius);
-	mTexture = SpriteRenderManager::Get()->LoadTexture(fileName);
+	mTexture[0] = SpriteRenderManager::Get()->LoadTexture(fileName_on);
+	mTexture[1] = SpriteRenderManager::Get()->LoadTexture(fileName_off);
 }
 
 void JimmyGod::Button::Update(float deltaTime)
@@ -23,6 +24,11 @@ void JimmyGod::Button::Update(float deltaTime)
 	int MouseY = inputSyetem->GetMouseScreenY();
 	mCollider = Circle(mPosition, mCollider.radius);
 	
+	if (PointInCircle(Vector2(MouseX, MouseY), GetCollider()))
+		onPoint = true;
+	else
+		onPoint = false;
+
 	if (inputSyetem->IsMouseDown(MouseButton::LBUTTON))
 	{
 		if (PointInCircle(Vector2(MouseX, MouseY), GetCollider()) && !onClick)
@@ -38,7 +44,11 @@ void JimmyGod::Button::Update(float deltaTime)
 void JimmyGod::Button::Render()
 {
 	if (!IsDisplay) return;
-	SpriteRenderManager::Get()->DrawSprite(mTexture, mPosition);
+	if (onPoint)
+		SpriteRenderManager::Get()->DrawSprite(mTexture[0], mPosition);
+	else
+		SpriteRenderManager::Get()->DrawSprite(mTexture[1], mPosition);
+	
 }
 
 void JimmyGod::Button::AddListener(std::function<void()> func)

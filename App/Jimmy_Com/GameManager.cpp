@@ -154,10 +154,6 @@ void GameManager::DebugUI()
 		{
 			GridManager::Get()->GetGird().DisplayAreaCube(mUnitCM->GetAgentComponent().mArea, mUnitCM->GetPosition(), GetColor(mCurrentState));
 			GridManager::Get()->GetGird().DisplayAreaCube(mUnitCM->GetAgentComponent().mArea - 1, mUnitCM->GetPosition(), Colors::DarkRed);
-
-			if (mUnit && mTarget)
-				JimmyGod::Graphics::SimpleDraw::AddLine(Vector3{ mUnitCM->GetPosition().x,3.0f,mUnitCM->GetPosition().z},
-					Vector3{ mTargetCM->GetPosition().x,3.0f,mTargetCM->GetPosition().z}, Colors::White);
 		}
 		if (order == UIManager::Order::Attack && mUnit->GetStatus() == Status::Standby)
 			GridManager::Get()->GetGird().DisplayAreaCube(mUnitCM->GetAgentComponent().mArea - 1, mUnitCM->GetPosition(), Colors::Yellow);
@@ -278,7 +274,6 @@ void GameManager::ActionState(float deltaTime)
 			if (mUnitCM->GetAgentComponent().mPath.size() == 0 && UIManager::Get()->GetOrder() == UIManager::Order::Move)
 			{
 				auto& getGrid = GridManager::Get()->GetGird();
-				getGrid.ObjectPosition(mUnitCM->GetPosition());
 				mUnitCM->GetAgentComponent().SetCurrentCoord(getGrid.GetGraph().GetNode(mUnitCM->GetPosition())->coordinate);
 				mUnit->SetStatus(Status::TurnOver);
 				Reset();
@@ -328,7 +323,6 @@ void GameManager::ControlState(float deltaTime)
 			mUnit = TraceUnit(mCurrentState);
 			if (mUnit && mUnit->GetStatus() == Status::Standby)
 			{
-				GridManager::Get()->GetGird().ObjectPosition(mUnitCM->GetTransformComponent().GetPosition());
 				mUnitCM->GetAgentComponent().SetCurrentCoord(GridManager::Get()->GetGird().GetGraph().GetNode(mUnitCM->GetTransformComponent().GetPosition())->coordinate);
 				mUnitCM->GetAgentComponent().SetDestinationCoord(mUnitCM->GetAgentComponent().GetCurrentCoord());
 				UIManager::Get()->ShowButtons();
@@ -361,14 +355,12 @@ void GameManager::ControlState(float deltaTime)
 				if (RayCast(mRay, node.collider, mMaxDistance))
 				{
 					if (node.GetWalkable() == false) return;
-					check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(node.coordinate);
+					check = GridManager::Get()->GetGird().Inside_Circle(mUnitCM->GetPosition(), node.position, mUnitCM->GetAgentComponent().mArea * 4);
 					if (check)
 					{
-						mUnitCM->GetAgentComponent().SetCurrentCoord(mUnitCM->GetAgentComponent().GetCurrentCoord());
-						mUnitCM->GetAgentComponent().SetDestinationCoord(node.coordinate);
-						GridManager::Get()->GetGird().ObjectPosition(node.position);
 						UIManager::Get()->HideButtons();
-						mUnit->Move();
+						auto& coord = GridManager::Get()->GetGird().GetGraph().GetNode(mUnitCM->GetPosition())->coordinate;
+						mUnit->Move(coord, node.coordinate);
 						return;
 					}
 				}
@@ -385,12 +377,10 @@ void GameManager::ControlState(float deltaTime)
 				mTarget = TraceUnit((mCurrentState == Flag::Ally ? Flag::Enemy : Flag::Ally));
 			if (mTarget)
 			{
-				GridManager::Get()->GetGird().CalculateGrid(mUnitCM->GetAgentComponent().mArea, mUnitCM->GetPosition());
-				check = GridManager::Get()->GetGird().CheckMaximumAndMinimumGird(mTargetCM->GetAgentComponent().GetCurrentCoord());
+				check = GridManager::Get()->GetGird().Inside_Circle(mUnitCM->GetPosition(), mTargetCM->GetPosition(), (mUnitCM->GetAgentComponent().mArea * 4)-1);
 				if (mTarget == mUnit || mTarget->GetFlag() == mUnit->GetFlag() || !check) mTarget = nullptr;
 				if (mTarget != nullptr)
 				{
-					GridManager::Get()->GetGird().ObjectPosition(mTargetCM->GetPosition());
 					UIManager::Get()->HideButtons();
 					BeginAttack();
 				}
@@ -409,7 +399,6 @@ void JimmyCom::GameManager::AIDecisionState(float deltaTime)
 	{
 		if (mUnitCM->GetAgentComponent().mPath.empty() && mUnit->GetStatus() == Status::Move)
 		{
-			grid.ObjectPosition(mUnitCM->GetPosition());
 			mUnitCM->GetAgentComponent().SetCurrentCoord(grid.GetGraph().GetNode(mUnitCM->GetPosition())->coordinate);
 			mUnit->SetStatus(Status::TurnOver);
 			Reset();
@@ -430,24 +419,22 @@ void JimmyCom::GameManager::AIDecisionState(float deltaTime)
 	{
 		mUnit = TraceEnemy();
 		mTarget = TraceClosestUnit(Flag::Ally);
-		if (mUnitCM) grid.ObjectPosition(mUnitCM->GetPosition());
 		mTurnOver += 2.0f;
 		return;
 	}
 
-	if (mUnitCM && mUnit->GetFlag() == Flag::Enemy)
+	if (mUnitCM && mUnit && mUnit->GetFlag() == Flag::Enemy)
 	{
 		if (!mTarget) mUnit->SetStatus(Status::TurnOver);
 		else
 		{
 			if (!mProcessing_AI)
 			{
-				grid.CalculateGrid(mUnitCM->GetAgentComponent().mArea - 1, mUnitCM->GetPosition());
-				if (!grid.CheckMaximumAndMinimumGird(mTargetCM->GetAgentComponent().GetDestinationCoord()))
+				if (!grid.Inside_Circle(mUnitCM->GetPosition(),mTargetCM->GetPosition(), mUnitCM->GetAgentComponent().mArea * 4))
 				{
 					auto pos = grid.FindClosestPath(mUnitCM->GetAgentComponent().mArea, mUnitCM->GetPosition(), mTargetCM->GetPosition());
-					mUnitCM->GetAgentComponent().SetDestinationCoord(grid.GetGraph().GetNode(pos)->coordinate);
-					mUnit->Move();
+					auto& coord = GridManager::Get()->GetGird().GetGraph().GetNode(mUnitCM->GetPosition())->coordinate;
+					mUnit->Move(coord, grid.GetGraph().GetNode(pos)->coordinate);
 				}
 				else BeginAttack();
 				mProcessing_AI = true;

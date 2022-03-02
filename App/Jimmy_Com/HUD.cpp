@@ -59,24 +59,24 @@ void JimmyCom::HUD::Initialize()
 			b->SetDisplay(false);
 	};
 
-	auto button1 = new Button("Health1.png", Vector2(2000.0f, 500.0f), 20.0f);
+	auto button1 = new Button("Health1.png","Health1.png", Vector2(2000.0f, 500.0f), 20.0f);
 	button1->AddListener(StandbyFunc);
 	mButtons.emplace_back(std::move(button1));
 
-	auto button2 = new Button("Health1.png", Vector2(2000.0f, 450.0f), 20.0f);
+	auto button2 = new Button("Health1.png","Health1.png", Vector2(2000.0f, 450.0f), 20.0f);
 	button2->AddListener(MoveFunc);
 	mButtons.emplace_back(std::move(button2));
 
-	auto button3 = new Button("Health1.png", Vector2(2000.0f, 400.0f), 20.0f);
+	auto button3 = new Button("Health1.png","Health1.png", Vector2(2000.0f, 400.0f), 20.0f);
 	button3->AddListener(AttackFunc);
 	mButtons.emplace_back(std::move(button3));
 
-	auto button4 = new Button("Energy5.png", Vector2(1000.0f, 325.0f), 20.0f);
+	auto button4 = new Button("Energy5.png","Energy1.png", Vector2(1000.0f, 325.0f), 20.0f);
 	button4->AddListener(StartFunc);
 	button4->SetDisplay(true);
 	mMainMenuButtons.emplace_back(std::move(button4));
 
-	auto button5 = new Button("Energy5.png", Vector2(1000.0f, 400.0f), 20.0f);
+	auto button5 = new Button("Energy5.png","Energy1.png", Vector2(1000.0f, 400.0f), 20.0f);
 	button5->AddListener(EndFunc);
 	button5->SetDisplay(true);
 	mMainMenuButtons.emplace_back(std::move(button5));

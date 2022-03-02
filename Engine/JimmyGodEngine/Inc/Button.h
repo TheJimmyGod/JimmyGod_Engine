@@ -5,7 +5,7 @@ namespace JimmyGod
 	class Button
 	{
 	public:
-		Button(const char* fileName, const JimmyGod::Math::Vector2& pos, float radius);
+		Button(const char* fileName_on, const char* fileName_off, const JimmyGod::Math::Vector2& pos, float radius);
 		~Button() = default;
 
 		void Update(float deltaTime);
@@ -27,11 +27,12 @@ namespace JimmyGod
 	private:
 		bool IsDisplay = false;
 		bool onClick = false;
+		bool onPoint = false;
 		std::function<void()> mFunc;
 
 		JimmyGod::Math::Vector2 mPosition = JimmyGod::Math::Vector2::Zero;
 		JimmyGod::Math::Circle mCollider;
 
-		JimmyGod::Graphics::TextureId mTexture;
+		JimmyGod::Graphics::TextureId mTexture[2];
 	};
 }

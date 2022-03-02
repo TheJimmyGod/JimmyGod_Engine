@@ -19,7 +19,7 @@ namespace JimmyCom
 		virtual ~Unit() = default;
 
 		virtual void Attack(Unit& unit);
-		virtual void Move() = 0;
+		virtual void Move(const AI::Coord& curr, const AI::Coord& dest) = 0;
 		virtual void TakeDamage(float val);
 
 	public:

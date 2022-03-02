@@ -19,7 +19,7 @@ namespace JimmyCom
 
 		void TakeDamage(float val) override;
 		void Reset() override;
-		void Move() override;
+		void Move(const AI::Coord& curr, const AI::Coord& dest) override;
 	};
 }
 
